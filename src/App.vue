@@ -1,11 +1,14 @@
 <template>
-  <div class="wrapper">
-    <MainWithMenu />
+  <div class="app">
+  <main>
+    <MainWithMenu/>
+    <router-view></router-view> 
+  </main>
   </div>
 </template>
 
 <script setup>
-import MainWithMenu from './components/MainWithMenu.vue'
+import MainWithMenu from './views/MainWithMenu.vue'
 </script>
 
 <style scoped>
