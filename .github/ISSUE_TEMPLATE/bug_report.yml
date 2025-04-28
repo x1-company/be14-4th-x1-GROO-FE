@@ -1,4 +1,4 @@
-name: "🐛 fix"
+name: "🐞 Bug"
 description: "버그 제보"
 labels: ["bug"]
 body:
