@@ -1,14 +1,12 @@
 <template>
   <div class="app">
   <main>
-    <Main/>
     <router-view></router-view> 
   </main>
   </div>
 </template>
 
 <script setup>
-import Main from './views/Main.vue'
 </script>
 
 <style scoped>
