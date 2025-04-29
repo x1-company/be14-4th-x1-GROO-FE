@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import MainWithMenu from "../views/MainWithMenu.vue";
+import Main from "../views/Main.vue";
 import WriteDiary from "../components/WriteDiary.vue";
 import ViewDiary from "../components/ViewDiary.vue";
 import ForestMate from "../views/ForestMate.vue";
@@ -12,8 +12,8 @@ const router = createRouter({
   routes: [
     { 
       path: "/",
-      name: "MainWithMenu",
-      component: MainWithMenu
+      name: "Main",
+      component: Main
     },
     {
       path: "/writediary",
