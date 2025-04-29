@@ -1,14 +1,22 @@
 <script setup>
+import { ref } from 'vue'
 import BackgroundImage from '../components/BackgroundImage.vue'
 import SideMenu from '../components/SideMenu.vue'
+import ForestView from '../components/ForestView.vue'
+
+const currentView = ref('background') // 초기 상태: BackgroundImage
+
+const changeView = (view) => {
+  currentView.value = view
+}
 </script>
 
 <template>
   <div class="container">
     <div class="main-area">
-      <BackgroundImage />
+      <component :is="currentView === 'background' ? BackgroundImage : ForestView" />
     </div>
-    <SideMenu />
+    <SideMenu @change-view="changeView" />
   </div>
 </template>
 
@@ -22,6 +30,7 @@ import SideMenu from '../components/SideMenu.vue'
 }
 
 .main-area {
+  flex: 1;
   height: 100%;
   display: flex;
   justify-content: center;
