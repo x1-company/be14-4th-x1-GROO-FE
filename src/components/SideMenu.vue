@@ -7,6 +7,7 @@ import buttonIcon_4 from '../icons/forestview_icon.png'
 import buttonIcon_5 from '../icons/myitemview_icon.png'
 import buttonIcon_6 from '../icons/mailbox_icon.png'
 import logoutIcon from '../icons/logout_icon.png'
+import { useRouter } from 'vue-router'
 
 const isMenuOpen = ref(true)
 
@@ -14,6 +15,12 @@ const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60))
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
+}
+
+const router = useRouter()
+
+const logout = () => {
+  router.push('/login')
 }
 </script>
 
@@ -29,7 +36,7 @@ const toggleMenu = () => {
     </button>
     <div class="menu-content" v-if="isMenuOpen">
       <div class="top-bar">
-        <span class="logout-icon">
+        <span class="logout-icon" @click="logout">
           <img :src="logoutIcon" class="btn-img" />
         </span>
       </div>
@@ -56,7 +63,7 @@ const toggleMenu = () => {
           </span>
           우정의 숲 입장하기
         </router-link>
-        <router-link to="#" class="menu-btn" @click.prevent="$emit('change-view', 'forest')">
+        <router-link to="/forestview" class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
           </span>

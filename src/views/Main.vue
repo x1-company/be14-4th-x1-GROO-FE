@@ -1,22 +1,24 @@
 <script setup>
 import { ref } from 'vue'
-import BackgroundImage from '../components/BackgroundImage.vue'
+import { useRoute } from 'vue-router' // 현재 경로를 가져오기 위해 useRoute 사용
 import SideMenu from '../components/SideMenu.vue'
-import ForestView from '../components/ForestView.vue'
 
 const currentView = ref('background') // 초기 상태: BackgroundImage
 
 const changeView = (view) => {
   currentView.value = view
 }
+
+const route = useRoute() // 현재 경로 가져오기
 </script>
 
 <template>
   <div class="container">
     <div class="main-area">
-      <component :is="currentView === 'background' ? BackgroundImage : ForestView" />
+      <router-view />
     </div>
-    <SideMenu @change-view="changeView" />
+    <!-- /login 경로가 아닐 때만 SideMenu를 렌더링 -->
+    <SideMenu v-if="route.path !== '/login'" @change-view="changeView" />
   </div>
 </template>
 
