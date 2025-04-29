@@ -56,7 +56,7 @@ const toggleMenu = () => {
           </span>
           우정의 숲 입장하기
         </router-link>
-        <router-link to="/forestview" class="menu-btn">
+        <router-link to="#" class="menu-btn" @click.prevent="$emit('change-view', 'forest')">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
           </span>
