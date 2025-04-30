@@ -58,21 +58,25 @@ onMounted(async () => {
 })
 
 const togglePublic = async () => {
-  if (!(forestData.value && forestData.value.length)) return;
+  if (!forestData.value) return;
   const forestId = route.params.forestId;
   const token = localStorage.getItem('accessToken');
   console.log('token:', token);
+
   try {
-    const res = await fetch(`http://localhost:8080/public/${forestId}`, {
+    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
+
     const text = await res.text();
     console.log('PATCH status:', res.status, 'body:', text);
     if (!res.ok) throw new Error('공개여부 변경 실패');
-    forestData.value[0].isPublic = !forestData.value[0].isPublic;
+    
+    // forestData가 배열이 아닌 객체라고 가정
+    forestData.value.isPublic = !forestData.value.isPublic;
   } catch (err) {
     alert('공개여부 변경에 실패했습니다.');
     console.error(err);
@@ -96,12 +100,12 @@ const togglePublic = async () => {
         />
         <div v-if="showTooltip" class="tooltip">
           <div class="tooltip-title">공개 범위 설정</div>
-            <div class="tooltip-status" 
-              :class="forestData && forestData.length && forestData[0].isPublic ? 'public' : 'private'">
-              {{ forestData && forestData.length && forestData[0].isPublic ? '공개중' : '비공개' }}
-            </div>
+          <div class="tooltip-status"
+            :class="forestData && forestData.isPublic ? 'public' : 'private'">
+            {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
           </div>
         </div>
+      </div>
       <!-- 정원 -->
       <div v-if="forestData && forestData.length" class="forest-container">
         <!-- 정중앙 텍스트 -->
@@ -256,10 +260,10 @@ const togglePublic = async () => {
   display: inline-block;
 }
 .tooltip-status.public {
-  background: rgba(11, 87, 138, 0.33); /* #0B578A 44% */
+  background: rgba(11, 87, 138, 0.33); /* #FF0A26 44% */
 }
 
 .tooltip-status.private {
-  background: rgba(255, 10, 38, 0.33); /* #FF0A26 44% */
+  background: rgba(255, 10, 38, 0.33); /* #0B578A 44% */
 }
 </style>
