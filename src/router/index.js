@@ -11,6 +11,7 @@ import Login from "@/components/Login.vue";
 import BackgroundImage from "@/components/BackgroundImage.vue";
 import Signup from "@/components/Signup.vue";
 import ForestDetail from "@/views/ForestDetail.vue"; 
+import BackgroundImage2 from "@/components/BackgroundImage2.vue";
 import InviteCodeView from "../views/InviteCodeView.vue";
 
 const router = createRouter({
@@ -23,7 +24,7 @@ const router = createRouter({
         {
           path: "", // == "/"
           name: "BackgroundImage",
-          component: BackgroundImage,
+          component: BackgroundImage2,
         },
         {
           path: "writediary",
