@@ -9,10 +9,21 @@
       <div class="diary-container">
         <div class="diary-header">
           <div class="diary-title">
-            <span class="diary-icon">📝</span>
+            <span class="diary-icon">🌳</span>
             감정 일기 쓰기
           </div>
-          <div class="diary-date">{{ currentDate }}</div>
+          <!-- 날짜 선택 -->
+          <div class="date-selector">
+            <VueFlatPickr
+              v-model="selectedDate"
+              :config="flatpickrConfig"
+              class="date-input"
+            >
+              <button class="date-button">
+                {{ formattedDate }}
+              </button>
+            </VueFlatPickr>
+          </div>
         </div>
 
         <div class="button-group">
@@ -46,31 +57,59 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import VueFlatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
+import { Korean } from 'flatpickr/dist/l10n/ko.js';
 
 const diaryContent = ref('');
 const charCount = ref(0);
+const selectedDate = ref(new Date());
+
+// Flatpickr 설정
+const flatpickrConfig = {
+  locale: Korean,
+  dateFormat: 'Y년 n월 j일 l',
+  disableMobile: true,
+  static: true,
+  mode: 'single',
+  allowInput: false,
+  clickOpens: true,
+  position: 'below',
+  monthSelectorType: 'static',
+  defaultDate: selectedDate.value,
+  onChange: function(selectedDates) {
+    if (selectedDates && selectedDates[0]) {
+      selectedDate.value = selectedDates[0];
+    }
+  }
+};
+
+// 날짜 포맷팅
+const formattedDate = computed(() => {
+  const date = new Date(selectedDate.value);
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${weekdays[date.getDay()]}요일`;
+});
 
 const updateCharCount = () => {
   charCount.value = diaryContent.value.length;
 };
 
-const currentDate = new Date().toLocaleDateString('ko-KR', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  weekday: 'long'
-});
-
 const saveDraft = () => {
-  localStorage.setItem('diaryDraft', diaryContent.value);
+  localStorage.setItem('diaryDraft', JSON.stringify({
+    content: diaryContent.value,
+    date: selectedDate.value
+  }));
   alert('임시저장되었습니다.');
 };
 
 const loadDraft = () => {
   const draft = localStorage.getItem('diaryDraft');
   if (draft) {
-    diaryContent.value = draft;
+    const { content, date } = JSON.parse(draft);
+    diaryContent.value = content;
+    selectedDate.value = new Date(date);
     updateCharCount();
   } else {
     alert('저장된 임시글이 없습니다.');
@@ -81,15 +120,21 @@ const emit = defineEmits(['save']);
 
 const saveDiary = () => {
   // TODO: API 연동 후 구현
-  console.log('일기 저장:', diaryContent.value);
-  localStorage.removeItem('diaryDraft'); // 임시저장 데이터 삭제
+  console.log('일기 저장:', {
+    content: diaryContent.value,
+    date: selectedDate.value
+  });
+  localStorage.removeItem('diaryDraft');
   emit('save');
 };
 
+// 컴포넌트 마운트 시 임시저장 데이터 불러오기
 onMounted(() => {
   const draft = localStorage.getItem('diaryDraft');
   if (draft) {
-    diaryContent.value = draft;
+    const { content, date } = JSON.parse(draft);
+    diaryContent.value = content;
+    selectedDate.value = new Date(date);
     updateCharCount();
   }
 });
@@ -100,7 +145,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 20px 0;
 }
 
 .content-wrapper {
@@ -140,16 +184,48 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .diary-icon {
   font-size: 24px;
 }
 
-.diary-date {
-  color: rgba(255,255,255,0.8);
+.date-selector {
+  position: relative;
+  background: transparent;
+}
+
+.date-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+}
+
+.date-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #3a5a40;
   font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.date-button::before {
+  content: "🗓️";
+  font-size: 18px;
+}
+
+.date-button:hover {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .button-group {
@@ -224,5 +300,147 @@ onMounted(() => {
 .save-btn:disabled {
   background: rgba(58, 90, 64, 0.5);
   cursor: not-allowed;
+}
+
+/* Flatpickr 커스텀 스타일 */
+
+:global(.flatpickr-input) {
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+}
+
+:global(.flatpickr-calendar) {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 20px !important;
+  border: none !important;
+  width: 300px !important;
+  padding: 20px !important;
+  margin-top: 10px !important;
+}
+
+:global(.flatpickr-calendar.arrowTop::before),
+:global(.flatpickr-calendar.arrowTop::after),
+:global(.flatpickr-calendar.arrowBottom::before),
+:global(.flatpickr-calendar.arrowBottom::after) {
+  display: none !important;
+}
+
+:global(.flatpickr-calendar.open) {
+  display: inline-block !important;
+  z-index: 100 !important;
+}
+
+:global(.flatpickr-innerContainer) {
+  border-radius: 20px !important;
+}
+
+:global(.flatpickr-rContainer) {
+  border-radius: 20px !important;
+}
+
+:global(.flatpickr-days) {
+  border-radius: 20px !important;
+}
+
+:global(.dayContainer) {
+  border-radius: 20px !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+}
+
+:global(.flatpickr-months) {
+  padding-top: 16px !important;
+}
+
+:global(.flatpickr-month) {
+  background: transparent !important;
+  color: #3a5a40 !important;
+  fill: #3a5a40 !important;
+  height: 40px !important;
+}
+
+:global(.flatpickr-current-month) {
+  padding-top: 0px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #3a5a40 !important;
+}
+
+:global(.flatpickr-monthDropdown-months) {
+  background: transparent !important;
+  color: #3a5a40 !important;
+  font-weight: 500 !important;
+}
+
+:global(.flatpickr-monthDropdown-month) {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #3a5a40 !important;
+}
+
+:global(.flatpickr-weekdays) {
+  background: transparent !important;
+  padding-top: 8px !important;
+}
+
+:global(.flatpickr-weekday) {
+  background: transparent !important;
+  color: rgba(58, 90, 64, 0.8) !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+}
+
+:global(.flatpickr-day) {
+  background: transparent !important;
+  border-radius: 50% !important;
+  color: #3a5a40 !important;
+  margin: 2px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  width: 36px !important;
+  max-width: 36px !important;
+}
+
+:global(.flatpickr-day.selected) {
+  background: rgba(58, 90, 64, 0.2) !important;
+  border: none !important;
+  color: #3a5a40 !important;
+  font-weight: bold !important;
+}
+
+:global(.flatpickr-day:hover) {
+  background: rgba(58, 90, 64, 0.1) !important;
+}
+
+:global(.flatpickr-day.today) {
+  border: none !important;
+  background: rgba(58, 90, 64, 0.15) !important;
+}
+
+:global(.flatpickr-day.prevMonthDay),
+:global(.flatpickr-day.nextMonthDay) {
+  color: rgba(58, 90, 64, 0.4) !important;
+}
+
+:global(.flatpickr-prev-month),
+:global(.flatpickr-next-month) {
+  fill: #3a5a40 !important;
+  padding: 10px !important;
+}
+
+:global(.flatpickr-prev-month:hover),
+:global(.flatpickr-next-month:hover) {
+  opacity: 1 !important;
+}
+
+:global(.flatpickr-prev-month svg),
+:global(.flatpickr-next-month svg) {
+  opacity: 0.7 !important;
+}
+
+:global(.flatpickr-prev-month:hover svg),
+:global(.flatpickr-next-month:hover svg) {
+  opacity: 1 !important;
 }
 </style>

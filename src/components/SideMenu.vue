@@ -77,9 +77,13 @@ const handleDiarySave = () => {
 };
 
 const toggleCategorySelector = () => {
-  showWriteDiary.value = true;
-  showCategorySelector.value = false;
-  showAnalyzeResult.value = false;
+  if (showWriteDiary.value || showCategorySelector.value || showAnalyzeResult.value) {
+    showWriteDiary.value = false;
+    showCategorySelector.value = false;
+    showAnalyzeResult.value = false;
+  } else {
+    showWriteDiary.value = true;
+  }
 }
 </script>
 
@@ -144,6 +148,11 @@ const toggleCategorySelector = () => {
           </div>
         </template>
         <template v-else-if="showWriteDiary">
+          <div class="top-bar">
+            <button class="back-button" @click="toggleCategorySelector">
+              ←
+            </button>
+          </div>
           <WriteDiary @save="handleDiarySave" />
         </template>
         <template v-else-if="showCategorySelector">
