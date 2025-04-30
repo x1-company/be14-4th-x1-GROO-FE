@@ -1,30 +1,30 @@
 <script setup>
-import { ref, computed } from 'vue'
-import buttonIcon_1 from '../icons/diarywrite_icon.png'
-import buttonIcon_2 from '../icons/diaryview_icon.png'
-import buttonIcon_3 from '../icons/forestmate_icon.png'
-import buttonIcon_4 from '../icons/forestview_icon.png'
-import buttonIcon_5 from '../icons/myitemview_icon.png'
-import buttonIcon_6 from '../icons/mailbox_icon.png'
-import logoutIcon from '../icons/logout_icon.png'
-import { useRouter } from 'vue-router'
+import { ref, computed } from "vue";
+import buttonIcon_1 from "../icons/diarywrite_icon.png";
+import buttonIcon_2 from "../icons/diaryview_icon.png";
+import buttonIcon_3 from "../icons/forestmate_icon.png";
+import buttonIcon_4 from "../icons/forestview_icon.png";
+import buttonIcon_5 from "../icons/myitemview_icon.png";
+import buttonIcon_6 from "../icons/mailbox_icon.png";
+import logoutIcon from "../icons/logout_icon.png";
+import { useRouter } from "vue-router";
 
-const isMenuOpen = ref(true)
+const isMenuOpen = ref(true);
 
-const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60))
+const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+  isMenuOpen.value = !isMenuOpen.value;
+};
 
-const router = useRouter()
+const router = useRouter();
 
 const logout = () => {
   // 로컬 스토리지 비우기
-  localStorage.removeItem('accessToken')
-  localStorage.removeItem('userNickname')
-  router.push('/login')
-}
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userNickname");
+  router.push("/login");
+};
 </script>
 
 <template>
