@@ -53,15 +53,9 @@ div {
 .icons {
   position: absolute;
   top: 40px;
-  right: 40px;
+  left: 88px;
   display: flex;
   gap: 16px;
-}
-
-.top-right {
-  position: absolute;
-  top: 40px;
-  right: 40px;
 }
 
 .btn-img {

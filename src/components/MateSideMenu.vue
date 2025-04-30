@@ -11,11 +11,22 @@ import { useRouter } from "vue-router";
 const isMenuOpen = ref(true);
 const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
 
+const router = useRouter();
+const emit = defineEmits(["openShare"]);
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-const router = useRouter();
+const handleShare = () => {
+  emit("openShare");
+};
+
+const logout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userNickname");
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -43,32 +54,32 @@ const router = useRouter();
           <span class="icon">
             <img :src="buttonIcon_1" class="btn-img" />
           </span>
-          감정일기 작성하기</button
-        >
+          감정일기 작성하기
+        </button>
         <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_2" class="btn-img" />
           </span>
-          감정일기 다시보기</button
-        >
+          감정일기 다시보기
+        </button>
         <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_3" class="btn-img" />
           </span>
-          감정의 숲 입장하기</button
-        >
-        <button class="menu-btn">
+          감정의 숲 입장하기
+        </button>
+        <button class="menu-btn" @click="handleShare">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
           </span>
-          우정의 숲 초대하기</button
-        >
+          우정의 숲 초대하기
+        </button>
         <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_5" class="btn-img" />
           </span>
-          우리의 조각 보기</button
-        >
+          우리의 조각 보기
+        </button>
       </div>
     </div>
   </div>
