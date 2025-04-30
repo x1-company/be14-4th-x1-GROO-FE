@@ -4,9 +4,11 @@ import { useRoute } from "vue-router"; // 현재 경로를 가져오기 위해 u
 import SideMenu from "../components/SideMenu.vue";
 import MateSideMenu from "../components/MateSideMenu.vue";
 import InviteLinkModal from "../components/InviteLinkModal.vue";
+import ForestListModal from "../components/ForestListModal.vue";
 
 const currentView = ref("background"); // 초기 상태: BackgroundImage
 const isInviteLinkModalOpen = ref(false);
+const isForestListModalOpen = ref(false);
 
 const changeView = (view) => {
   currentView.value = view;
@@ -19,6 +21,15 @@ const openInviteLinkModal = () => {
 
 const closeInviteLinkModal = () => {
   isInviteLinkModalOpen.value = false;
+};
+
+// 숲 목록 모달 열기
+const openForestListModal = () => {
+  isForestListModalOpen.value = true;
+};
+
+const closeForestListModal = () => {
+  isForestListModalOpen.value = false;
 };
 
 const route = useRoute(); // 현재 경로 가져오기
@@ -35,12 +46,17 @@ const route = useRoute(); // 현재 경로 가져오기
       <MateSideMenu
         v-if="route.name === 'ForestMate'"
         @openShare="openInviteLinkModal"
+        @openForestList="openForestListModal"
       />
       <SideMenu v-else @change-view="changeView" />
     </template>
     <InviteLinkModal
       :is-open="isInviteLinkModalOpen"
       @close="closeInviteLinkModal"
+    />
+    <ForestListModal
+      :is-open="isForestListModalOpen"
+      @close="closeForestListModal"
     />
   </div>
 </template>
