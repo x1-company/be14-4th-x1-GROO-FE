@@ -7,11 +7,15 @@ import buttonIcon_4 from '../icons/forestview_icon.png'
 import buttonIcon_5 from '../icons/myitemview_icon.png'
 import buttonIcon_6 from '../icons/mailbox_icon.png'
 import logoutIcon from '../icons/logout_icon.png'
+import WriteDiary from './WriteDiary.vue'
 import { useRouter } from 'vue-router'
 
 const isMenuOpen = ref(true)
-
-const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60))
+const showCategorySelector = ref(false)
+const sidebarWidth = computed(() => {
+  if (!isMenuOpen.value) return 60
+  return showCategorySelector.value ? 655 : 360
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -25,92 +29,99 @@ const logout = () => {
   localStorage.removeItem('userNickname')
   router.push('/login')
 }
+
+const handleAnalyze = (category) => {
+  console.log("Selected category:", category)
+  showCategorySelector.value = false
+  // 여기에 분석 로직 추가
+}
+
+const toggleCategorySelector = () => {
+  showCategorySelector.value = !showCategorySelector.value
+}
 </script>
 
 <template>
-  <div
-    class="side-menu"
-    :class="{ open: isMenuOpen }"
-    :style="{ width: sidebarWidth + 'px' }"
-  >
-    <button class="toggle-button" @click="toggleMenu">
+  <div class="side-wrapper">
+    <div
+      class="side-menu"
+      :class="{ open: isMenuOpen, 'category-mode': showCategorySelector }"
+      :style="{ 
+        width: sidebarWidth + 'px',
+        height: showCategorySelector ? '1024px' : '100%'
+      }"
+    >
+      <div class="menu-content" v-if="isMenuOpen">
+        <template v-if="!showCategorySelector">
+          <div class="top-bar">
+            <span class="logout-icon" @click="logout">
+              <img :src="logoutIcon" class="btn-img" />
+            </span>
+          </div>
+          <div class="greeting">
+            <div>안녕하세요 min님,</div>
+            <div>오늘 하루는 어떠셨나요?</div>
+          </div>
+          <div class="menu-buttons">
+            <button class="menu-btn" @click="toggleCategorySelector">
+              <span class="icon">
+                <img :src="buttonIcon_1" class="btn-img" />
+              </span>
+              감정일기 작성하기
+            </button>
+            <router-link to="/viewdiary" class="menu-btn">
+              <span class="icon">
+                <img :src="buttonIcon_2" class="btn-img" />
+              </span>
+              감정일기 다시보기
+            </router-link>
+            <router-link to="/forestmate" class="menu-btn">
+              <span class="icon">
+                <img :src="buttonIcon_3" class="btn-img" />
+              </span>
+              우정의 숲 입장하기
+            </router-link>
+            <router-link to="/forestview" class="menu-btn">
+              <span class="icon">
+                <img :src="buttonIcon_4" class="btn-img" />
+              </span>
+              다른 숲 구경가기
+            </router-link>
+            <router-link to="/myitemview" class="menu-btn">
+              <span class="icon">
+                <img :src="buttonIcon_5" class="btn-img" />
+              </span>
+              나의 조각 보기
+            </router-link>
+            <router-link to="/guestbook" class="menu-btn">
+              <span class="icon">
+                <img :src="buttonIcon_6" class="btn-img" />
+              </span>
+              방명록 확인하기
+            </router-link>
+          </div>
+        </template>
+        <div v-else class="category-selector-container">
+          <div class="top-bar">
+            <button class="back-button" @click="toggleCategorySelector">
+              ←
+            </button>
+          </div>
+          <WriteDiary @toggleMenu="toggleCategorySelector" />
+        </div>
+      </div>
+    </div>
+    <button
+      class="toggle-button"
+      @click="toggleMenu"
+    >
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
-    <div class="menu-content" v-if="isMenuOpen">
-      <div class="top-bar">
-        <span class="logout-icon" @click="logout">
-          <img :src="logoutIcon" class="btn-img" />
-        </span>
-      </div>
-      <div class="greeting">
-        <div>안녕하세요 min님,</div>
-        <div>오늘 하루는 어떠셨나요?</div>
-      </div>
-      <div class="menu-buttons">
-        <router-link to="/writediary" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_1" class="btn-img" />
-          </span>
-          감정일기 작성하기
-        </router-link>
-        <router-link to="/viewdiary" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_2" class="btn-img" />
-          </span>
-          감정일기 다시보기
-        </router-link>
-        <router-link to="/forestmate" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_3" class="btn-img" />
-          </span>
-          우정의 숲 입장하기
-        </router-link>
-        <router-link to="/forestview" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_4" class="btn-img" />
-          </span>
-          다른 숲 구경가기
-        </router-link>
-        <router-link to="/myitemview" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_5" class="btn-img" />
-          </span>
-          나의 조각 보기
-        </router-link>
-        <router-link to="/guestbook" class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_6" class="btn-img" />
-          </span>
-          방명록 확인하기
-        </router-link>
-      </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
-/* Add the styles for side-menu here */
-.side-menu {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1.5px solid rgba(255, 255, 255, 0.25);
-  height: 100%;
-  padding: 0px 20px 20px 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.side-menu.open {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 .toggle-button {
   width: 40px;
   height: 60px;
@@ -123,7 +134,37 @@ const logout = () => {
   left: -40px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-wrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+}
+
+.side-menu {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.25);
+  padding: 0px 20px 20px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.side-menu.category-mode {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
 }
 
 .menu-content {
@@ -200,5 +241,23 @@ const logout = () => {
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+.category-selector-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: auto;
 }
 </style>
