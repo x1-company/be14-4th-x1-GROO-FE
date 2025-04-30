@@ -54,19 +54,19 @@ const logout = () => {
           <span class="icon">
             <img :src="buttonIcon_1" class="btn-img" />
           </span>
-          감정일기 작성하기
+          우정일기 작성하기
         </button>
         <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_2" class="btn-img" />
           </span>
-          감정일기 다시보기
+          우정일기 다시보기
         </button>
         <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_3" class="btn-img" />
           </span>
-          감정의 숲 입장하기
+          우정의 숲 입장하기
         </button>
         <button class="menu-btn" @click="handleShare">
           <span class="icon">
