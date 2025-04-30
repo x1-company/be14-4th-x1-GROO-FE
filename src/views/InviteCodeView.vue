@@ -1,0 +1,426 @@
+<template>
+  <div class="invite-code-container">
+    <div class="floating-items">
+      <span class="float-item">🌿</span>
+      <span class="float-item">🍃</span>
+      <span class="float-item">🌱</span>
+      <span class="float-item">🦊</span>
+      <span class="float-item">🌸</span>
+      <span class="float-item">🦌</span>
+    </div>
+    <div class="invite-code-box">
+      <div class="forest-symbol">
+        <div class="tree-container">
+          <span class="tree">🌳</span>
+          <div class="animals">
+            <span class="animal">🦊</span>
+            <span class="animal">🦌</span>
+            <span class="animal">🐰</span>
+          </div>
+        </div>
+        <div class="grass">
+          <span>🌿</span>
+          <span>🌱</span>
+          <span>🍃</span>
+        </div>
+      </div>
+      <h1 class="title">우리의 숲으로<br />놀러와요!</h1>
+      <p class="subtitle">✨ 친구의 초대 코드를 입력해주세요 ✨</p>
+      <div class="input-container">
+        <div class="input-wrapper">
+          <input
+            v-model="inviteCode"
+            type="text"
+            class="code-input"
+            placeholder="초대 코드 8자리"
+            maxlength="8"
+          />
+          <div class="input-decoration">
+            <span class="flower">🦊</span>
+          </div>
+        </div>
+      </div>
+      <button @click="handleSubmit" class="submit-button">
+        <span class="button-text">입장하기</span>
+        <span class="button-icon">🌳</span>
+      </button>
+      <div class="bottom-decoration">
+        <span>🌿</span>
+        <span>🌱</span>
+        <span>🌿</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const inviteCode = ref("");
+
+const handleSubmit = () => {
+  if (inviteCode.value.length === 8) {
+    // TODO: 초대 코드 검증 로직 추가
+    router.push("/forest-mate"); // 검증 후 포레스트메이트 페이지로 이동
+  }
+};
+</script>
+
+<style scoped>
+.invite-code-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #dae2b6 0%, #3a5a40 100%);
+  font-family: "Pretendard", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-items {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.float-item {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.5;
+  animation: floating 6s ease-in-out infinite;
+}
+
+.float-item:nth-child(1) {
+  top: 15%;
+  left: 15%;
+  animation-delay: 0s;
+}
+.float-item:nth-child(2) {
+  top: 25%;
+  right: 20%;
+  animation-delay: 1s;
+}
+.float-item:nth-child(3) {
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 2s;
+}
+.float-item:nth-child(4) {
+  bottom: 30%;
+  right: 25%;
+  animation-delay: 3s;
+}
+.float-item:nth-child(5) {
+  top: 40%;
+  left: 30%;
+  animation-delay: 4s;
+}
+.float-item:nth-child(6) {
+  bottom: 40%;
+  right: 15%;
+  animation-delay: 5s;
+}
+
+.invite-code-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 30px;
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 20px 60px rgba(58, 90, 64, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: 3px solid rgba(165, 192, 167, 0.3);
+}
+
+.forest-symbol {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-container {
+  position: relative;
+  animation: gentle-bounce 3s ease-in-out infinite;
+}
+
+.tree {
+  font-size: 80px;
+  display: block;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 8px rgba(58, 90, 64, 0.3));
+}
+
+.animals {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.animal {
+  font-size: 24px;
+  animation: peek 3s ease-in-out infinite;
+}
+
+.animal:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.animal:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.grass {
+  display: flex;
+  gap: 10px;
+  margin-top: -20px;
+}
+
+.grass span {
+  font-size: 24px;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.grass span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.grass span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.title {
+  font-size: 32px;
+  color: #3a5a40;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+}
+
+.subtitle {
+  font-size: 17px;
+  color: #5c8374;
+  margin-bottom: 35px;
+  text-align: center;
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s both;
+}
+
+.input-container {
+  width: 100%;
+  margin-bottom: 35px;
+  padding-right: 40px;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.code-input {
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #a5c0a7;
+  border-radius: 20px;
+  font-size: 22px;
+  text-align: center;
+  letter-spacing: 4px;
+  color: #3a5a40;
+  transition: all 0.3s ease;
+}
+
+.code-input:focus {
+  outline: none;
+  border-color: #3a5a40;
+  box-shadow: 0 0 0 4px rgba(58, 90, 64, 0.1);
+  transform: translateY(-2px);
+}
+
+.code-input::placeholder {
+  color: #a5c0a7;
+  opacity: 0.7;
+}
+
+.input-decoration {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: bounce 2s infinite;
+}
+
+.flower {
+  font-size: 24px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #3a5a40 0%, #2c4632 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(58, 90, 64, 0.3);
+}
+
+.submit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(58, 90, 64, 0.4);
+  background: linear-gradient(135deg, #2c4632 0%, #1a2a1e 100%);
+}
+
+.submit-button:active {
+  transform: translateY(1px);
+}
+
+.bottom-decoration {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+}
+
+.bottom-decoration span {
+  font-size: 24px;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.bottom-decoration span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.bottom-decoration span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(10px, -20px) rotate(5deg);
+  }
+}
+
+@keyframes gentle-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes peek {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(0.89);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .invite-code-box {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .forest-symbol {
+    width: 140px;
+    height: 140px;
+  }
+
+  .tree {
+    font-size: 70px;
+  }
+
+  .animals {
+    bottom: 15px;
+  }
+
+  .animal {
+    font-size: 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .code-input {
+    font-size: 20px;
+    padding: 18px;
+  }
+
+  .float-item {
+    font-size: 20px;
+  }
+
+  .bottom-decoration span {
+    font-size: 20px;
+  }
+}
+</style>

@@ -11,6 +11,7 @@ import Login from "@/components/Login.vue";
 import BackgroundImage from "@/components/BackgroundImage.vue";
 import Signup from "@/components/Signup.vue";
 import ForestDetail from "@/views/ForestDetail.vue"; 
+import InviteCodeView from "../views/InviteCodeView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -70,6 +71,11 @@ const router = createRouter({
       path: "/signup",
       name: "SignUp",
       component: Signup,
+    },
+    {
+      path: "/invite", // 초대 코드 입력 화면도 레이아웃 없이 독립적으로 표시
+      name: "InviteCode",
+      component: InviteCodeView,
     },
   ],
 });
