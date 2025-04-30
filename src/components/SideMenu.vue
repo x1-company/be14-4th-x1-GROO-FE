@@ -38,10 +38,10 @@ const sidebarWidth = computed(() => {
 })
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+  isMenuOpen.value = !isMenuOpen.value
+}
 
-const router = useRouter();
+const router = useRouter()
 
 const logout = () => {
   // 로컬 스토리지 비우기
@@ -81,10 +81,6 @@ const toggleCategorySelector = () => {
   showCategorySelector.value = false;
   showAnalyzeResult.value = false;
 }
-
-const handleWriteDiaryBack = () => {
-  showWriteDiary.value = false;
-};
 </script>
 
 <template>
@@ -148,11 +144,6 @@ const handleWriteDiaryBack = () => {
           </div>
         </template>
         <template v-else-if="showWriteDiary">
-          <div class="top-bar">
-            <button class="back-button" @click="handleWriteDiaryBack">
-              ←
-            </button>
-          </div>
           <WriteDiary @save="handleDiarySave" />
         </template>
         <template v-else-if="showCategorySelector">
@@ -321,4 +312,3 @@ const handleWriteDiaryBack = () => {
   margin-right: auto;
 }
 </style>
-
