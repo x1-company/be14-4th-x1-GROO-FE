@@ -8,7 +8,6 @@ import ForestView from "../components/ForestView.vue";
 import MyItemView from "../components/MyItemView.vue";
 import Guestbook from "../components/GuestBook.vue";
 import Login from "@/components/Login.vue";
-import BackgroundImage from "@/components/BackgroundImage.vue";
 import Signup from "@/components/Signup.vue";
 import ForestDetail from "@/views/ForestDetail.vue"; 
 import BackgroundImage2 from "@/components/BackgroundImage2.vue";
