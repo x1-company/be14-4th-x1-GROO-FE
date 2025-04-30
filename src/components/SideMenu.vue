@@ -38,10 +38,10 @@ const sidebarWidth = computed(() => {
 })
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+  isMenuOpen.value = !isMenuOpen.value;
+};
 
-const router = useRouter()
+const router = useRouter();
 
 const logout = () => {
   // 로컬 스토리지 비우기
@@ -321,3 +321,4 @@ const handleWriteDiaryBack = () => {
   margin-right: auto;
 }
 </style>
+
