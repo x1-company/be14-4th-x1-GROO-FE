@@ -8,6 +8,7 @@ import MyItemView from "../components/MyItemView.vue";
 import Guestbook from "../components/GuestBook.vue";
 import Login from "@/components/Login.vue";
 import BackgroundImage from "@/components/BackgroundImage.vue";
+import Signup from "@/components/Signup.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -58,6 +59,11 @@ const router = createRouter({
       name: "Login",
       component: Login,
     },
+    {
+      path: "/signup",
+      name: "SignUp",
+      component: Signup,
+    }
   ],
 });
 

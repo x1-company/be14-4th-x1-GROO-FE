@@ -63,7 +63,7 @@ const handleLogin = async (e) => {
   
         <div class="links">
           <a href="#" class="find-password">비밀번호 찾기</a>
-          <a href="#" class="signup">회원가입</a>
+          <router-link to="/signup" class="signup">회원가입</router-link>
         </div>
   
         <div class="social-login">
