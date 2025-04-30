@@ -2,7 +2,7 @@
   <div v-if="isOpen" class="modal-overlay" @click="$emit('close')">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
-        <h2>공유하기</h2>
+        <h2>초대 링크</h2>
         <button class="close-button" @click="$emit('close')">
           <span class="close-icon">×</span>
         </button>
@@ -30,7 +30,7 @@
             />
             <button @click="copyLink" class="copy-button"> 복사하기 </button>
           </div>
-          <p class="share-tip">링크를 복사하여 친구들과 공유해보세요!</p>
+          <p class="share-tip">링크를 복사하여 친구들을 초대해보세요!</p>
         </div>
       </div>
     </div>
