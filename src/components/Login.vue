@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
+const router = useRouter()
 
 const handleLogin = async (e) => {
   e.preventDefault()
@@ -33,6 +35,31 @@ const handleLogin = async (e) => {
 
     // 유저 닉네임 저장
     localStorage.setItem("userNickname", data.userNickname);
+
+    const token = localStorage.getItem('accessToken');
+    const authToken = `Bearer ${token}`;
+    console.log(authToken);
+
+    // 숲 정보 가져오기
+    const forestResponse = await fetch('http://localhost:8080/myforest', {
+      method: 'GET',
+      headers: {
+        Authorization: authToken,
+      }
+    })
+
+    if (!forestResponse.ok) {
+      throw new Error('숲 정보 불러오기 실패')
+    }
+
+    const forestData = await forestResponse.json()
+    const forestId = forestData[0]?.id
+
+    if (!forestId) {
+      throw new Error('숲이 존재하지 않습니다.')
+    }
+
+    router.push(`/forest-detail/${forestId}`)
 
     // 페이지 이동 처리 필요(내 숲 상세 조회 페이지로 이동 필요)
   } catch (error) {

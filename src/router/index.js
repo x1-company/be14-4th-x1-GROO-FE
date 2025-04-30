@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+
 import Main from "../views/Main.vue";
 import WriteDiary from "../components/WriteDiary.vue";
 import ViewDiary from "../components/ViewDiary.vue";
@@ -7,8 +8,8 @@ import ForestView from "../components/ForestView.vue";
 import MyItemView from "../components/MyItemView.vue";
 import Guestbook from "../components/GuestBook.vue";
 import Login from "@/components/Login.vue";
-import BackgroundImage from "@/components/BackgroundImage.vue";
 import Signup from "@/components/Signup.vue";
+import ForestDetail from "@/views/ForestDetail.vue"; 
 import BackgroundImage2 from "@/components/BackgroundImage2.vue";
 import InviteCodeView from "../views/InviteCodeView.vue";
 
@@ -53,6 +54,11 @@ const router = createRouter({
           path: "guestbook",
           name: "GuestBook",
           component: Guestbook,
+        },
+        {
+          path: "forest-detail/:forestId", 
+          name: "ForestDetail",
+          component: ForestDetail,
         },
       ],
     },
