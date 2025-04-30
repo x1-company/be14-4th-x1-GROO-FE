@@ -1,5 +1,6 @@
 <template>
   <div class="invite-code-container">
+    <button class="back-button" @click="$router.back()">←</button>
     <div class="floating-items">
       <span class="float-item">🌿</span>
       <span class="float-item">🍃</span>
@@ -422,5 +423,24 @@ const handleSubmit = () => {
   .bottom-decoration span {
     font-size: 20px;
   }
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #3a5a40;
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.2s ease;
+  z-index: 10;
+}
+
+.back-button:hover {
+  transform: scale(1.2);
+  cursor: pointer;
 }
 </style>

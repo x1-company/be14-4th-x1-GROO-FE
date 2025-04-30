@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png";
 import buttonIcon_7 from "../icons/External_icon.png";
 import buttonIcon_8 from "../icons/is_public_icon.png";

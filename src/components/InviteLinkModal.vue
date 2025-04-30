@@ -25,7 +25,9 @@
         <div class="invite-section">
           <div class="message-box">
             <span class="message-icon">💌</span>
-            <p>친구에게 전달할 초대장이 준비되었어요</p>
+            <p style="border-right: 80px"
+              >친구에게 전달할 초대장이 준비되었어요</p
+            >
           </div>
 
           <div class="link-box">
@@ -51,16 +53,25 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
-  isOpen: Boolean,
+  isOpen: {
+    type: Boolean,
+    default: true,
+  },
+  inviteLink: {
+    type: String,
+    required: true,
+  },
 });
 
 defineEmits(["close"]);
 
 const linkInput = ref(null);
-const shareUrl = "http://localhost:5173/invite";
+const shareUrl = computed(() => {
+  return `http://localhost:8080/mate/invite/${props.inviteLink}`;
+});
 
 const copyLink = () => {
   if (linkInput.value) {
@@ -202,10 +213,10 @@ const copyLink = () => {
 .message-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 20px;
   background: #f5f8f5;
-  padding: 15px 20px;
+  padding: 15px 15px;
   border-radius: 15px;
   white-space: nowrap;
 }
@@ -231,7 +242,6 @@ const copyLink = () => {
 }
 
 .link-input {
-  width: 100%;
   padding: 15px;
   border: none;
   border-radius: 12px;
@@ -240,7 +250,7 @@ const copyLink = () => {
   background: white;
   text-align: center;
   transition: all 0.3s;
-  border-right: 30px;
+  border-right: 60px;
 }
 
 .link-input:focus {
