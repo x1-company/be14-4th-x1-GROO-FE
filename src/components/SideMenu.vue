@@ -20,6 +20,9 @@ const toggleMenu = () => {
 const router = useRouter()
 
 const logout = () => {
+  // 로컬 스토리지 비우기
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('userNickname')
   router.push('/login')
 }
 </script>

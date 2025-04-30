@@ -1,21 +1,65 @@
+<script setup>
+import { ref } from 'vue'
+
+const email = ref('')
+const password = ref('')
+
+const handleLogin = async (e) => {
+  e.preventDefault()
+
+  try {
+    const response = await fetch('http://localhost:8080/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+    })
+
+    if (!response.ok) {
+      alert("로그인 정보를 확인해 주세요!")
+      throw new Error('로그인 실패')
+    }
+
+    const data = await response.json()
+
+    alert("로그인 성공! 환영합니다.🌿")
+
+    // 토큰 저장
+    localStorage.setItem("accessToken", data.accessToken);
+
+    // 유저 닉네임 저장
+    localStorage.setItem("userNickname", data.userNickname);
+
+    // 페이지 이동 처리 필요(내 숲 상세 조회 페이지로 이동 필요)
+  } catch (error) {
+    console.error('에러 발생:', error)
+    alert('로그인 실패')
+  }
+}
+</script>
+
 <template>
     <div class="login-container">
       <div class="login-box">
         <img src="/logo-icon.png" alt="Logo" class="logo" />
-        <form class="login-form">
-          <label for="email">이메일</label>
-          <input type="email" id="email" placeholder="이메일을 입력하세요" />
-  
-          <label for="password">비밀번호</label>
-          <input type="password" id="password" placeholder="비밀번호를 입력하세요" />
-  
-          <div class="remember-me">
-            <input type="checkbox" id="remember-me" />
-            <label for="remember-me">로그인 유지</label>
-          </div>
-  
-          <button type="submit" class="login-button">로그인</button>
-        </form>
+       <form class="login-form" @submit.prevent="handleLogin">
+        <label for="email">이메일</label>
+        <input type="email" id="email" v-model="email" placeholder="이메일을 입력하세요" />
+
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" v-model="password" placeholder="비밀번호를 입력하세요" />
+
+        <div class="remember-me">
+          <input type="checkbox" id="remember-me" />
+          <label for="remember-me">로그인 유지</label>
+        </div>
+
+        <button type="submit" class="login-button">로그인</button>
+      </form>
   
         <div class="links">
           <a href="#" class="find-password">비밀번호 찾기</a>
