@@ -3,11 +3,22 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router"; // 현재 경로를 가져오기 위해 useRoute 사용
 import SideMenu from "../components/SideMenu.vue";
 import MateSideMenu from "../components/MateSideMenu.vue";
+import InviteLinkModal from "../components/InviteLinkModal.vue";
 
 const currentView = ref("background"); // 초기 상태: BackgroundImage
+const isInviteLinkModalOpen = ref(false);
 
 const changeView = (view) => {
   currentView.value = view;
+};
+
+// 초대 링크 모달 열기
+const openInviteLinkModal = () => {
+  isInviteLinkModalOpen.value = true;
+};
+
+const closeInviteLinkModal = () => {
+  isInviteLinkModalOpen.value = false;
 };
 
 const route = useRoute(); // 현재 경로 가져오기
@@ -21,9 +32,16 @@ const route = useRoute(); // 현재 경로 가져오기
     <!-- 로그인 페이지가 아닐 때 -->
     <template v-if="route.path !== '/login'">
       <!-- forestmate 페이지일 때는 MateSideMenu를, 그 외에는 일반 SideMenu를 보여줌 -->
-      <MateSideMenu v-if="route.name === 'ForestMate'" />
+      <MateSideMenu
+        v-if="route.name === 'ForestMate'"
+        @openShare="openInviteLinkModal"
+      />
       <SideMenu v-else @change-view="changeView" />
     </template>
+    <InviteLinkModal
+      :is-open="isInviteLinkModalOpen"
+      @close="closeInviteLinkModal"
+    />
   </div>
 </template>
 
