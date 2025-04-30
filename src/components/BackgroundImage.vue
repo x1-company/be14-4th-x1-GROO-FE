@@ -8,6 +8,6 @@
   
   <style scoped>
   .background {
-    width: 80%;
+    width: 70%;
   }
   </style>
