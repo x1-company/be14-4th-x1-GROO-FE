@@ -10,6 +10,7 @@ import logoutIcon from '../icons/logout_icon.png'
 import CategorySelector from './CategorySelector.vue'
 import AnalyzeResult from './AnalyzeResult.vue'
 import WriteDiary from './WriteDiary.vue'
+import WriteGuestbook from './WriteGuestbook.vue'
 import { useRouter } from 'vue-router'
 
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
@@ -30,11 +31,12 @@ const isMenuOpen = ref(true)
 const showCategorySelector = ref(false)
 const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
+const showWriteGuestbook = ref(false)
 const categoryLoading = ref(false)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value ? 576 : 360
 })
 
 const toggleMenu = () => {
@@ -81,6 +83,28 @@ const toggleCategorySelector = () => {
   showCategorySelector.value = false;
   showAnalyzeResult.value = false;
 }
+
+const handleWriteGuestbook = () => {
+  showWriteGuestbook.value = true
+  showCategorySelector.value = false
+  showAnalyzeResult.value = false
+  showWriteDiary.value = false
+}
+
+const handleWriteGuestbookBack = () => {
+  showWriteGuestbook.value = false
+}
+
+const handleGuestbook = () => {
+  // TODO: API 호출 로직 추가
+  console.log('방명록 확인하기')
+}
+
+const handleGuestbookSubmit = async (content) => {
+  // TODO: API 호출 로직 추가
+  console.log('방명록 내용:', content)
+  showWriteGuestbook.value = false
+}
 </script>
 
 <template>
@@ -89,12 +113,12 @@ const toggleCategorySelector = () => {
       class="side-menu"
       :class="{ 
         open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary 
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook 
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary">
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
@@ -135,12 +159,18 @@ const toggleCategorySelector = () => {
               </span>
               나의 조각 보기
             </router-link>
-            <router-link to="/guestbook" class="menu-btn">
+            <button class="menu-btn" @click="handleGuestbook">
               <span class="icon">
                 <img :src="buttonIcon_6" class="btn-img" />
               </span>
               방명록 확인하기
-            </router-link>
+            </button>
+            <button class="menu-btn" @click="handleWriteGuestbook">
+              <span class="icon">
+                <img :src="buttonIcon_6" class="btn-img" />
+              </span>
+              방명록 작성하기
+            </button>
           </div>
         </template>
         <template v-else-if="showWriteDiary">
@@ -159,6 +189,12 @@ const toggleCategorySelector = () => {
             v-bind="dummyAnalysisResult"
             @place="handlePlace"
             @toStorage="handleToStorage"
+          />
+        </template>
+        <template v-else-if="showWriteGuestbook">
+          <WriteGuestbook
+            @back="handleWriteGuestbookBack"
+            @submit="handleGuestbookSubmit"
           />
         </template>
       </div>
