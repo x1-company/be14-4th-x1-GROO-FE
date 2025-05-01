@@ -173,7 +173,6 @@ const handleDiarySave = (analysisResult) => {
 
   // 분석 결과 데이터 업데이트
   Object.assign(dummyAnalysisResult, analysisData);
-
   // 분석 결과 화면으로 전환
   showAnalyzeResult.value = true;
 };
