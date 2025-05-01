@@ -11,6 +11,7 @@ import CategorySelector from './CategorySelector.vue'
 import AnalyzeResult from './AnalyzeResult.vue'
 import WriteDiary from './WriteDiary.vue'
 import WriteGuestbook from './WriteGuestbook.vue'
+import MyItemView from './MyItemView.vue'
 import { useRouter } from 'vue-router'
 
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
@@ -32,11 +33,12 @@ const showCategorySelector = ref(false)
 const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
 const showWriteGuestbook = ref(false)
+const showMyItemView = ref(false)
 const categoryLoading = ref(false)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value || showMyItemView.value ? 576 : 360
 })
 
 const toggleMenu = () => {
@@ -113,6 +115,18 @@ const handleGuestbookSubmit = async (content) => {
   console.log('방명록 내용:', content)
   showWriteGuestbook.value = false
 }
+
+const handleMyItemView = () => {
+  if (showMyItemView.value) {
+    showMyItemView.value = false;
+  } else {
+    showMyItemView.value = true;
+    showCategorySelector.value = false;
+    showAnalyzeResult.value = false;
+    showWriteDiary.value = false;
+    showWriteGuestbook.value = false;
+  }
+};
 </script>
 
 <template>
@@ -121,12 +135,12 @@ const handleGuestbookSubmit = async (content) => {
       class="side-menu"
       :class="{ 
         open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook 
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook || showMyItemView
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook">
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook && !showMyItemView">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
@@ -161,12 +175,12 @@ const handleGuestbookSubmit = async (content) => {
               </span>
               다른 숲 구경가기
             </router-link>
-            <router-link to="/myitemview" class="menu-btn">
+            <button class="menu-btn" @click="handleMyItemView">
               <span class="icon">
                 <img :src="buttonIcon_5" class="btn-img" />
               </span>
               나의 조각 보기
-            </router-link>
+            </button>
             <button class="menu-btn" @click="handleGuestbook">
               <span class="icon">
                 <img :src="buttonIcon_6" class="btn-img" />
@@ -188,6 +202,14 @@ const handleGuestbookSubmit = async (content) => {
             </button>
           </div>
           <WriteDiary @save="handleDiarySave" />
+        </template>
+        <template v-else-if="showMyItemView">
+          <div class="top-bar">
+            <button class="back-button" @click="handleMyItemView">
+              ←
+            </button>
+          </div>
+          <MyItemView />
         </template>
         <template v-else-if="showCategorySelector">
           <div class="top-bar">
@@ -213,6 +235,7 @@ const handleGuestbookSubmit = async (content) => {
       </div>
     </div>
     <button
+      v-if="!showWriteDiary"
       class="toggle-button"
       @click="toggleMenu"
     >
