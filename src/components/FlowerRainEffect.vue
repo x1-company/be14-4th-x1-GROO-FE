@@ -1,70 +1,86 @@
 <template>
-    <div ref="container" class="rain-container"></div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  
-  const container = ref(null);
-  const names = ['🎈', '🌹', '🌸', '🌷', '🌺'];
-  
-  function createRainName() {
-    const span = document.createElement('span');
-    span.className = 'name';
-    span.textContent = names[Math.floor(Math.random() * names.length)];
-  
-    const x = Math.random() * (window.innerWidth - span.offsetWidth);
-    const delay = Math.random() * 3;
-    const duration = 3 + Math.random() * 3;
-  
-    span.style.left = `${x}px`;
-    span.style.animationDelay = `${delay}s`;
-    span.style.animationDuration = `${duration}s`;
-  
-    container.value.appendChild(span);
-  }
-  
-  onMounted(() => {
-    const numberOfNames = 20;
-    for (let i = 0; i < numberOfNames; i++) {
-      createRainName();
+  <canvas ref="canvas" class="rain-canvas"></canvas>
+</template>
+
+<script setup>
+import { onMounted, ref, onUnmounted } from "vue";
+
+const canvas = ref(null);
+let ctx;
+let animationId;
+let petals = [];
+
+const canvasWidth = window.innerWidth / 2;
+const canvasHeight = window.innerHeight;
+
+const initCanvas = () => {
+  const canvasEl = canvas.value;
+  canvasEl.width = canvasWidth;
+  canvasEl.height = canvasHeight;
+  ctx = canvasEl.getContext("2d");
+};
+
+const createPetals = () => {
+  const count = 80;
+  petals = Array.from({ length: count }, () => ({
+    x: Math.random() * canvasWidth,
+    y: Math.random() * canvasHeight,
+    radius: Math.random() * 6 + 4,
+    speedY: Math.random() * 1.2 + 0.5,
+    sway: Math.random() * 50 + 30,
+    swaySpeed: Math.random() * 0.02 + 0.01,
+    angle: Math.random() * Math.PI * 2,
+  }));
+};
+
+const drawPetals = () => {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  petals.forEach(petal => {
+    const x = petal.x + Math.sin(petal.angle) * petal.sway;
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(255,182,193,0.7)"; // 연한 분홍색
+    ctx.ellipse(x, petal.y, petal.radius, petal.radius * 0.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+};
+
+const updatePetals = () => {
+  petals.forEach(petal => {
+    petal.y += petal.speedY;
+    petal.angle += petal.swaySpeed;
+
+    if (petal.y > canvasHeight) {
+      petal.y = -10;
+      petal.x = Math.random() * canvasWidth;
     }
   });
-  </script>
-  
-  <style scoped>
-  .rain-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 999999;
-  }
-  
-  .name {
-    position: absolute;
-    color: #000;
-    font-size: 24px;
-    animation: rain 3s linear infinite;
-  }
-  
-  @keyframes rain {
-    0% {
-      transform: translateY(-100px);
-      opacity: 0;
-    }
-  
-    50% {
-      opacity: 1;
-    }
-  
-    100% {
-      transform: translateY(100vh);
-      opacity: 0;
-    }
-  }
-  </style>
-  
+};
+
+const animate = () => {
+  drawPetals();
+  updatePetals();
+  animationId = requestAnimationFrame(animate);
+};
+
+onMounted(() => {
+  initCanvas();
+  createPetals();
+  animate();
+});
+
+onUnmounted(() => {
+  cancelAnimationFrame(animationId);
+});
+</script>
+
+<style scoped>
+.rain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 150vh;
+  z-index: 2;
+  pointer-events: none;
+}
+</style>
