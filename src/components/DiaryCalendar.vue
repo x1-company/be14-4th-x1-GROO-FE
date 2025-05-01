@@ -162,15 +162,15 @@ function getWeekday(y, m, d) {
 }
 .back-img {    /* 페이지 뒤로가기 버튼 */
   position: absolute;
-  top: 32px;
-  left: 12px;
-  width: 36px;
-  height: 36px;
+  top: -10px;
+  left: -10px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
   z-index: 10;
 }
 .calendar-title {   /* 우리의 우정 일기 기록 */
-  margin-top: 0px;
+  margin-top: 90px;
   margin-bottom: 0;
   text-align: center;
   font-size: 1.9rem;
@@ -181,7 +181,7 @@ function getWeekday(y, m, d) {
 .calendar-content-box {     /* 뒤에 흰색 배경 */
   background: rgba(255,255,255,0.4);
   border-radius: 30px;
-  padding: 8px 32px 24px 20px;
+  padding: 30px 32px 24px 20px;
   margin-top: 60px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
   display: flex;
@@ -195,7 +195,7 @@ function getWeekday(y, m, d) {
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-  margin-top: 120px;
+  margin-top: 100px;
   margin-bottom: 170px;
   color: #fff;
   font-size: 1.2rem;
