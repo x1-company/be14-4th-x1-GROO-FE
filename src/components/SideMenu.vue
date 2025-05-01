@@ -22,6 +22,7 @@ import WriteGuestbook from './WriteGuestbook.vue'
 import LoadingAnimation from './LoadingAnimation.vue'
 import GuestbookList from './GuestbookList.vue'
 import { useRouter, useRoute } from 'vue-router'
+import ConfirmModal from './ConfirmModal.vue'
 
 
 
@@ -46,6 +47,15 @@ const showWriteDiary = ref(false)
 const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
 const categoryLoading = ref(false)
 const selectedCategory = ref(null)
+const showSaveModal = ref(false)
+
+function openSaveModal() {
+  showSaveModal.value = true
+}
+function closeSaveModal() {
+  showSaveModal.value = false
+}
+
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
@@ -109,11 +119,10 @@ const handlePlace = (selectedPiece) => {
   // 여기에 배치 로직 추가
 }
 
-const handleToStorage = () => {
-  console.log("Moving to storage")
-  showAnalyzeResult.value = false
-  router.push('/myitemview')
-}
+const confirmSaveToStorage = () => {
+  showSaveModal.value = false;
+  router.push('/myitemview');
+};
 
 // 감정 아이콘 매핑 객체
 const emotionIcons = {
@@ -313,7 +322,7 @@ const handleGuestbookBack = () => {
           <AnalyzeResult 
             v-bind="dummyAnalysisResult"
             @place="handlePlace"
-            @toStorage="handleToStorage"
+            @to-storage="openSaveModal"
           />
         </template>
         <template v-else-if="showGuestbookList">
@@ -328,6 +337,13 @@ const handleGuestbookBack = () => {
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
+    <ConfirmModal
+            :is-open="showSaveModal"
+            title="보관소에 저장"
+            message="정말로 이 조각을 보관소에 저장하시겠습니까?"
+            @confirm="confirmSaveToStorage"
+            @cancel="closeSaveModal"
+          />
   </div>
 </template>
 
