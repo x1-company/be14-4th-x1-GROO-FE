@@ -20,7 +20,7 @@ const router = createRouter({
       component: Main, // Main이 레이아웃 역할
       children: [
         {
-          path: "", // == "/"
+          path: "background-image", // == "/"
           name: "BackgroundImage",
           component: BackgroundImage2,
         },
