@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
 import axios from 'axios'
+import MyDiaryCalendar from './MyDiaryCalendar.vue';
+import MyDiaryDetail from './MyDiaryDetail.vue';
 
 // Icons
 import buttonIcon_1 from '../icons/diarywrite_icon.png'
@@ -49,6 +51,10 @@ const selectedCategory = ref(null)
 const showSaveModal = ref(false)
 const pieceToSave = ref(null)
 const showMyItemView = ref(false)
+const showMyDiaryCalendar = ref(false)
+const showMyDiaryDetail = ref(false)
+const selectedDiaryData = ref(null)
+const currentDiaryIndex = ref(0)
 
 function openSaveModal(selectedPiece) {
   pieceToSave.value = selectedPiece
@@ -64,7 +70,7 @@ const emit = defineEmits(["openForestList"])
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value || showGuestbookDetail.value || showMyItemView.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value || showGuestbookDetail.value || showMyItemView.value || showMyDiaryCalendar.value || showMyDiaryDetail.value ? 576 : 360
 })
 
 const toggleMenu = () => {
@@ -305,6 +311,42 @@ function openMyItemView() {
 function closeMyItemView() {
   showMyItemView.value = false;
 }
+
+const handleViewDiary = () => {
+  showMyDiaryCalendar.value = true;
+  showCategorySelector.value = false;
+  showAnalyzeResult.value = false;
+  showWriteDiary.value = false;
+  showGuestbookList.value = false;
+  showGuestbookDetail.value = false;
+  showMyItemView.value = false;
+};
+
+const handleDiaryClick = (data) => {
+  selectedDiaryData.value = data;
+  currentDiaryIndex.value = 0;
+  showMyDiaryDetail.value = true;
+  showMyDiaryCalendar.value = false;
+};
+
+const handleDiaryDetailClose = () => {
+  showMyDiaryDetail.value = false;
+  showMyDiaryCalendar.value = true;
+  selectedDiaryData.value = null;
+  currentDiaryIndex.value = 0;
+};
+
+const handlePrevDiary = () => {
+  if (currentDiaryIndex.value > 0) {
+    currentDiaryIndex.value--;
+  }
+};
+
+const handleNextDiary = () => {
+  if (currentDiaryIndex.value < selectedDiaryData.value.diaries.length - 1) {
+    currentDiaryIndex.value++;
+  }
+};
 </script>
 
 <template>
@@ -317,12 +359,36 @@ function closeMyItemView() {
           showCategorySelector ||
           showAnalyzeResult ||
           showWriteDiary ||
-          showGuestbookList,
+          showGuestbookList ||
+          showMyDiaryCalendar ||
+          showMyDiaryDetail
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="showMyItemView">
+        <template v-if="showMyDiaryDetail">
+          <MyDiaryDetail
+            v-if="selectedDiaryData"
+            :nickname="nickname"
+            :year="selectedDiaryData.year"
+            :month="selectedDiaryData.month"
+            :day="selectedDiaryData.day"
+            :emotions="selectedDiaryData.diaries[currentDiaryIndex].emotions"
+            :content="selectedDiaryData.diaries[currentDiaryIndex].content"
+            :showPrev="currentDiaryIndex > 0"
+            :showNext="currentDiaryIndex < selectedDiaryData.diaries.length - 1"
+            @close="handleDiaryDetailClose"
+            @prev="handlePrevDiary"
+            @next="handleNextDiary"
+          />
+        </template>
+        <template v-else-if="showMyDiaryCalendar">
+          <MyDiaryCalendar
+            @close="showMyDiaryCalendar = false"
+            @diary-click="handleDiaryClick"
+          />
+        </template>
+        <template v-else-if="showMyItemView">
           <MyItemView @close="closeMyItemView" />
         </template>
         <template v-else-if="showGuestbookDetail">
@@ -393,12 +459,12 @@ function closeMyItemView() {
               </span>
               감정일기 작성하기
             </button>
-            <router-link to="/viewdiary" class="menu-btn">
+            <button class="menu-btn" @click="handleViewDiary">
               <span class="icon">
                 <img :src="buttonIcon_2" class="btn-img" />
               </span>
               감정일기 다시보기
-            </router-link>
+            </button>
             <button class="menu-btn" @click="handleForestList">
               <span class="icon">
                 <img :src="buttonIcon_3" class="btn-img" />
