@@ -49,7 +49,8 @@ export const diaryApi = {
       const requestData = {
         forestId: Number(forestId),
         content: diaryData.content,
-        categoryId: Number(diaryData.categoryId)
+        categoryId: Number(diaryData.categoryId),
+        createdAt: diaryData.createdAt
       };
 
       console.log('API Request Data:', requestData);
