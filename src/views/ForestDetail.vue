@@ -227,12 +227,12 @@ const togglePublic = async () => {
   color: white;
   font-size: 36px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-  margin-top: 0px;
+  margin-top: 15px;
 }
 
 .tooltip {
   position: absolute;
-  bottom: 50px;
+  bottom: 45px;
   left: 87%;
   transform: translateX(-50%);
   background: rgba(240, 248, 240, 0.95);
@@ -251,8 +251,8 @@ const togglePublic = async () => {
 .tooltip::after {
   content: '';
   position: absolute;
-  left: 50%;
-  bottom: -16px;
+  left: 50.5%;
+  bottom: -12px;
   transform: translateX(-50%);
   width: 0;
   height: 0;
