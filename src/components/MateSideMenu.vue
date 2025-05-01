@@ -7,13 +7,15 @@ import buttonIcon_4 from "../icons/invite_icon.png";
 import buttonIcon_5 from "../icons/myitemview_icon.png";
 import logoutIcon from "../icons/logout_icon.png";
 import previousIcon from "../icons/previous_icon.png";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import InviteLinkModal from "./InviteLinkModal.vue";
 import ForestListModal from "./ForestListModal.vue";
 
+const route = useRoute();
 const isMenuOpen = ref(true);
 const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
 const showInviteModal = ref(false);
+const showWithdrawModal = ref(false);
 const inviteLink = ref("");
 const router = useRouter();
 const showForestListModal = ref(false);
@@ -39,6 +41,37 @@ const logout = () => {
 
 const handleForestList = () => {
   emit("openForestList");
+};
+
+const handleWithdraw = () => {
+  showWithdrawModal.value = true;
+};
+
+const confirmWithdraw = async () => {
+  try {
+    const forestId = route.params.id;
+    const token = localStorage.getItem("accessToken");
+    const response = await fetch(
+      `http://localhost:8080/mate/withdraw/${forestId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      router.push("/forest-list");
+    } else {
+      throw new Error("탈퇴 처리 중 오류가 발생했습니다.");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert(error.message);
+  } finally {
+    showWithdrawModal.value = false;
+  }
 };
 </script>
 
@@ -79,12 +112,6 @@ const handleForestList = () => {
           </span>
           우정일기 다시보기
         </button>
-        <button class="menu-btn" @click="handleForestList">
-          <span class="icon">
-            <img :src="buttonIcon_3" class="btn-img" />
-          </span>
-          우정의 숲 입장하기
-        </button>
         <button class="menu-btn" @click="handleShare">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
@@ -97,6 +124,26 @@ const handleForestList = () => {
           </span>
           우리의 조각 보기
         </button>
+        <button class="menu-btn" @click="handleWithdraw">
+          <span class="icon">
+            <img :src="buttonIcon_3" class="btn-img" />
+          </span>
+          우정의 숲 탈퇴하기
+        </button>
+        <div v-if="showWithdrawModal" class="modal-overlay">
+          <div class="modal-content">
+            <h3>정말 탈퇴하시겠습니까?</h3>
+            <p>탈퇴하시면 이 우정의 숲에서 영구적으로 나가게 됩니다.</p>
+            <div class="modal-buttons">
+              <button @click="showWithdrawModal = false" class="cancel-btn"
+                >취소</button
+              >
+              <button @click="confirmWithdraw" class="confirm-btn"
+                >탈퇴하기</button
+              >
+            </div>
+          </div>
+        </div>
         <InviteLinkModal
           v-if="showInviteModal"
           :inviteLink="inviteLink"
@@ -232,5 +279,73 @@ const handleForestList = () => {
 
 .previous-icon:hover {
   cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  color: #333;
+  font-size: 20px;
+}
+
+.modal-content p {
+  margin: 0 0 24px;
+  color: #666;
+  font-size: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-btn {
+  background: #ff6b6b;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #d0d0d0;
+}
+
+.confirm-btn:hover {
+  background: #ff5252;
 }
 </style>

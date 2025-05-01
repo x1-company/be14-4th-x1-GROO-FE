@@ -35,7 +35,7 @@ const router = createRouter({
           component: ViewDiary,
         },
         {
-          path: "forestmate",
+          path: "forestmate/:id",
           name: "ForestMate",
           component: ForestMate,
         },

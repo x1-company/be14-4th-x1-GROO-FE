@@ -8,10 +8,12 @@ import buttonIcon_5 from "../icons/myitemview_icon.png";
 import buttonIcon_6 from "../icons/mailbox_icon.png";
 import logoutIcon from "../icons/logout_icon.png";
 import { useRouter } from "vue-router";
+import ForestListModal from "./ForestListModal.vue";
 
 const isMenuOpen = ref(true);
-
 const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
+const showForestListModal = ref(false);
+const emit = defineEmits(["openForestList"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -24,6 +26,11 @@ const logout = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNickname");
   router.push("/login");
+};
+
+const handleForestList = () => {
+  emit("openForestList");
+  // showForestListModal.value = true;
 };
 </script>
 
@@ -60,12 +67,12 @@ const logout = () => {
           </span>
           감정일기 다시보기
         </router-link>
-        <router-link to="/forestmate" class="menu-btn">
+        <button class="menu-btn" @click="handleForestList">
           <span class="icon">
             <img :src="buttonIcon_3" class="btn-img" />
           </span>
           우정의 숲 입장하기
-        </router-link>
+        </button>
         <router-link to="/forestview" class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
@@ -84,6 +91,11 @@ const logout = () => {
           </span>
           방명록 확인하기
         </router-link>
+        <ForestListModal
+          v-if="showForestListModal"
+          :isOpen="showForestListModal"
+          @close="showForestListModal = false"
+        />
       </div>
     </div>
   </div>

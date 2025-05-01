@@ -48,14 +48,19 @@ const route = useRoute(); // 현재 경로 가져오기
         @openShare="openInviteLinkModal"
         @openForestList="openForestListModal"
       />
-      <SideMenu v-else @change-view="changeView" />
+      <SideMenu
+        v-else
+        @change-view="changeView"
+        @openForestList="openForestListModal"
+      />
     </template>
     <InviteLinkModal
       :is-open="isInviteLinkModalOpen"
       @close="closeInviteLinkModal"
     />
     <ForestListModal
-      :is-open="isForestListModalOpen"
+      v-if="isForestListModalOpen"
+      :isOpen="isForestListModalOpen"
       @close="closeForestListModal"
     />
   </div>

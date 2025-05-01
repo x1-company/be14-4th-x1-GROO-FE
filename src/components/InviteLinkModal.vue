@@ -69,14 +69,25 @@ const props = defineProps({
 defineEmits(["close"]);
 
 const linkInput = ref(null);
+
+// 실제 표시될 링크 URL 생성
 const shareUrl = computed(() => {
-  return `http://localhost:8080/mate/invite/${props.inviteLink}`;
+  if (!props.inviteLink) return "";
+  return `${window.location.origin}/mate/invite/${props.inviteLink}`;
 });
 
-const copyLink = () => {
-  if (linkInput.value) {
-    linkInput.value.select();
-    document.execCommand("copy");
+const copyLink = async () => {
+  try {
+    await navigator.clipboard.writeText(shareUrl.value);
+    alert("링크가 복사되었습니다!");
+  } catch (err) {
+    console.error("클립보드 복사 실패:", err);
+    // 폴백: 기존 방식으로 복사
+    if (linkInput.value) {
+      linkInput.value.select();
+      document.execCommand("copy");
+      alert("링크가 복사되었습니다!");
+    }
   }
 };
 </script>
