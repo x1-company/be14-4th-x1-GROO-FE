@@ -1,46 +1,22 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
 
-const props = defineProps({
-  isSidebarOpen: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const containerWidth = computed(() => {
-  return props.isSidebarOpen ? '65%' : '80%'
-})
-
-const itemSize = computed(() => {
-  return props.isSidebarOpen ? '3vw' : '4.5vw'
-})
-
-const backgroundContainer = ref(null)
-
-watch(() => props.isSidebarOpen, (newValue) => {
-  if (newValue) {
-    itemSize.value = '3vw'
-  } else {
-    itemSize.value = '4.5vw'
-  }
-}, { immediate: true })
-
-const currentView = ref('background')
-const forestData = ref(null)
-const showTooltip = ref(false)
-
-const route = useRoute()
-const router = useRouter()
+const bgRef = ref(null); // background 요소 참조
+const containerRef = ref(null); // placement-container 요소 참조
+const itemWidth = ref(60); // 아이템의 고정 크기
+const showTooltip = ref(false);
+const forestData = ref(null);
 
 onMounted(async () => {
-  const token = localStorage.getItem('accessToken')
 
-  let forestId = route.params.forestId
+  // 숲 데이터 가져오기
+  const token = localStorage.getItem('accessToken');
+
+  // let forestId = route.params.forestId
+  let forestId = localStorage.getItem("myRecentforestId")
 
   if (!forestId) {
     try {
@@ -73,29 +49,32 @@ onMounted(async () => {
         }
       })
 
-      if (!response.ok) throw new Error('detail 요청 실패')
+      if (!response.ok) {
+        alert("다시 로그인해 주세요!")
+        router.push('/login')
+        throw new Error('detail 요청 실패')
+      }
+
       forestData.value = await response.json()
       console.log('forestData:', forestData.value)
     } catch (error) {
       console.error('숲 정보 불러오기 실패:', error)
     }
   }
-})
+});
 
 const togglePublic = async () => {
   if (!forestData.value) return;
-  const forestId = route.params.forestId;
   const token = localStorage.getItem('accessToken');
 
   try {
-    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestId}`, {
+    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestData.value.id}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
-    const text = await res.text();
     if (!res.ok) throw new Error('공개여부 변경 실패');
 
     forestData.value.isPublic = !forestData.value.isPublic;
@@ -103,79 +82,62 @@ const togglePublic = async () => {
     alert('공개여부 변경에 실패했습니다.');
     console.error(err);
   }
-}
+};
 </script>
 
 <template>
-  <div class="container1">
-    <div class="main-area1">
-      <div class="icons">
-        <img :src="buttonIcon_6" class="btn-img" />
-        <img :src="buttonIcon_7" class="btn-img" />
-        <img
-          :src="buttonIcon_8"
-          class="btn-img"
-          @mouseenter="showTooltip = true"
-          @mouseleave="showTooltip = false"
-          @click="togglePublic"
-          style="cursor:pointer;"
-        />
-        <div v-if="showTooltip" class="tooltip">
-          <div class="tooltip-title">공개 범위 설정</div>
-          <div class="tooltip-status"
-            :class="forestData && forestData.isPublic ? 'public' : 'private'">
-            {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
-          </div>
+  <div>
+    <div class="icons">
+      <img :src="buttonIcon_6" class="btn-img" />
+      <img :src="buttonIcon_7" class="btn-img" />
+      <img
+        :src="buttonIcon_8"
+        class="btn-img"
+        @mouseenter="showTooltip = true"
+        @mouseleave="showTooltip = false"
+        @click="togglePublic"
+        style="cursor:pointer;"
+      />
+      <div v-if="showTooltip" class="tooltip">
+        <div class="tooltip-title">공개 범위 설정</div>
+        <div class="tooltip-status"
+          :class="forestData && forestData.isPublic ? 'public' : 'private'">
+          {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
         </div>
       </div>
+    </div>
+  </div>
 
-      <div v-if="forestData && forestData.length" class="forest-container">
-        <div class="background-container" 
-          ref="backgroundContainer"
-          :style="{ 
-            backgroundImage: `url(${forestData[0].backgroundImageUrl})`,
-            width: containerWidth
-          }"
-        >
-          <div class="forest-title">
-            <h1>{{ forestData[0].name }}</h1>
-          </div>
-          <div
-            v-for="item in forestData[0].placementList"
-            :key="item.placementId"
-            class="item"
-            :style="{
-              left: `${item.placementPositionX}%`,
-              top: `${item.placementPositionY}%`
-            }"
-          >
-            <img 
-              :src="item.itemImageUrl" 
-              :alt="item.itemName" 
-              class="item-image" 
-              :style="{ width: itemSize, height: itemSize }"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div v-else>
-        <p>데이터 불러오는 중...</p>
-      </div>
+  <div ref="containerRef" class="placement-container">
+    <div class="placement-inner-container">
+      <img
+        v-if="forestData && forestData.length"
+        ref="bgRef"
+        class="background"
+        :src="forestData[0].backgroundImageUrl"
+        alt="Green Background"
+      />
+      <img
+        v-if="forestData && forestData.length"
+        v-for="item in forestData[0].placementList"
+        :key="item.placementId"
+        class="item"
+        :src="item.itemImageUrl" 
+        :alt="item.itemName"
+        :style="{
+          left: `${item.placementPositionX}%`,
+          top: `${item.placementPositionY}%`,
+          width: `${itemWidth}px`
+        }"
+        draggable="false"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-.container1 {
-  padding: 20px;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
+.placement-container {
   position: relative;
-}
-
-.main-area1 {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -183,31 +145,22 @@ const togglePublic = async () => {
   height: 100%;
 }
 
-.forest-container {
-  width: 100%;
-  max-width: 1200px;
+.placement-inner-container {
   position: relative;
-  margin: 0 auto;
+  width: 800px;
+  height: auto;
 }
 
-.background-container {
-  height: 600px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  margin: 0 auto;
-  position: relative;
+.background {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .item {
   position: absolute;
+  user-select: none;
   transform: translate(-50%, -50%);
-}
-
-.item-image {
-  object-fit: contain;
-  transition: transform 0.3s ease;
-  will-change: transform;
 }
 
 .icons {
@@ -223,22 +176,6 @@ const togglePublic = async () => {
   width: 32px;
   height: 32px;
   cursor: pointer;
-}
-
-.forest-title {
-  position: absolute;
-  left: 50%;
-  top: calc(50% - 440px);
-  transform: translateX(-50%);
-  z-index: 5;
-  pointer-events: none;
-}
-
-.forest-title h1 {
-  color: white;
-  font-size: 36px;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-  margin-top: 15px;
 }
 
 .tooltip {
@@ -277,6 +214,7 @@ const togglePublic = async () => {
   font-weight: 600;
   margin-bottom: 8px;
 }
+
 .tooltip-status {
   font-size: 15px;
   background: #bfcfc2;
@@ -285,9 +223,11 @@ const togglePublic = async () => {
   padding: 2px 12px;
   display: inline-block;
 }
+
 .tooltip-status.public {
   background: rgba(11, 87, 138, 0.33);
 }
+
 .tooltip-status.private {
   background: rgba(255, 10, 38, 0.33);
 }

@@ -1,118 +1,298 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import buttonIcon_6 from "../icons/edit_icon.png"
+import buttonIcon_7 from "../icons/External_icon.png"
+import buttonIcon_8 from "../icons/is_public_icon.png"
 
-const bgRef = ref(null); // background 요소 참조
-const containerRef = ref(null); // placement-container 요소 참조
-const pos = ref({ x: 10, y: 10 }); // 아이템의 위치 (퍼센트 값)
-const dragging = ref(false); // 드래그 상태
-const offset = ref({ x: 0, y: 0 }); // 드래그 시작 시 마우스와 아이템의 상대 위치
-const itemWidth = ref(80); // 아이템의 동적 크기
-
-let resizeObserver = null; // ResizeObserver 인스턴스
-
-const updateItemWidth = () => {
-  if (containerRef.value) {
-    const containerWidth = containerRef.value.getBoundingClientRect().width;
-    // placement-container 크기에 따라 아이템 크기 조정
-    itemWidth.value = Math.min(80, containerWidth * 0.09); // 최대 80px, 컨테이너의 10% 크기
+const props = defineProps({
+  isSidebarOpen: {
+    type: Boolean,
+    default: false
   }
-};
+})
 
-onMounted(() => {
-  updateItemWidth();
+const containerWidth = computed(() => {
+  return props.isSidebarOpen ? '65%' : '80%'
+})
 
-  // ResizeObserver를 사용하여 placement-container 크기 변화를 감지
-  if (containerRef.value) {
-    resizeObserver = new ResizeObserver(() => {
-      updateItemWidth();
+const itemSize = computed(() => {
+  return props.isSidebarOpen ? '3vw' : '4.5vw'
+})
+
+const backgroundContainer = ref(null)
+
+watch(() => props.isSidebarOpen, (newValue) => {
+  if (newValue) {
+    itemSize.value = '3vw'
+  } else {
+    itemSize.value = '4.5vw'
+  }
+}, { immediate: true })
+
+const currentView = ref('background')
+const forestData = ref(null)
+const showTooltip = ref(false)
+
+const route = useRoute()
+const router = useRouter()
+
+onMounted(async () => {
+  const token = localStorage.getItem('accessToken')
+
+  let forestId = route.params.forestId
+
+  if (!forestId) {
+    try {
+      const res = await fetch('http://localhost:8080/myforest', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!res.ok) throw new Error('myforest 요청 실패')
+
+      const forestList = await res.json()
+
+      if (!forestList.length) {
+        alert('소유한 숲이 없습니다.')
+        return
+      }
+
+      forestId = forestList[0].id
+      router.replace(`/forest-detail/${forestId}`)
+      return
+    } catch (err) {
+      console.error('myforest 호출 실패:', err)
+    }
+  } else {
+    try {
+      const response = await fetch(`http://localhost:8080/detail/${forestId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        alert("다시 로그인해 주세요!")
+        router.push('/login')
+        throw new Error('detail 요청 실패')
+      }
+      forestData.value = await response.json()
+      console.log('forestData:', forestData.value)
+    } catch (error) {
+      console.error('숲 정보 불러오기 실패:', error)
+    }
+  }
+})
+
+const togglePublic = async () => {
+  if (!forestData.value) return;
+  const forestId = route.params.forestId;
+  const token = localStorage.getItem('accessToken');
+
+  try {
+    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
-    resizeObserver.observe(containerRef.value);
+
+    const text = await res.text();
+    if (!res.ok) throw new Error('공개여부 변경 실패');
+
+    forestData.value.isPublic = !forestData.value.isPublic;
+  } catch (err) {
+    alert('공개여부 변경에 실패했습니다.');
+    console.error(err);
   }
-
-  window.addEventListener("resize", updateItemWidth); // 창 크기 변경 시 업데이트
-});
-
-onBeforeUnmount(() => {
-  // ResizeObserver 해제
-  if (resizeObserver && containerRef.value) {
-    resizeObserver.unobserve(containerRef.value);
-    resizeObserver = null;
-  }
-
-  window.removeEventListener("resize", updateItemWidth);
-});
-
-const onMouseDown = (e) => {
-  if (!bgRef.value) return;
-  dragging.value = true;
-  const bgRect = bgRef.value.getBoundingClientRect();
-  // 드래그 시작 시 마우스와 아이템의 상대 위치 계산
-  offset.value.x = e.clientX - bgRect.left - (pos.value.x / 100) * bgRect.width;
-  offset.value.y = e.clientY - bgRect.top - (pos.value.y / 100) * bgRect.height;
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
-};
-
-const onMouseMove = (e) => {
-  if (!dragging.value || !bgRef.value) return;
-  const bgRect = bgRef.value.getBoundingClientRect();
-  // 마우스 위치를 background 기준 퍼센트 값으로 변환
-  let newX = ((e.clientX - bgRect.left - offset.value.x) / bgRect.width) * 100;
-  let newY = ((e.clientY - bgRect.top - offset.value.y) / bgRect.height) * 100;
-
-  // 좌우로는 0 ~ 70% 사이로 제한
-  newX = Math.min(Math.max(newX, 0), 70);
-  // 상하로는 0 ~ 80% 사이로 제한
-  newY = Math.min(Math.max(newY, 0), 110);
-
-  pos.value = { x: newX, y: newY };
-};
-
-const onMouseUp = () => {
-  dragging.value = false;
-  window.removeEventListener("mousemove", onMouseMove);
-  window.removeEventListener("mouseup", onMouseUp);
-};
+}
 </script>
 
 <template>
-  <div ref="containerRef" class="placement-container">
-    <img
-      ref="bgRef"
-      class="background"
-      src="https://x1-groo.s3.ap-northeast-2.amazonaws.com/ground2"
-      alt="Green Background"
-    />
-    <img
-      class="item"
-      src="https://x1-groo.s3.ap-northeast-2.amazonaws.com/joy_hedgehog"
-      alt="hedgehog"
-      @mousedown="onMouseDown"
-      :style="{
-        left: pos.x + '%',
-        top: pos.y + '%',
-        width: itemWidth + 'px'
-      }"
-      draggable="false"
-    />
+  <div class="container1">
+    <div class="main-area1">
+      <div class="icons">
+        <img :src="buttonIcon_6" class="btn-img" />
+        <img :src="buttonIcon_7" class="btn-img" />
+        <img
+          :src="buttonIcon_8"
+          class="btn-img"
+          @mouseenter="showTooltip = true"
+          @mouseleave="showTooltip = false"
+          @click="togglePublic"
+          style="cursor:pointer;"
+        />
+        <div v-if="showTooltip" class="tooltip">
+          <div class="tooltip-title">공개 범위 설정</div>
+          <div class="tooltip-status"
+            :class="forestData && forestData.isPublic ? 'public' : 'private'">
+            {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
+          </div>
+        </div>
+      </div>
+
+      <div v-if="forestData && forestData.length" class="forest-container">
+        <div class="background-container" 
+          ref="backgroundContainer"
+          :style="{ 
+            backgroundImage: `url(${forestData[0].backgroundImageUrl})`,
+            width: containerWidth
+          }"
+        >
+          <div class="forest-title">
+            <h1>{{ forestData[0].name }}</h1>
+          </div>
+          <div
+            v-for="item in forestData[0].placementList"
+            :key="item.placementId"
+            class="item"
+            :style="{
+              left: `${item.placementPositionX}%`,
+              top: `${item.placementPositionY}%`
+            }"
+          >
+            <img 
+              :src="item.itemImageUrl" 
+              :alt="item.itemName" 
+              class="item-image" 
+              :style="{ width: itemSize, height: itemSize }"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div v-else>
+        <p>데이터 불러오는 중...</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.placement-container {
+.container1 {
+  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
   position: relative;
-  border: 5px solid black;
 }
 
-.background {
-  width: 80%;
-  display: block;
-  border: 5px solid blue;
+.main-area1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.forest-container {
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.background-container {
+  height: 600px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 0 auto;
+  position: relative;
 }
 
 .item {
   position: absolute;
-  cursor: move;
-  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+.item-image {
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.icons {
+  position: absolute;
+  top: 12.83%;
+  left: 5.07%;
+  display: flex;
+  gap: 16px;
+  z-index: 10;
+}
+
+.btn-img {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.forest-title {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 440px);
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.forest-title h1 {
+  color: white;
+  font-size: 36px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  margin-top: 15px;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 45px;
+  left: 87%;
+  transform: translateX(-50%);
+  background: rgba(240, 248, 240, 0.95);
+  opacity: 0.7;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 12px 24px 16px 24px;
+  min-width: 180px;
+  z-index: 100;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  pointer-events: none;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50.5%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 16px solid rgba(240, 248, 240, 0.95);
+}
+
+.tooltip-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.tooltip-status {
+  font-size: 15px;
+  background: #bfcfc2;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 12px;
+  display: inline-block;
+}
+.tooltip-status.public {
+  background: rgba(11, 87, 138, 0.33);
+}
+.tooltip-status.private {
+  background: rgba(255, 10, 38, 0.33);
 }
 </style>
