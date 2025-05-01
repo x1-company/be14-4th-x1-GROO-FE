@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
-import { useRouter, useRoute } from 'vue-router'
 
 // Icons
 import buttonIcon_1 from '../icons/diarywrite_icon.png'
