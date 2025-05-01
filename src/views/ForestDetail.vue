@@ -12,6 +12,7 @@ import FogEffect from "../components/FogEffect.vue";
 import YellowDustEffects from "../components/YellowDustEffects.vue";
 import SnowEffects from "../components/SnowEffects.vue";
 import ThunderEffects from "../components/ThunderEffects.vue";
+import CloudyEffects from "../components/CloudyEffects.vue";
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -66,6 +67,12 @@ const showThunder = computed(() => {
   forceUpdate.value;
   const weather = localStorage.getItem('weather');
   return weather === '번개';
+});
+
+const showCloudy = computed(() => {
+  forceUpdate.value;
+  const weather = localStorage.getItem('weather');
+  return weather === '흐림';
 });
 
 const refreshForestData = async () => {
@@ -329,6 +336,7 @@ const sortedPlacementList = computed(() => {
     <YellowDustEffects v-if="showYellowDust" />
     <SnowEffects v-if="showSnow" />
     <ThunderEffects v-if="showThunder" />
+    <CloudyEffects v-if="showCloudy" />
   </div>
 </template>
 
