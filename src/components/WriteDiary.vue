@@ -80,7 +80,7 @@ const selectedDate = ref(new Date());
 // Flatpickr 설정
 const flatpickrConfig = {
   locale: Korean,
-  dateFormat: 'Y년 n월 j일 l',
+  dateFormat: 'Y-m-d',
   disableMobile: true,
   static: true,
   mode: 'single',
@@ -88,12 +88,7 @@ const flatpickrConfig = {
   clickOpens: true,
   position: 'below',
   monthSelectorType: 'static',
-  defaultDate: selectedDate.value,
-  onChange: function(selectedDates) {
-    if (selectedDates && selectedDates[0]) {
-      selectedDate.value = selectedDates[0];
-    }
-  }
+  defaultDate: selectedDate.value
 };
 
 // 날짜 포맷팅
@@ -142,15 +137,24 @@ const saveDiary = async () => {
     }
 
     emit('loading', true);
-    console.log('Saving diary with data:', {
+
+    // 날짜를 ISO 문자열로 변환
+    const date = new Date(selectedDate.value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const createdAt = `${year}-${month}-${day}T00:00:00`;
+
+    const requestData = {
       content: diaryContent.value,
       categoryId: props.categoryId,
-    });
+      forestId: Number(localStorage.getItem('forestId')),
+      createdAt: createdAt
+    };
+
+    console.log('Saving diary with data:', requestData);
     
-    const response = await diaryApi.createDiary({
-      content: diaryContent.value,
-      categoryId: props.categoryId,
-    });
+    const response = await diaryApi.createDiary(requestData);
 
     if (!response) {
       throw new Error('API 응답이 없습니다.');
