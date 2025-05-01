@@ -40,7 +40,7 @@
 
       <transition name="fade">
         <div v-if="selected" class="result-actions">
-          <button class="action-btn" @click="$emit('place', selected)">배치하기</button>
+          <button class="action-btn" @click="$emit('place', selectedPiece)">배치하기</button>
           <button class="action-btn secondary" @click="$emit('toStorage')">보관소에 저장하기</button>
         </div>
       </transition>
@@ -68,7 +68,13 @@ const props = defineProps({
   }
 })
 const selected = ref(null)
-const selectPiece = (val) => (selected.value = val)
+let selectedPiece = ref(null)
+
+const selectPiece = (val) => {
+  selected.value = val
+  selectedPiece = props.pieces.filter((piece) => piece.value === val)[0]
+  console.log('Selected piece:', selectedPiece)
+}
 </script>
 
 <style scoped>

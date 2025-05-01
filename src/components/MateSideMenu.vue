@@ -6,13 +6,21 @@ import buttonIcon_3 from "../icons/forestmate_icon.png";
 import buttonIcon_4 from "../icons/invite_icon.png";
 import buttonIcon_5 from "../icons/myitemview_icon.png";
 import logoutIcon from "../icons/logout_icon.png";
-import { useRouter } from "vue-router";
+import previousIcon from "../icons/previous_icon.png";
+import { useRouter, useRoute } from "vue-router";
+import InviteLinkModal from "./InviteLinkModal.vue";
+import ForestListModal from "./ForestListModal.vue";
+import WithdrawModal from "./WithdrawModal.vue";
 
+const route = useRoute();
 const isMenuOpen = ref(true);
 const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
-
+const showInviteModal = ref(false);
+const showWithdrawModal = ref(false);
+const inviteLink = ref("");
 const router = useRouter();
-const emit = defineEmits(["openShare"]);
+const showForestListModal = ref(false);
+const emit = defineEmits(["openShare", "openForestList", "openWithdraw"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -22,10 +30,22 @@ const handleShare = () => {
   emit("openShare");
 };
 
+const goBack = () => {
+  router.back();
+};
+
 const logout = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNickname");
   router.push("/login");
+};
+
+const handleForestList = () => {
+  emit("openForestList");
+};
+
+const handleWithdraw = () => {
+  emit("openWithdraw");
 };
 </script>
 
@@ -39,8 +59,12 @@ const logout = () => {
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
+
     <div class="menu-content" v-if="isMenuOpen">
       <div class="top-bar">
+        <span class="previous-icon" @click="goBack">
+          <img :src="previousIcon" class="btn-img" />
+        </span>
         <span class="logout-icon" @click="logout">
           <img :src="logoutIcon" class="btn-img" />
         </span>
@@ -62,12 +86,6 @@ const logout = () => {
           </span>
           우정일기 다시보기
         </button>
-        <button class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_3" class="btn-img" />
-          </span>
-          우정의 숲 입장하기
-        </button>
         <button class="menu-btn" @click="handleShare">
           <span class="icon">
             <img :src="buttonIcon_4" class="btn-img" />
@@ -80,6 +98,28 @@ const logout = () => {
           </span>
           우리의 조각 보기
         </button>
+        <button class="menu-btn" @click="handleWithdraw">
+          <span class="icon">
+            <img :src="buttonIcon_3" class="btn-img" />
+          </span>
+          우정의 숲 탈퇴하기
+        </button>
+        <InviteLinkModal
+          v-if="showInviteModal"
+          :inviteLink="inviteLink"
+          @close="showInviteModal = false"
+        />
+        <ForestListModal
+          v-if="showForestListModal"
+          :isOpen="showForestListModal"
+          @close="showForestListModal = false"
+        />
+        <WithdrawModal
+          v-if="showWithdrawModal"
+          :is-open="showWithdrawModal"
+          :forest-id="route.params.id"
+          @close="showWithdrawModal = false"
+        />
       </div>
     </div>
   </div>
@@ -132,7 +172,6 @@ const logout = () => {
 .top-bar {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   padding: 0 24px;
   margin-bottom: 32px;
@@ -198,5 +237,81 @@ const logout = () => {
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+.logout-icon {
+  margin-left: 254.5px;
+}
+
+.previous-icon:hover {
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  color: #333;
+  font-size: 20px;
+}
+
+.modal-content p {
+  margin: 0 0 24px;
+  color: #666;
+  font-size: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-btn {
+  background: #ff6b6b;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #d0d0d0;
+}
+
+.confirm-btn:hover {
+  background: #ff5252;
 }
 </style>

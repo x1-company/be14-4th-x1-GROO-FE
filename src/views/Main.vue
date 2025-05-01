@@ -5,10 +5,12 @@ import SideMenu from "../components/SideMenu.vue";
 import MateSideMenu from "../components/MateSideMenu.vue";
 import InviteLinkModal from "../components/InviteLinkModal.vue";
 import ForestListModal from "../components/ForestListModal.vue";
+import WithdrawModal from "../components/WithdrawModal.vue";
 
 const currentView = ref("background"); // 초기 상태: BackgroundImage
 const isInviteLinkModalOpen = ref(false);
 const isForestListModalOpen = ref(false);
+const isWithdrawModalOpen = ref(false);
 
 const changeView = (view) => {
   currentView.value = view;
@@ -32,6 +34,15 @@ const closeForestListModal = () => {
   isForestListModalOpen.value = false;
 };
 
+// 탈퇴 모달 열기
+const openWithdrawModal = () => {
+  isWithdrawModalOpen.value = true;
+};
+
+const closeWithdrawModal = () => {
+  isWithdrawModalOpen.value = false;
+};
+
 const route = useRoute(); // 현재 경로 가져오기
 </script>
 
@@ -47,16 +58,27 @@ const route = useRoute(); // 현재 경로 가져오기
         v-if="route.name === 'ForestMate'"
         @openShare="openInviteLinkModal"
         @openForestList="openForestListModal"
+        @openWithdraw="openWithdrawModal"
       />
-      <SideMenu v-else @change-view="changeView" />
+      <SideMenu
+        v-else
+        @change-view="changeView"
+        @openForestList="openForestListModal"
+      />
     </template>
     <InviteLinkModal
       :is-open="isInviteLinkModalOpen"
       @close="closeInviteLinkModal"
     />
     <ForestListModal
-      :is-open="isForestListModalOpen"
+      v-if="isForestListModalOpen"
+      :isOpen="isForestListModalOpen"
       @close="closeForestListModal"
+    />
+    <WithdrawModal
+      v-if="isWithdrawModalOpen"
+      :is-open="isWithdrawModalOpen"
+      @close="closeWithdrawModal"
     />
   </div>
 </template>
