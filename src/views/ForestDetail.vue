@@ -216,6 +216,14 @@ const handleEmotionWeather = (weather) => {
     forestData.value[0].emotionWeather = weather;
   }
 };
+
+const sortedPlacementList = computed(() => {
+  if (!forestData.value || !forestData.value.length) return [];
+  // Y값(placementPositionY)이 작은 순 → 큰 순으로 정렬
+  return [...forestData.value[0].placementList].sort(
+    (a, b) => a.placementPositionY - b.placementPositionY
+  );
+});
 </script>
 
 <template>
@@ -267,7 +275,7 @@ const handleEmotionWeather = (weather) => {
         />
         <img
           v-if="forestData && forestData.length"
-          v-for="item in forestData[0].placementList"
+          v-for="item in sortedPlacementList"
           :key="item.placementId"
           class="item"
           :src="item.itemImageUrl" 
@@ -275,7 +283,8 @@ const handleEmotionWeather = (weather) => {
           :style="{
             left: `${item.placementPositionX}%`,
             top: `${item.placementPositionY}%`,
-            width: `${itemWidth}px`
+            width: `${itemWidth}px`,
+            zIndex: 100 + Math.round(item.placementPositionY)
           }"
           draggable="false"
         />
@@ -288,7 +297,8 @@ const handleEmotionWeather = (weather) => {
             left: `${dragPos.x}%`,
             top: `${dragPos.y}%`,
             width: `${itemWidth}px`,
-            cursor: isDragging ? 'grabbing' : 'grab'
+            cursor: isDragging ? 'grabbing' : 'grab',
+            zIndex: 100 + Math.round(dragPos.y)
           }"
           @mousedown="onMouseDown"
           @dragstart.prevent

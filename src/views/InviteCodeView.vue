@@ -55,28 +55,82 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 const inviteCode = ref("");
 
-const handleSubmit = () => {
+onMounted(() => {
+  // URL 파라미터에서 inviteCode를 가져와서 설정
+  if (route.params.inviteCode) {
+    inviteCode.value = route.params.inviteCode;
+  }
+});
+
+const handleSubmit = async () => {
+  console.log("입력된 초대 코드:", inviteCode.value);
+  console.log("초대 코드 길이:", inviteCode.value.length);
+
   if (inviteCode.value.length === 8) {
-    // TODO: 초대 코드 검증 로직 추가
-    router.push("/forest-mate"); // 검증 후 포레스트메이트 페이지로 이동
+    // localStorage에서 토큰 확인
+    const token = localStorage.getItem("accessToken");
+    console.log("저장된 토큰:", token);
+
+    if (!token) {
+      console.log("토큰이 없습니다. 로그인 페이지로 이동합니다.");
+      localStorage.setItem("pendingInviteCode", inviteCode.value);
+      router.push("/login");
+      return;
+    }
+
+    try {
+      console.log("API 호출 시작");
+      const apiUrl = `http://localhost:8080/mate/accept/${inviteCode.value}`;
+      console.log("요청 URL:", apiUrl);
+      console.log("요청 헤더:", {
+        Authorization: `Bearer ${token}`,
+      });
+
+      // 초대 코드 검증 API 호출
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("응답 상태:", response.status);
+
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 성공 시 메인 페이지로 이동
+      router.push("/");
+    } catch (error) {
+      console.error("초대 코드 검증 중 상세 오류:", error);
+      alert("초대 코드 검증에 실패했습니다. 다시 시도해주세요.");
+    }
+  } else {
+    console.log("초대 코드가 8자리가 아닙니다.");
+    alert("초대 코드 8자리를 입력해주세요.");
   }
 };
 </script>
 
 <style scoped>
 .invite-code-container {
-  width: 100vw;
-  height: 100vh;
+  padding-top: 40px;
+  width: 90%;
+  height: 90%;
+  min-height: 90vh;
+  margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #dae2b6 0%, #3a5a40 100%);
   font-family: "Pretendard", sans-serif;
   position: relative;
   overflow: hidden;
@@ -130,24 +184,24 @@ const handleSubmit = () => {
 .invite-code-box {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 30px;
-  width: 420px;
+  padding: 30px;
+  border-radius: 25px;
+  width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 20px 60px rgba(58, 90, 64, 0.3);
+  box-shadow: 0 15px 40px rgba(58, 90, 64, 0.3);
   position: relative;
   overflow: hidden;
   animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border: 3px solid rgba(165, 192, 167, 0.3);
+  border: 2px solid rgba(165, 192, 167, 0.3);
 }
 
 .forest-symbol {
   position: relative;
-  width: 160px;
-  height: 160px;
-  margin-bottom: 30px;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -160,10 +214,10 @@ const handleSubmit = () => {
 }
 
 .tree {
-  font-size: 80px;
+  font-size: 60px;
   display: block;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 4px 8px rgba(58, 90, 64, 0.3));
+  margin-bottom: 8px;
+  filter: drop-shadow(0 3px 6px rgba(58, 90, 64, 0.3));
 }
 
 .animals {
@@ -208,9 +262,9 @@ const handleSubmit = () => {
 }
 
 .title {
-  font-size: 32px;
+  font-size: 28px;
   color: #3a5a40;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   font-weight: 700;
   text-align: center;
   line-height: 1.4;
@@ -218,9 +272,9 @@ const handleSubmit = () => {
 }
 
 .subtitle {
-  font-size: 17px;
+  font-size: 15px;
   color: #5c8374;
-  margin-bottom: 35px;
+  margin-bottom: 25px;
   text-align: center;
   animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s both;
 }
@@ -238,13 +292,13 @@ const handleSubmit = () => {
 
 .code-input {
   width: 100%;
-  padding: 20px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid #a5c0a7;
-  border-radius: 20px;
-  font-size: 22px;
+  border-radius: 15px;
+  font-size: 18px;
   text-align: center;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   color: #3a5a40;
   transition: all 0.3s ease;
 }
@@ -275,20 +329,20 @@ const handleSubmit = () => {
 
 .submit-button {
   width: 100%;
-  padding: 20px;
+  padding: 15px;
   background: linear-gradient(135deg, #3a5a40 0%, #2c4632 100%);
   color: white;
   border: none;
-  border-radius: 20px;
-  font-size: 18px;
+  border-radius: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 15px rgba(58, 90, 64, 0.3);
+  gap: 10px;
+  box-shadow: 0 3px 10px rgba(58, 90, 64, 0.3);
 }
 
 .submit-button:hover {
