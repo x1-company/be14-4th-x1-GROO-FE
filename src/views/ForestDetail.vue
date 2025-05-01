@@ -13,6 +13,7 @@ import YellowDustEffects from "../components/YellowDustEffects.vue";
 import SnowEffects from "../components/SnowEffects.vue";
 import ThunderEffects from "../components/ThunderEffects.vue";
 import CloudyEffects from "../components/CloudyEffects.vue";
+import EditForestName from "../components/EditForestName.vue";
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -30,6 +31,7 @@ const dragPos = ref({ x: 50, y: 50 })
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const forceUpdate = ref(0);
+const showEditName = ref(false);
 
 const { proxy } = getCurrentInstance();
 
@@ -245,13 +247,30 @@ const sortedPlacementList = computed(() => {
     (a, b) => a.placementPositionY - b.placementPositionY
   );
 });
+
+const handleEditNameClick = () => {
+  showEditName.value = !showEditName.value;
+};
+
+const handleNameUpdate = (newName) => {
+  if (forestData.value && forestData.value.length) {
+    forestData.value[0].name = newName;
+  }
+};
 </script>
 
 <template>
   <div class="forest-detail">
-    <div v-if="!showGuestBook" class="icons">
-      <img :src="buttonIcon_6" class="btn-img" @click="handleGuestBookClick" />
-      <img :src="buttonIcon_7" class="btn-img" />
+    <div class="top-left-icons">
+      <div class="edit-name-container">
+        <img :src="buttonIcon_6" class="btn-img" @click="handleEditNameClick" />
+        <EditForestName
+          v-if="showEditName"
+          :current-name="forestData?.[0]?.name || ''"
+          @update="handleNameUpdate"
+        />
+      </div>
+      <img :src="buttonIcon_7" class="btn-img" @click="handleGuestBookClick" />
       <img
         :src="buttonIcon_8"
         class="btn-img"
@@ -368,13 +387,24 @@ const sortedPlacementList = computed(() => {
   transform: translate(-50%, -50%);
 }
 
-.icons {
+.top-left-icons {
   position: absolute;
   top: 12.83%;
   left: 5.07%;
   display: flex;
   gap: 16px;
   z-index: 10;
+}
+
+.edit-name-container {
+  position: relative;
+}
+
+.edit-name-container .forest-name-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .btn-img {
