@@ -23,10 +23,12 @@ const selectedPiece = ref(null)
 const dragPos = ref({ x: 50, y: 50 })
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
+const forceUpdate = ref(0);
 
 const { proxy } = getCurrentInstance();
 
 const showRain = computed(() => {
+  forceUpdate.value; // 의존성 추가
   const nickname = localStorage.getItem('userNickname');
   const weatherOwner = localStorage.getItem(nickname);
   if (nickname !== weatherOwner) return false
@@ -169,8 +171,9 @@ const handleCompletePlacement = async () => {
     });
     if (!res.ok) throw new Error('배치 요청 실패');
     alert('배치가 완료되었습니다!');
-    await refreshForestData(); // 배치 완료 후 숲 데이터 새로고침
+    await refreshForestData();
     selectedPiece.value = null;
+    forceUpdate.value++; // 배치 후 강제 리렌더 트리거
   } catch (err) {
     alert('배치에 실패했습니다.');
     console.error(err);
