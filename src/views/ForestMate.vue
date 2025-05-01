@@ -10,6 +10,7 @@
           v-if="forestData"
         />
       </div>
+      <!-- 숲이름 & 친구 -->
       <h1 class="title">{{ forestData?.name || "숲 이름 없음" }}</h1>
       <div class="nickname-list">
         함께하는 친구👥 : {{ forestData?.nicknames?.join(", ") || "없음" }}</div
