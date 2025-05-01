@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Main from "../views/Main.vue";
-import WriteDiary from "../components/WriteDiary.vue";
 import ViewDiary from "../components/ViewDiary.vue";
 import ForestMate from "../views/ForestMate.vue";
 import ForestView from "../components/ForestView.vue";
@@ -24,11 +23,6 @@ const router = createRouter({
           path: "", // == "/"
           name: "BackgroundImage",
           component: BackgroundImage2,
-        },
-        {
-          path: "writediary",
-          name: "WriteDiary",
-          component: WriteDiary,
         },
         {
           path: "viewdiary",

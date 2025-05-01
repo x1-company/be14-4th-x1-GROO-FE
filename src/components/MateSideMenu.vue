@@ -6,18 +6,13 @@ import buttonIcon_3 from "../icons/forestmate_icon.png";
 import buttonIcon_4 from "../icons/invite_icon.png";
 import buttonIcon_5 from "../icons/myitemview_icon.png";
 import logoutIcon from "../icons/logout_icon.png";
-import previousIcon from "../icons/previous_icon.png";
 import { useRouter } from "vue-router";
-import InviteLinkModal from "./InviteLinkModal.vue";
-import ForestListModal from "./ForestListModal.vue";
 
 const isMenuOpen = ref(true);
 const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
-const showInviteModal = ref(false);
-const inviteLink = ref("");
+
 const router = useRouter();
-const showForestListModal = ref(false);
-const emit = defineEmits(["openShare", "openForestList"]);
+const emit = defineEmits(["openShare"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -27,18 +22,10 @@ const handleShare = () => {
   emit("openShare");
 };
 
-const goBack = () => {
-  router.back();
-};
-
 const logout = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNickname");
   router.push("/login");
-};
-
-const handleForestList = () => {
-  emit("openForestList");
 };
 </script>
 
@@ -52,12 +39,8 @@ const handleForestList = () => {
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
-
     <div class="menu-content" v-if="isMenuOpen">
       <div class="top-bar">
-        <span class="previous-icon" @click="goBack">
-          <img :src="previousIcon" class="btn-img" />
-        </span>
         <span class="logout-icon" @click="logout">
           <img :src="logoutIcon" class="btn-img" />
         </span>
@@ -79,7 +62,7 @@ const handleForestList = () => {
           </span>
           우정일기 다시보기
         </button>
-        <button class="menu-btn" @click="handleForestList">
+        <button class="menu-btn">
           <span class="icon">
             <img :src="buttonIcon_3" class="btn-img" />
           </span>
@@ -97,16 +80,6 @@ const handleForestList = () => {
           </span>
           우리의 조각 보기
         </button>
-        <InviteLinkModal
-          v-if="showInviteModal"
-          :inviteLink="inviteLink"
-          @close="showInviteModal = false"
-        />
-        <ForestListModal
-          v-if="showForestListModal"
-          :isOpen="showForestListModal"
-          @close="showForestListModal = false"
-        />
       </div>
     </div>
   </div>
@@ -159,6 +132,7 @@ const handleForestList = () => {
 .top-bar {
   width: 100%;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   padding: 0 24px;
   margin-bottom: 32px;
@@ -224,13 +198,5 @@ const handleForestList = () => {
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
-}
-
-.logout-icon {
-  margin-left: 254.5px;
-}
-
-.previous-icon:hover {
-  cursor: pointer;
 }
 </style>
