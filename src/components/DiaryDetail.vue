@@ -80,10 +80,10 @@
   }
   .back-img {
     position: absolute;
-    top: 32px;
-    left: 32px;
-    width: 36px;
-    height: 36px;
+    top: -10px;
+    left: -10px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     z-index: 10;
   }
@@ -91,9 +91,9 @@
     color: #fff;
     font-size: 1.3rem;
     font-weight: 400;
-    margin-top: 90px;
+    margin-top: 40px;
     margin-bottom: 0px;
-    margin-left: 8px;
+    margin-left: -10px;
     letter-spacing: -0.5px;
   }
   .diary-detail-title {
@@ -102,7 +102,7 @@
     color: #fff;
     margin-bottom: 30px;
     margin-top: 10px;
-    margin-left: 8px;
+    margin-left: -10px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -124,7 +124,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-left: 8px;
+    margin-left: -10px;
     position: relative;
   }
   .emoji {
@@ -138,6 +138,7 @@
     min-width: 230px;
     min-height: 460px;
     margin-top: 0;
+    margin-left: -20px;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
@@ -148,7 +149,7 @@
     font-size: 1.05rem;
     line-height: 1.7;
     margin-bottom: 24px;
-    margin-left: -15px;
+    margin-left: -20px;
     word-break: keep-all;
   }
   .diary-detail-content-count {
