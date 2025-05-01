@@ -9,7 +9,7 @@
 
 <script setup>
 </script>
-<!-- import { DotLottieVue } from '@lottiefiles/dotlottie-vue' -->
+<!-- import { DotLottieVue } from '@lottiefiles/dotlottie-vue'   -->
 <style scoped>
 .wrapper {
   width: 100vw;

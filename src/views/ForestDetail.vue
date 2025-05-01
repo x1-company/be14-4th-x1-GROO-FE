@@ -10,6 +10,7 @@ import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포�
 import FlowerRainEffect from "../components/FlowerRainEffect.vue";
 import FogEffect from "../components/FogEffect.vue";
 import YellowDustEffects from "../components/YellowDustEffects.vue";
+// import SnowEffects from "../components/SnowEffects.vue";
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -52,6 +53,12 @@ const showYellowDust = computed(() => {
   forceUpdate.value;
   const weather = localStorage.getItem('weather');
   return weather === '황사';
+});
+
+const showSnow = computed(() => {
+  forceUpdate.value;
+  const weather = localStorage.getItem('weather');
+  return weather === '맑음';
 });
 
 const refreshForestData = async () => {
@@ -311,6 +318,7 @@ const sortedPlacementList = computed(() => {
     <FlowerRainEffect v-if="showFlowerRain" />
     <FogEffect v-if="showFog" />
     <YellowDustEffects v-if="showYellowDust" />
+    <!-- <SnowEffects v-if="showSnow" /> -->
   </div>
 </template>
 
