@@ -80,7 +80,7 @@ const togglePublic = async () => {
 
     if (!res.ok) throw new Error('공개여부 변경 실패');
 
-    forestData.value.isPublic = !forestData.value.isPublic;
+    forestData.value[0].isPublic = !forestData.value[0].isPublic;
   } catch (err) {
     alert('공개여부 변경에 실패했습니다.');
     console.error(err);
@@ -104,8 +104,8 @@ const togglePublic = async () => {
       <div v-if="showTooltip" class="tooltip">
         <div class="tooltip-title">공개 범위 설정</div>
         <div class="tooltip-status"
-          :class="forestData && forestData.isPublic ? 'public' : 'private'">
-          {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
+          :class="forestData && forestData[0].isPublic ? 'public' : 'private'">
+          {{ forestData && forestData[0].isPublic ? '공개중' : '비공개' }}
         </div>
       </div>
     </div>
