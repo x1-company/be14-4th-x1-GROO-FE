@@ -3,8 +3,6 @@ import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
-import GuestBookList from "../components/GuestBookList.vue";
-import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -206,6 +204,7 @@ const handleCompletePlacement = async () => {
         </div>
       </div>
     </div>
+  </div>
 
   <div ref="containerRef" class="placement-container">
     <div class="placement-inner-container">
