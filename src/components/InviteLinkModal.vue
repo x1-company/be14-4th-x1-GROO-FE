@@ -7,18 +7,18 @@
           <span class="deco-item">🦊</span>
           <span class="deco-item">🌸</span>
         </div>
-        <button class="close-button" @click="$emit('close')">✨</button>
+        <button class="close-button" @click="$emit('close')">닫기</button>
       </div>
 
       <div class="modal-body">
         <div class="title-section">
           <div class="title-box">
             <h2>우리의 숲으로<br />놀러와요!</h2>
-            <div class="animal-friends">
+            <!-- <div class="animal-friends">
               <span class="animal bounce-animation">🦊</span>
               <span class="animal bounce-animation-delay">🐰</span>
               <span class="animal bounce-animation">🦌</span>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -38,14 +38,14 @@
               ref="linkInput"
               class="link-input"
             />
-            <button @click="copyLink" class="copy-button"> 복사하기 ✨ </button>
+            <button @click="copyLink" class="copy-button"> 복사하기 </button>
           </div>
 
-          <div class="footer-message">
-            <span class="heart">💝</span>
+          <!-- <div class="footer-message">
+            <span class="heart"></span>
             <p>함께라서 더 즐거운 우리의 숲</p>
-            <span class="heart">💝</span>
-          </div>
+            <span class="heart"></span>
+          </div> -->
         </div>
       </div>
     </div>
@@ -148,17 +148,20 @@ const copyLink = () => {
 .close-button {
   position: absolute;
   right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
+  background: rgba(58, 90, 64, 0.1);
   border: none;
-  font-size: 24px;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #3a5a40;
+  font-weight: 500;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.2s ease;
 }
 
 .close-button:hover {
-  transform: translateY(-50%) rotate(90deg);
+  background: rgba(58, 90, 64, 0.15);
+  transform: translateY(-1px);
 }
 
 .modal-body {
@@ -284,13 +287,13 @@ const copyLink = () => {
   font-size: 18px;
 }
 
-.footer-message {
+/* .footer-message {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
   margin-top: 25px;
-}
+} */
 
 .footer-message p {
   margin: 0;

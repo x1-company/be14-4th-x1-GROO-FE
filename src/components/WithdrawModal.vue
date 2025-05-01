@@ -134,11 +134,11 @@ const handleWithdraw = async () => {
 }
 
 .confirm-btn {
-  background: #ff6b6b;
+  background: #1F4028;
   color: white;
 }
 
 .confirm-btn:hover {
-  background: #ff5252;
+  background: #1f4028af;
 }
 </style>

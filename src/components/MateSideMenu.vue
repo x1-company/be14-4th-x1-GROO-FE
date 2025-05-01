@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
 import buttonIcon_1 from "../icons/diarywrite_icon.png";
 import buttonIcon_2 from "../icons/diaryview_icon.png";
 import buttonIcon_3 from "../icons/forestmate_icon.png";
@@ -58,8 +58,10 @@ const handleForestList = () => {
   emit("openForestList");
 };
 
-const handleWithdraw = () => {
-  showWithdrawModal.value = true;
+const openWithdrawModal = inject('openWithdrawModal');
+
+const handleWithdrawClick = () => {
+  openWithdrawModal();
 };
 
 const openDiaryCalendar = () => {
@@ -155,7 +157,7 @@ const closeMyItems = () => {
             </span>
             우리의 조각 보기
           </button>
-          <button class="menu-btn" @click="handleWithdraw">
+          <button class="menu-btn" @click="handleWithdrawClick">
             <span class="icon">
               <img :src="buttonIcon_3" class="btn-img" />
             </span>

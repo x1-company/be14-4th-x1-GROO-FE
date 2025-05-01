@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
-import GuestBookList from "../components/GuestBookList.vue";
+import GuestBookList from "../components/GuestbookList.vue"; // Fixed casing to match actual file
 import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포넌트 불러오기
