@@ -123,12 +123,14 @@ const handleSubmit = async () => {
 
 <style scoped>
 .invite-code-container {
-  width: 100vw;
-  height: 100vh;
+  padding-top: 40px;
+  width: 90%;
+  height: 90%;
+  min-height: 90vh;
+  margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #dae2b6 0%, #3a5a40 100%);
   font-family: "Pretendard", sans-serif;
   position: relative;
   overflow: hidden;
@@ -182,24 +184,24 @@ const handleSubmit = async () => {
 .invite-code-box {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 30px;
-  width: 420px;
+  padding: 30px;
+  border-radius: 25px;
+  width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 20px 60px rgba(58, 90, 64, 0.3);
+  box-shadow: 0 15px 40px rgba(58, 90, 64, 0.3);
   position: relative;
   overflow: hidden;
   animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border: 3px solid rgba(165, 192, 167, 0.3);
+  border: 2px solid rgba(165, 192, 167, 0.3);
 }
 
 .forest-symbol {
   position: relative;
-  width: 160px;
-  height: 160px;
-  margin-bottom: 30px;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -212,10 +214,10 @@ const handleSubmit = async () => {
 }
 
 .tree {
-  font-size: 80px;
+  font-size: 60px;
   display: block;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 4px 8px rgba(58, 90, 64, 0.3));
+  margin-bottom: 8px;
+  filter: drop-shadow(0 3px 6px rgba(58, 90, 64, 0.3));
 }
 
 .animals {
@@ -260,9 +262,9 @@ const handleSubmit = async () => {
 }
 
 .title {
-  font-size: 32px;
+  font-size: 28px;
   color: #3a5a40;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   font-weight: 700;
   text-align: center;
   line-height: 1.4;
@@ -270,9 +272,9 @@ const handleSubmit = async () => {
 }
 
 .subtitle {
-  font-size: 17px;
+  font-size: 15px;
   color: #5c8374;
-  margin-bottom: 35px;
+  margin-bottom: 25px;
   text-align: center;
   animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s both;
 }
@@ -290,13 +292,13 @@ const handleSubmit = async () => {
 
 .code-input {
   width: 100%;
-  padding: 20px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid #a5c0a7;
-  border-radius: 20px;
-  font-size: 22px;
+  border-radius: 15px;
+  font-size: 18px;
   text-align: center;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   color: #3a5a40;
   transition: all 0.3s ease;
 }
@@ -327,20 +329,20 @@ const handleSubmit = async () => {
 
 .submit-button {
   width: 100%;
-  padding: 20px;
+  padding: 15px;
   background: linear-gradient(135deg, #3a5a40 0%, #2c4632 100%);
   color: white;
   border: none;
-  border-radius: 20px;
-  font-size: 18px;
+  border-radius: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 15px rgba(58, 90, 64, 0.3);
+  gap: 10px;
+  box-shadow: 0 3px 10px rgba(58, 90, 64, 0.3);
 }
 
 .submit-button:hover {

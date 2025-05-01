@@ -6,7 +6,7 @@ import buttonIcon_3 from "../icons/forestmate_icon.png";
 import buttonIcon_4 from "../icons/invite_icon.png";
 import buttonIcon_5 from "../icons/myitemview_icon.png";
 import logoutIcon from "../icons/logout_icon.png";
-import previousIcon from "../icons/previous_icon.png";
+import previousIcon from "../icons/previous_icon2.png";
 import { useRouter, useRoute } from "vue-router";
 import InviteLinkModal from "./InviteLinkModal.vue";
 import ForestListModal from "./ForestListModal.vue";

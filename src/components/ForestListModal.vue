@@ -2,8 +2,13 @@
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>우정의 숲 목록</h2>
-        <button class="close-button" @click="$emit('close')">×</button>
+        <div class="header-decoration">
+          <span class="deco-item">🌸</span>
+          <span class="deco-item">🦊</span>
+          <span class="deco-item">🌸</span>
+        </div>
+        <h2>우리의 숲 목록</h2>
+        <button class="close-button" @click="$emit('close')">✨</button>
       </div>
       <div class="forest-grid">
         <div
@@ -17,15 +22,23 @@
             :alt="forest.forestName"
             class="forest-image"
           />
-          <div class="forest-name">{{ forest.forestName }}</div>
+          <div class="forest-info">
+            <div class="forest-name">{{ forest.forestName }}</div>
+            <div class="forest-members">
+              <span class="member-icon">👥</span>
+              <span class="member-count"
+                >{{ forest.memberCount || 1 }}명의 친구들</span
+              >
+            </div>
+          </div>
         </div>
         <div
           class="forest-card add-forest-card"
           @click="showCreateForestModal = true"
         >
           <div class="add-forest-content">
-            <div class="plus-icon">+</div>
-            <div class="add-forest-text">새로운 숲 추가하기</div>
+            <div class="plus-icon">✨</div>
+            <div class="add-forest-text">새로운 숲 만들기</div>
           </div>
         </div>
       </div>
@@ -35,20 +48,31 @@
   <div v-if="showCreateForestModal" class="modal-overlay">
     <div class="create-forest-modal">
       <div class="modal-header">
-        <h2>새로운 우정의 숲 만들기</h2>
+        <div class="header-decoration">
+          <span class="deco-item">🌱</span>
+          <span class="deco-item">🌳</span>
+          <span class="deco-item">🌱</span>
+        </div>
+        <h2>새로운 우리의 숲 만들기</h2>
         <button class="close-button" @click="showCreateForestModal = false"
-          >×</button
+          >✨</button
         >
       </div>
       <div class="create-forest-content">
-        <input
-          v-model="newForestName"
-          type="text"
-          placeholder="숲 이름을 입력하세요"
-          class="forest-name-input"
-          @keyup.enter="createNewForest"
-        />
-        <button class="create-button" @click="createNewForest">만들기</button>
+        <div class="input-wrapper">
+          <input
+            v-model="newForestName"
+            type="text"
+            placeholder="숲 이름을 입력해주세요"
+            class="forest-name-input"
+            @keyup.enter="createNewForest"
+          />
+          <span class="input-icon">🌳</span>
+        </div>
+        <button class="create-button" @click="createNewForest">
+          <span>만들기</span>
+          <span class="button-icon">✨</span>
+        </button>
       </div>
     </div>
   </div>
@@ -57,6 +81,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import forestImage from "@/icons/forest1.png";
 
 const router = useRouter();
 const props = defineProps({
@@ -87,8 +112,7 @@ const getForestList = async () => {
     const data = await response.json();
     forests.value = data.map((forest) => ({
       ...forest,
-      image:
-        "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=500&auto=format&fit=crop",
+      image: forestImage,
     }));
   } catch (error) {
     console.error("Error fetching forest list:", error);
@@ -162,7 +186,8 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(218, 226, 182, 0.2);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -170,57 +195,89 @@ onMounted(() => {
 }
 
 .modal-content {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 20px;
+  background: #fdfbf6;
+  border-radius: 30px;
   width: 80%;
   max-width: 800px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(58, 90, 64, 0.2);
+  animation: floatIn 0.5s ease-out;
+  border: 3px solid #a5c0a7;
 }
 
 .modal-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #dae2b6 0%, #a5c0a7 100%);
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 2rem;
+  border-radius: 27px 27px 0 0;
+}
+
+.header-decoration {
+  display: flex;
+  gap: 15px;
+  position: absolute;
+  left: 20px;
+}
+
+.deco-item {
+  font-size: 24px;
+  animation: bounce 2s infinite;
+}
+
+.deco-item:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.deco-item:nth-child(3) {
+  animation-delay: 0.6s;
 }
 
 .modal-header h2 {
   color: #3a5a40;
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .close-button {
+  position: absolute;
+  right: 20px;
   background: none;
   border: none;
-  font-size: 2rem;
-  color: #3a5a40;
+  font-size: 24px;
   cursor: pointer;
-  padding: 0.5rem;
+  transition: transform 0.3s;
+}
+
+.close-button:hover {
+  transform: rotate(90deg);
 }
 
 .forest-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  padding: 24px;
 }
 
 .forest-card {
   position: relative;
-  border-radius: 15px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  box-shadow: 0 8px 20px rgba(58, 90, 64, 0.1);
+  transition: all 0.3s ease;
   aspect-ratio: 1;
   cursor: pointer;
+  background: white;
 }
 
 .forest-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(58, 90, 64, 0.2);
 }
 
 .forest-image {
@@ -229,29 +286,43 @@ onMounted(() => {
   object-fit: cover;
 }
 
-.forest-name {
+.forest-info {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  border-top: 2px solid rgba(165, 192, 167, 0.3);
+}
+
+.forest-name {
   color: #3a5a40;
-  font-weight: 500;
-  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.forest-members {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #5c8374;
 }
 
 .add-forest-card {
-  background: rgba(58, 90, 64, 0.05);
-  border: 2px dashed #3a5a40;
+  border: 2px dashed #a5c0a7;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(218, 226, 182, 0.2);
   transition: all 0.3s ease;
 }
 
 .add-forest-card:hover {
-  background: rgba(58, 90, 64, 0.1);
+  background: rgba(218, 226, 182, 0.4);
   border-style: solid;
 }
 
@@ -261,60 +332,133 @@ onMounted(() => {
 }
 
 .plus-icon {
-  font-size: 3rem;
-  line-height: 1;
-  margin-bottom: 0.5rem;
+  font-size: 40px;
+  margin-bottom: 10px;
+  animation: sparkle 2s infinite;
 }
 
 .add-forest-text {
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .create-forest-modal {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 20px;
+  background: #fdfbf6;
+  border-radius: 30px;
   width: 90%;
   max-width: 400px;
+  border: 3px solid #a5c0a7;
+  animation: floatIn 0.5s ease-out;
 }
 
 .create-forest-content {
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  padding: 30px;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .forest-name-input {
-  padding: 0.8rem 1rem;
-  border: 2px solid #3a5a40;
-  border-radius: 8px;
-  font-size: 1rem;
   width: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  padding: 15px 20px;
+  padding-right: 50px;
+  border: 2px solid #a5c0a7;
+  border-radius: 15px;
+  font-size: 16px;
+  color: #3a5a40;
+  background: white;
+  transition: all 0.3s ease;
 }
 
 .forest-name-input:focus {
   outline: none;
-  border-color: #588157;
-  box-shadow: 0 0 0 2px rgba(58, 90, 64, 0.2);
+  border-color: #3a5a40;
+  box-shadow: 0 0 0 4px rgba(58, 90, 64, 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
 }
 
 .create-button {
-  padding: 0.8rem 2rem;
-  background-color: #3a5a40;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #3a5a40 0%, #2c4632 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .create-button:hover {
-  background-color: #588157;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #2c4632 0%, #1a2a1e 100%);
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .forest-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .forest-name {
+    font-size: 14px;
+  }
+
+  .forest-members {
+    font-size: 12px;
+  }
 }
 </style>
