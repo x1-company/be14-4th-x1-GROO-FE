@@ -144,7 +144,8 @@ async function confirmSaveToStorage() {
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
     closeSaveModal();
-    router.push("/myitemview");
+    // 강제 새로고침 방식으로 이동
+    window.location.href = `/forest-detail/${forestId}`;
   } catch (e) {
     console.error(e);
     alert("보관소 저장에 실패했습니다. 다시 시도해주세요.");
