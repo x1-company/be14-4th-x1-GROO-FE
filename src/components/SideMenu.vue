@@ -11,7 +11,7 @@ import CategorySelector from './CategorySelector.vue'
 import AnalyzeResult from './AnalyzeResult.vue'
 import WriteDiary from './WriteDiary.vue'
 import WriteGuestbook from './WriteGuestbook.vue'
-import MyItemView from './MyItemView.vue'
+import WriteGuestbook from './WriteGuestbook.vue'
 import { useRouter } from 'vue-router'
 
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
@@ -33,15 +33,15 @@ const showCategorySelector = ref(false)
 const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
 const showWriteGuestbook = ref(false)
-const showMyItemView = ref(false)
 const categoryLoading = ref(false)
+const showWriteGuestbook = ref(false)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value || showMyItemView.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value ? 576 : 360
 })
 
-const toggleMenu = () => {
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value || showGuestbookList.value || showMyItemView.value ? 576 : 360
   isMenuOpen.value = !isMenuOpen.value
 }
 
@@ -107,6 +107,7 @@ const handleWriteGuestbookBack = () => {
 
 const handleGuestbook = () => {
   // TODO: API 호출 로직 추가
+  showWriteGuestbook.value = false
   console.log('방명록 확인하기')
 }
 
@@ -115,40 +116,26 @@ const handleGuestbookSubmit = async (content) => {
   console.log('방명록 내용:', content)
   showWriteGuestbook.value = false
 }
-
-const handleMyItemView = () => {
-  if (showMyItemView.value) {
-    showMyItemView.value = false;
-  } else {
-    showMyItemView.value = true;
-    showCategorySelector.value = false;
-    showAnalyzeResult.value = false;
-    showWriteDiary.value = false;
-    showWriteGuestbook.value = false;
-  }
-};
 </script>
 
-<template>
-  <div class="side-wrapper">
-    <div
+    showWriteGuestbook.value = false;
+  } <div class="side-wrapper">
       class="side-menu"
       :class="{ 
-        open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook || showMyItemView
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook 
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook && !showMyItemView">
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
-              <img :src="logoutIcon" class="btn-img" />
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook || showGuestbookList || showMyItemView
             </span>
           </div>
           <div class="greeting">
             <div>안녕하세요 {{ nickname }}님,</div>
-            <div>오늘 하루는 어떠셨나요?</div>
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook && !showGuestbookList && !showMyItemView">
           </div>
           <div class="menu-buttons">
             <button class="menu-btn" @click="toggleCategorySelector">
@@ -175,12 +162,12 @@ const handleMyItemView = () => {
               </span>
               다른 숲 구경가기
             </router-link>
-            <button class="menu-btn" @click="handleMyItemView">
+            <router-link to="/myitemview" class="menu-btn">
               <span class="icon">
                 <img :src="buttonIcon_5" class="btn-img" />
               </span>
               나의 조각 보기
-            </button>
+            </router-link>
             <button class="menu-btn" @click="handleGuestbook">
               <span class="icon">
                 <img :src="buttonIcon_6" class="btn-img" />
@@ -202,14 +189,6 @@ const handleMyItemView = () => {
             </button>
           </div>
           <WriteDiary @save="handleDiarySave" />
-        </template>
-        <template v-else-if="showMyItemView">
-          <div class="top-bar">
-            <button class="back-button" @click="handleMyItemView">
-              ←
-            </button>
-          </div>
-          <MyItemView />
         </template>
         <template v-else-if="showCategorySelector">
           <div class="top-bar">
@@ -235,7 +214,6 @@ const handleMyItemView = () => {
       </div>
     </div>
     <button
-      v-if="!showWriteDiary"
       class="toggle-button"
       @click="toggleMenu"
     >
