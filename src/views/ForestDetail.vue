@@ -3,6 +3,9 @@ import { ref, onMounted } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const bgRef = ref(null); // background 요소 참조
 const containerRef = ref(null); // placement-container 요소 참조
@@ -68,7 +71,7 @@ const togglePublic = async () => {
   const token = localStorage.getItem('accessToken');
 
   try {
-    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestData.value.id}`, {
+    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestData.value[0].forestId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`
