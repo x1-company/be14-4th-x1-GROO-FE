@@ -41,7 +41,7 @@
     left: 0;
     width: 100vw;
     pointer-events: none;
-    z-index: 100;
+    z-index: 1000;
     filter: blur(1.5px) sepia(0.5) hue-rotate(-20deg) brightness(1.05);
   }
   

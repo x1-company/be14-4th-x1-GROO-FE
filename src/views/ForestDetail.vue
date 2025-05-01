@@ -298,7 +298,8 @@ const sortedPlacementList = computed(() => {
             left: `${item.placementPositionX}%`,
             top: `${item.placementPositionY}%`,
             width: `${itemWidth}px`,
-            zIndex: 100 + Math.round(item.placementPositionY)
+            zIndex: 100 + Math.round(item.placementPositionY),
+            opacity: showYellowDust ? 0.7 : 1
           }"
           draggable="false"
         />
@@ -312,7 +313,8 @@ const sortedPlacementList = computed(() => {
             top: `${dragPos.y}%`,
             width: `${itemWidth}px`,
             cursor: isDragging ? 'grabbing' : 'grab',
-            zIndex: 100 + Math.round(dragPos.y)
+            zIndex: 100 + Math.round(dragPos.y),
+            opacity: showYellowDust ? 0.7 : 1
           }"
           @mousedown="onMouseDown"
           @dragstart.prevent
