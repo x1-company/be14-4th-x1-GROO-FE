@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
+import axios from 'axios'
 
 // Icons
 import buttonIcon_1 from '../icons/diarywrite_icon.png'
@@ -46,11 +47,14 @@ const selectedGuestbookId = ref(null)
 const categoryLoading = ref(false)
 const selectedCategory = ref(null)
 const showSaveModal = ref(false)
+const pieceToSave = ref(null)
 const showMyItemView = ref(false)
 
-function openSaveModal() {
+function openSaveModal(selectedPiece) {
+  pieceToSave.value = selectedPiece
   showSaveModal.value = true
 }
+
 function closeSaveModal() {
   showSaveModal.value = false
 }
@@ -118,16 +122,35 @@ const handleAnalyze = (category) => {
 };
 
 const handlePlace = (selectedPiece) => {
-  console.log("Selected piece to place:", selectedPiece);
-  showAnalyzeResult.value = false;
+  pieceToSave.value = selectedPiece
+  showAnalyzeResult.value = false
   // 이벤트 버스를 통해 이벤트 전달
   proxy.emitter.emit('place-item', selectedPiece);
 };
 
-const confirmSaveToStorage = () => {
-  showSaveModal.value = false;
-  router.push('/myitemview');
-};
+async function confirmSaveToStorage() {
+  if (!pieceToSave.value) {
+    alert("저장할 조각 정보가 없습니다.")
+    return
+  }
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const forestId    = localStorage.getItem("forestId");
+    const pieceId     = pieceToSave.value.value;
+    // URL · 헤더 · 쿼리 파라미터 수정
+    await axios.post(
+      `http://localhost:8080/item-storage?itemId=${pieceId}&forestId=${forestId}`,
+      {},  // 바디는 빈 객체
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    closeSaveModal();
+    // 강제 새로고침 방식으로 이동
+    window.location.href = `/forest-detail/${forestId}`;
+  } catch (e) {
+    console.error(e);
+    alert("보관소 저장에 실패했습니다. 다시 시도해주세요.");
+  }
+}
 
 // 감정 아이콘 매핑 객체
 const emotionIcons = {
