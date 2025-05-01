@@ -45,6 +45,9 @@ const toggleMenu = () => {
 
 const router = useRouter()
 
+// 닉네임 가져오기
+const nickname = localStorage.getItem('userNickname') || '여행자'
+
 const logout = () => {
   // 로컬 스토리지 비우기
   localStorage.removeItem('accessToken')
@@ -129,7 +132,7 @@ const handleGuestbookSubmit = async (content) => {
             </span>
           </div>
           <div class="greeting">
-            <div>안녕하세요 min님,</div>
+            <div>안녕하세요 {{ nickname }}님,</div>
             <div>오늘 하루는 어떠셨나요?</div>
           </div>
           <div class="menu-buttons">
