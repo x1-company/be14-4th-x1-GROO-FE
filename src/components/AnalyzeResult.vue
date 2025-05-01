@@ -14,7 +14,9 @@
           :style="{ marginLeft: idx === 0 ? '0' : '16px' }"
         >
           <div class="emotion-label">{{ emo.label }}</div>
-          <div class="emotion-emoji">{{ emo.emoji }}</div>
+          <div class="emotion-icon">
+            <img :src="emo.icon" alt="emotion icon" />
+          </div>
           <div class="emotion-percent">{{ emo.percent }}%</div>
         </div>
       </div>
@@ -122,9 +124,19 @@ const selectPiece = (val) => (selected.value = val)
   margin-bottom: 4px;
 }
 
-.emotion-emoji {
-  font-size: 32px;
-  margin-bottom: 4px;
+.emotion-icon {
+  width: 40px;
+  height: 40px;
+  margin: 12px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.emotion-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .emotion-percent {

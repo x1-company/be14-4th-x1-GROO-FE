@@ -61,6 +61,17 @@ import { ref, computed, onMounted } from 'vue';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 import { Korean } from 'flatpickr/dist/l10n/ko.js';
+import { diaryApi } from '../services/api';
+
+const props = defineProps({
+  categoryId: {
+    type: Number,
+    required: true,
+    validator: (value) => {
+      return value > 0;
+    }
+  }
+});
 
 const diaryContent = ref('');
 const charCount = ref(0);
@@ -116,16 +127,44 @@ const loadDraft = () => {
   }
 };
 
-const emit = defineEmits(['save']);
+const emit = defineEmits(['save', 'loading']);
 
-const saveDiary = () => {
-  // TODO: API 연동 후 구현
-  console.log('일기 저장:', {
-    content: diaryContent.value,
-    date: selectedDate.value
-  });
-  localStorage.removeItem('diaryDraft');
-  emit('save');
+const saveDiary = async () => {
+  try {
+    if (!props.categoryId) {
+      alert('카테고리가 선택되지 않았습니다.');
+      return;
+    }
+
+    if (!diaryContent.value.trim()) {
+      alert('일기 내용을 입력해주세요.');
+      return;
+    }
+
+    emit('loading', true);
+    console.log('Saving diary with data:', {
+      content: diaryContent.value,
+      categoryId: props.categoryId,
+    });
+    
+    const response = await diaryApi.createDiary({
+      content: diaryContent.value,
+      categoryId: props.categoryId,
+    });
+
+    if (!response) {
+      throw new Error('API 응답이 없습니다.');
+    }
+
+    console.log('API Response:', response);
+    localStorage.removeItem('diaryDraft');
+    emit('save', response);
+  } catch (error) {
+    console.error('일기 저장 실패:', error);
+    alert('일기 저장에 실패했습니다. 다시 시도해주세요.');
+  } finally {
+    emit('loading', false);
+  }
 };
 
 // 컴포넌트 마운트 시 임시저장 데이터 불러오기
@@ -200,6 +239,7 @@ onMounted(() => {
   width: 100%;
   background: transparent;
   border: none;
+  color:#3a5a40;
 }
 
 .date-button {

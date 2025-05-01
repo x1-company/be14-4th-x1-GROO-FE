@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import buttonIcon_1 from '../icons/diarywrite_icon.png'
 import buttonIcon_2 from '../icons/diaryview_icon.png'
 import buttonIcon_3 from '../icons/forestmate_icon.png'
@@ -7,18 +7,29 @@ import buttonIcon_4 from '../icons/forestview_icon.png'
 import buttonIcon_5 from '../icons/myitemview_icon.png'
 import buttonIcon_6 from '../icons/mailbox_icon.png'
 import logoutIcon from '../icons/logout_icon.png'
+import joyIcon from '../icons/joy_icon.png'
+import sadIcon from '../icons/sad_icon.png'
+import peacefulIcon from '../icons/peaceful_icon.png'
+import annoyIcon from '../icons/annoy_icon.png'
+import anxiousIcon from '../icons/anxious_icon.png'
+import melancholyIcon from '../icons/melancholy_icon.png'
+import tiredIcon from '../icons/tired_icon.png'
+import romanceIcon from '../icons/romance_icon.png'
 import CategorySelector from './CategorySelector.vue'
 import AnalyzeResult from './AnalyzeResult.vue'
 import WriteDiary from './WriteDiary.vue'
+import WriteGuestbook from './WriteGuestbook.vue'
+import LoadingAnimation from './LoadingAnimation.vue'
 import GuestbookList from './GuestbookList.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+
 
 
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
 const dummyAnalysisResult = {
   emotions: [
-    { label: '평온함', emoji: '😊', percent: 50 },
-    { label: '즐거움', emoji: '😺', percent: 30 },
+    { label: '평온함', icon: peacefulIcon, percent: 50 },
+    { label: '즐거움', icon: joyIcon, percent: 30 },
   ],
   summaryMessage: "평온하고 일상적인 하루에, 즐거움이 묻어나있네요!",
   pieces: [
@@ -34,6 +45,7 @@ const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
 const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
 const categoryLoading = ref(false)
+const selectedCategory = ref(null)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
@@ -45,6 +57,32 @@ const toggleMenu = () => {
 }
 
 const router = useRouter()
+const route = useRoute()
+
+const currentForestId = computed(() => {
+  // forest-detail/:forestId 경로에서 forestId 추출
+  if (route.name === 'ForestDetail') {
+    return route.params.forestId;
+  }
+  return null;
+});
+
+// forestId를 localStorage에 저장
+const updateForestId = () => {
+  if (currentForestId.value) {
+    localStorage.setItem('forestId', currentForestId.value);
+  }
+};
+
+// 컴포넌트 마운트 시 forestId 저장
+onMounted(() => {
+  updateForestId();
+});
+
+// route가 변경될 때마다 forestId 업데이트
+watch(() => route.params.forestId, () => {
+  updateForestId();
+});
 
 // 닉네임 가져오기
 const nickname = localStorage.getItem('userNickname') || '여행자'
@@ -59,9 +97,8 @@ const logout = () => {
 
 const handleAnalyze = (category) => {
   console.log("Selected category:", category)
-  // showCategorySelector는 로딩이 완료될 때까지 true로 유지
+  // API 요청 시 카테고리 ID를 함께 전송
   setTimeout(() => {
-    showCategorySelector.value = false
     showAnalyzeResult.value = true
   }, 2000)
 }
@@ -78,19 +115,101 @@ const handleToStorage = () => {
   router.push('/myitemview')
 }
 
-const handleDiarySave = () => {
+// 감정 아이콘 매핑 객체
+const emotionIcons = {
+  '즐거움': joyIcon,
+  '우울함': melancholyIcon,
+  '평온함': peacefulIcon,
+  '짜증': annoyIcon,
+  '불안함': anxiousIcon,
+  '슬픔': sadIcon,
+  '지침': tiredIcon,
+  '설렘': romanceIcon
+}
+
+const handleDiarySave = (analysisResult) => {
+  console.log('Diary save result:', analysisResult);
+  if (!analysisResult || !analysisResult.topEmotions) {
+    console.error('유효하지 않은 분석 결과입니다:', analysisResult);
+    alert('감정 분석에 실패했습니다. 다시 시도해주세요.');
+    return;
+  }
+
+  showWriteDiary.value = false;
+  
+  // 감정 레이블 매핑
+  const emotionMapping = {
+    '불안': '불안함',
+    '짜증': '짜증',
+    '우울': '우울함',
+    '슬픔': '슬픔',
+    '지침': '지침',
+    '설렘': '설렘',
+    '즐거움': '즐거움',
+    '평온': '평온함'
+  };
+
+  // 분석 결과 데이터 설정
+  const emotions = Object.entries(analysisResult.topEmotions).map(([label, percent]) => ({
+    label: emotionMapping[label] || label,
+    icon: emotionIcons[emotionMapping[label] || label],
+    percent
+  }));
+
+  const mainEmotion = emotionMapping[analysisResult.mainEmotion] || analysisResult.mainEmotion;
+
+  const analysisData = {
+    emotions,
+    summaryMessage: `${mainEmotion}이(가) 가장 두드러지는 하루였네요!`,
+    pieces: analysisResult.emotionItems.map(item => ({
+      value: item.id.toString(),
+      label: item.name,
+      icon: item.imageUrl
+    }))
+  };
+
+  // 분석 결과 데이터 업데이트
+  Object.assign(dummyAnalysisResult, analysisData);
+  
+  // 분석 결과 화면으로 전환
+  showAnalyzeResult.value = true;
+};
+
+const toggleCategorySelector = () => {
+  if (showCategorySelector.value) {
+    // 카테고리 선택 화면에서 뒤로가기: 모든 화면 닫기
+    showWriteDiary.value = false;
+    showCategorySelector.value = false;
+    showAnalyzeResult.value = false;
+    selectedCategory.value = null;
+  } else {
+    // 메인 메뉴에서 감정일기 작성하기 클릭: 카테고리 선택 화면 열기
+    showCategorySelector.value = true;
+  }
+}
+
+const handleWriteDiaryBack = () => {
+  // 일기 작성 화면에서 뒤로가기: 카테고리 선택 화면으로 돌아가기
   showWriteDiary.value = false;
   showCategorySelector.value = true;
 };
 
-const toggleCategorySelector = () => {
-  if (showWriteDiary.value || showCategorySelector.value || showAnalyzeResult.value) {
-    showWriteDiary.value = false;
-    showCategorySelector.value = false;
-    showAnalyzeResult.value = false;
-  } else {
-    showWriteDiary.value = true;
-  }
+const handleCategorySelect = (categoryId) => {
+  console.log('Selected category ID in SideMenu:', categoryId);
+  selectedCategory.value = Number(categoryId); // Ensure it's a number
+  showCategorySelector.value = false;
+  showWriteDiary.value = true;
+};
+
+const handleWriteGuestbook = () => {
+  showWriteGuestbook.value = true
+  showCategorySelector.value = false
+  showAnalyzeResult.value = false
+  showWriteDiary.value = false
+}
+
+const handleWriteGuestbookBack = () => {
+  showWriteGuestbook.value = false
 }
 
 const handleGuestbook = () => {
@@ -167,11 +286,20 @@ const handleGuestbookBack = () => {
         </template>
         <template v-else-if="showWriteDiary">
           <div class="top-bar">
-            <button class="back-button" @click="toggleCategorySelector">
+            <button class="back-button" @click="handleWriteDiaryBack">
               ←
             </button>
           </div>
-          <WriteDiary @save="handleDiarySave" />
+          <div class="relative-container">
+            <WriteDiary 
+              :categoryId="selectedCategory"
+              @save="handleDiarySave"
+              @loading="val => categoryLoading = val"
+            />
+            <div v-if="categoryLoading" class="loading-overlay">
+              <LoadingAnimation />
+            </div>
+          </div>
         </template>
         <template v-else-if="showCategorySelector">
           <div class="top-bar">
@@ -179,7 +307,7 @@ const handleGuestbookBack = () => {
               ←
             </button>
           </div>
-          <CategorySelector @analyze="handleAnalyze" @loading="val => categoryLoading = val" />
+          <CategorySelector @select="handleCategorySelect" @loading="val => categoryLoading = val" />
         </template>
         <template v-else-if="showAnalyzeResult">
           <AnalyzeResult 
@@ -242,6 +370,12 @@ const handleGuestbookBack = () => {
   position: relative;
   overflow-y: auto;
   height: 100vh;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.side-menu::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .side-menu.category-mode {
@@ -340,5 +474,37 @@ const handleGuestbookBack = () => {
   cursor: pointer;
   padding: 8px;
   margin-right: auto;
+}
+
+.relative-container {
+  position: relative;
+  flex: 1;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-animation {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
