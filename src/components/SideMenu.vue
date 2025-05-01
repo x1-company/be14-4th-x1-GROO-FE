@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
 import { useRouter, useRoute } from 'vue-router'
 
 // Icons
@@ -31,6 +31,27 @@ import GuestbookList from './GuestbookList.vue'
 import GuestBookDetail from './GuestBookDetail.vue'
 import ForestListModal from "./ForestListModal.vue";
 import WithdrawModal from "./WithdrawModal.vue";
+
+const { proxy } = getCurrentInstance();
+
+// '우정의 숲 입장하기' 화면 열기
+const handleForestList = () => {
+  emit("openForestList");
+};
+
+// 더미 데이터 - 실제로는 API 응답으로 받을 데이터
+const dummyAnalysisResult = {
+  emotions: [
+    { label: "평온함", icon: peacefulIcon, percent: 50 },
+    { label: "즐거움", icon: joyIcon, percent: 30 },
+  ],
+  summaryMessage: "평온하고 일상적인 하루에, 즐거움이 묻어나있네요!",
+  pieces: [
+    { value: "tree1", label: "동글 나무", icon: buttonIcon_1 },
+    { value: "tree2", label: "뾰족 나무", icon: buttonIcon_2 },
+    { value: "tree3", label: "나는 나무", icon: buttonIcon_3 },
+  ],
+};
 
 const isMenuOpen = ref(true)
 const showCategorySelector = ref(false)
@@ -106,7 +127,8 @@ const handleAnalyze = (category) => {
 const handlePlace = (selectedPiece) => {
   console.log("Selected piece to place:", selectedPiece);
   showAnalyzeResult.value = false;
-  // 여기에 배치 로직 추가
+  // 이벤트 버스를 통해 이벤트 전달
+  proxy.emitter.emit('place-item', selectedPiece);
 };
 
 const handleToStorage = () => {
