@@ -32,7 +32,6 @@ import { useRouter, useRoute } from 'vue-router'
 import ConfirmModal from './ConfirmModal.vue'
 import GuestBookDetail from './GuestBookDetail.vue'
 import ForestListModal from "./ForestListModal.vue";
-import WithdrawModal from "./WithdrawModal.vue";
 import MyItemView from './MyItemView.vue'
 
 const { proxy } = getCurrentInstance();
