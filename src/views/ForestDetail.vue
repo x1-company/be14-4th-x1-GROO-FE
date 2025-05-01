@@ -1,9 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+
+const props = defineProps({
+  isSidebarOpen: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const containerWidth = computed(() => {
+  return props.isSidebarOpen ? '65%' : '80%'
+})
+
+const itemSize = computed(() => {
+  return props.isSidebarOpen ? '3vw' : '4.5vw'
+})
+
+const backgroundContainer = ref(null)
+
+watch(() => props.isSidebarOpen, (newValue) => {
+  if (newValue) {
+    itemSize.value = '3vw'
+  } else {
+    itemSize.value = '4.5vw'
+  }
+}, { immediate: true })
 
 const currentView = ref('background')
 const forestData = ref(null)
@@ -58,21 +83,22 @@ onMounted(async () => {
 })
 
 const togglePublic = async () => {
-  if (!(forestData.value && forestData.value.length)) return;
+  if (!forestData.value) return;
   const forestId = route.params.forestId;
   const token = localStorage.getItem('accessToken');
-  console.log('token:', token);
+
   try {
-    const res = await fetch(`http://localhost:8080/public/${forestId}`, {
+    const res = await fetch(`http://localhost:8080/emotion-forest/public/${forestId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
+
     const text = await res.text();
-    console.log('PATCH status:', res.status, 'body:', text);
     if (!res.ok) throw new Error('공개여부 변경 실패');
-    forestData.value[0].isPublic = !forestData.value[0].isPublic;
+
+    forestData.value.isPublic = !forestData.value.isPublic;
   } catch (err) {
     alert('공개여부 변경에 실패했습니다.');
     console.error(err);
@@ -96,16 +122,21 @@ const togglePublic = async () => {
         />
         <div v-if="showTooltip" class="tooltip">
           <div class="tooltip-title">공개 범위 설정</div>
-            <div class="tooltip-status" 
-              :class="forestData && forestData.length && forestData[0].isPublic ? 'public' : 'private'">
-              {{ forestData && forestData.length && forestData[0].isPublic ? '공개중' : '비공개' }}
-            </div>
+          <div class="tooltip-status"
+            :class="forestData && forestData.isPublic ? 'public' : 'private'">
+            {{ forestData && forestData.isPublic ? '공개중' : '비공개' }}
           </div>
         </div>
-      <!-- 정원 -->
+      </div>
+
       <div v-if="forestData && forestData.length" class="forest-container">
-        <!-- 정중앙 텍스트 -->
-        <div class="background-container" :style="{ backgroundImage: `url(${forestData[0].backgroundImageUrl})` }">
+        <div class="background-container" 
+          ref="backgroundContainer"
+          :style="{ 
+            backgroundImage: `url(${forestData[0].backgroundImageUrl})`,
+            width: containerWidth
+          }"
+        >
           <div class="forest-title">
             <h1>{{ forestData[0].name }}</h1>
           </div>
@@ -114,11 +145,16 @@ const togglePublic = async () => {
             :key="item.placementId"
             class="item"
             :style="{
-              left: `${item.placementPositionX * 100}px`,
-              top: `${item.placementPositionY * 100}px`
+              left: `${item.placementPositionX}%`,
+              top: `${item.placementPositionY}%`
             }"
           >
-            <img :src="item.itemImageUrl" :alt="item.itemName" class="item-image" />
+            <img 
+              :src="item.itemImageUrl" 
+              :alt="item.itemName" 
+              class="item-image" 
+              :style="{ width: itemSize, height: itemSize }"
+            />
           </div>
         </div>
       </div>
@@ -151,10 +187,10 @@ const togglePublic = async () => {
   width: 100%;
   max-width: 1200px;
   position: relative;
+  margin: 0 auto;
 }
 
 .background-container {
-  width: 80%;
   height: 600px;
   background-size: contain;
   background-repeat: no-repeat;
@@ -169,14 +205,9 @@ const togglePublic = async () => {
 }
 
 .item-image {
-  width: 100px;
-  height: 100px;
   object-fit: contain;
   transition: transform 0.3s ease;
-}
-
-.item-image:hover {
-  transform: scale(1.1);
+  will-change: transform;
 }
 
 .icons {
@@ -207,12 +238,12 @@ const togglePublic = async () => {
   color: white;
   font-size: 36px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-  margin-top: 0px;
+  margin-top: 15px;
 }
 
 .tooltip {
   position: absolute;
-  bottom: 50px;
+  bottom: 45px;
   left: 87%;
   transform: translateX(-50%);
   background: rgba(240, 248, 240, 0.95);
@@ -228,18 +259,17 @@ const togglePublic = async () => {
   pointer-events: none;
 }
 
-/* 꼬리(arrow) 추가 */
 .tooltip::after {
   content: '';
   position: absolute;
-  left: 50%;
-  bottom: -16px; /* 꼬리 길이만큼 조정 */
+  left: 50.5%;
+  bottom: -12px;
   transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
-  border-top: 16px solid rgba(240, 248, 240, 0.95); /* 툴팁 배경색과 동일 */
+  border-top: 16px solid rgba(240, 248, 240, 0.95);
 }
 
 .tooltip-title {
@@ -256,10 +286,9 @@ const togglePublic = async () => {
   display: inline-block;
 }
 .tooltip-status.public {
-  background: rgba(11, 87, 138, 0.33); /* #0B578A 44% */
+  background: rgba(11, 87, 138, 0.33);
 }
-
 .tooltip-status.private {
-  background: rgba(255, 10, 38, 0.33); /* #FF0A26 44% */
+  background: rgba(255, 10, 38, 0.33);
 }
 </style>
