@@ -169,7 +169,7 @@ const handleLogin = async (e) => {
 }
 
 .logo {
-  width: 80px;
+  width: 150px;
   height: auto;
   margin-bottom: 20px;
 }
