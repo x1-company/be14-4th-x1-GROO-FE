@@ -23,22 +23,50 @@ import LoadingAnimation from './LoadingAnimation.vue'
 import GuestbookList from './GuestbookList.vue'
 import GuestBookDetail from './GuestBookDetail.vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ref, computed, onMounted, watch } from "vue";
+import buttonIcon_1 from "../icons/diarywrite_icon.png";
+import buttonIcon_2 from "../icons/diaryview_icon.png";
+import buttonIcon_3 from "../icons/forestmate_icon.png";
+import buttonIcon_4 from "../icons/forestview_icon.png";
+import buttonIcon_5 from "../icons/myitemview_icon.png";
+import buttonIcon_6 from "../icons/mailbox_icon.png";
+import logoutIcon from "../icons/logout_icon.png";
+import joyIcon from "../icons/joy_icon.png";
+import sadIcon from "../icons/sad_icon.png";
+import peacefulIcon from "../icons/peaceful_icon.png";
+import annoyIcon from "../icons/annoy_icon.png";
+import anxiousIcon from "../icons/anxious_icon.png";
+import melancholyIcon from "../icons/melancholy_icon.png";
+import tiredIcon from "../icons/tired_icon.png";
+import romanceIcon from "../icons/romance_icon.png";
+import CategorySelector from "./CategorySelector.vue";
+import AnalyzeResult from "./AnalyzeResult.vue";
+import WriteDiary from "./WriteDiary.vue";
+import WriteGuestbook from "./WriteGuestbook.vue";
+import LoadingAnimation from "./LoadingAnimation.vue";
+import GuestbookList from "./GuestbookList.vue";
+import ForestListModal from "./ForestListModal.vue";
+import WithdrawModal from "./WithdrawModal.vue";
+import { useRouter, useRoute } from "vue-router";
 
-
+// '우정의 숲 입장하기' 화면 열기
+const handleForestList = () => {
+  emit("openForestList");
+};
 
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
 const dummyAnalysisResult = {
   emotions: [
-    { label: '평온함', icon: peacefulIcon, percent: 50 },
-    { label: '즐거움', icon: joyIcon, percent: 30 },
+    { label: "평온함", icon: peacefulIcon, percent: 50 },
+    { label: "즐거움", icon: joyIcon, percent: 30 },
   ],
   summaryMessage: "평온하고 일상적인 하루에, 즐거움이 묻어나있네요!",
   pieces: [
-    { value: 'tree1', label: '동글 나무', icon: buttonIcon_1 },
-    { value: 'tree2', label: '뾰족 나무', icon: buttonIcon_2 },
-    { value: 'tree3', label: '나는 나무', icon: buttonIcon_3 },
-  ]
-}
+    { value: "tree1", label: "동글 나무", icon: buttonIcon_1 },
+    { value: "tree2", label: "뾰족 나무", icon: buttonIcon_2 },
+    { value: "tree3", label: "나는 나무", icon: buttonIcon_3 },
+  ],
+};
 
 const isMenuOpen = ref(true)
 const showCategorySelector = ref(false)
@@ -54,17 +82,36 @@ const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
   return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value || showGuestbookDetail.value ? 576 : 360
 })
+const isMenuOpen = ref(true);
+const showCategorySelector = ref(false);
+const showAnalyzeResult = ref(false);
+const showWriteDiary = ref(false);
+const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
+const categoryLoading = ref(false);
+const selectedCategory = ref(null);
+const showForestListModal = ref(false);
+const emit = defineEmits(["openForestList"]);
+
+const sidebarWidth = computed(() => {
+  if (!isMenuOpen.value) return 60;
+  return showCategorySelector.value ||
+    showAnalyzeResult.value ||
+    showWriteDiary.value ||
+    showGuestbookList.value
+    ? 576
+    : 360;
+});
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+  isMenuOpen.value = !isMenuOpen.value;
+};
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 const currentForestId = computed(() => {
   // forest-detail/:forestId 경로에서 forestId 추출
-  if (route.name === 'ForestDetail') {
+  if (route.name === "ForestDetail") {
     return route.params.forestId;
   }
   return null;
@@ -73,7 +120,7 @@ const currentForestId = computed(() => {
 // forestId를 localStorage에 저장
 const updateForestId = () => {
   if (currentForestId.value) {
-    localStorage.setItem('forestId', currentForestId.value);
+    localStorage.setItem("forestId", currentForestId.value);
   }
 };
 
@@ -83,97 +130,103 @@ onMounted(() => {
 });
 
 // route가 변경될 때마다 forestId 업데이트
-watch(() => route.params.forestId, () => {
-  updateForestId();
-});
+watch(
+  () => route.params.forestId,
+  () => {
+    updateForestId();
+  }
+);
 
 // 닉네임 가져오기
-const nickname = localStorage.getItem('userNickname') || '여행자'
+const nickname = localStorage.getItem("userNickname") || "여행자";
 
 const logout = () => {
   // 로컬 스토리지 비우기
-  localStorage.removeItem('accessToken')
-  localStorage.removeItem('userNickname')
-  localStorage.removeItem('myRecentforestId')
-  router.push('/login')
-}
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("userNickname");
+  localStorage.removeItem("myRecentforestId");
+  router.push("/login");
+};
 
 const handleAnalyze = (category) => {
-  console.log("Selected category:", category)
+  console.log("Selected category:", category);
   // API 요청 시 카테고리 ID를 함께 전송
   setTimeout(() => {
-    showAnalyzeResult.value = true
-  }, 2000)
-}
+    showAnalyzeResult.value = true;
+  }, 2000);
+};
 
 const handlePlace = (selectedPiece) => {
-  console.log("Selected piece to place:", selectedPiece)
-  showAnalyzeResult.value = false
+  console.log("Selected piece to place:", selectedPiece);
+  showAnalyzeResult.value = false;
   // 여기에 배치 로직 추가
-}
+};
 
 const handleToStorage = () => {
-  console.log("Moving to storage")
-  showAnalyzeResult.value = false
-  router.push('/myitemview')
-}
+  console.log("Moving to storage");
+  showAnalyzeResult.value = false;
+  router.push("/myitemview");
+};
 
 // 감정 아이콘 매핑 객체
 const emotionIcons = {
-  '즐거움': joyIcon,
-  '우울함': melancholyIcon,
-  '평온함': peacefulIcon,
-  '짜증': annoyIcon,
-  '불안함': anxiousIcon,
-  '슬픔': sadIcon,
-  '지침': tiredIcon,
-  '설렘': romanceIcon
-}
+  즐거움: joyIcon,
+  우울함: melancholyIcon,
+  평온함: peacefulIcon,
+  짜증: annoyIcon,
+  불안함: anxiousIcon,
+  슬픔: sadIcon,
+  지침: tiredIcon,
+  설렘: romanceIcon,
+};
 
 const handleDiarySave = (analysisResult) => {
-  console.log('Diary save result:', analysisResult);
+  console.log("Diary save result:", analysisResult);
   if (!analysisResult || !analysisResult.topEmotions) {
-    console.error('유효하지 않은 분석 결과입니다:', analysisResult);
-    alert('감정 분석에 실패했습니다. 다시 시도해주세요.');
+    console.error("유효하지 않은 분석 결과입니다:", analysisResult);
+    alert("감정 분석에 실패했습니다. 다시 시도해주세요.");
     return;
   }
 
   showWriteDiary.value = false;
-  
+
   // 감정 레이블 매핑
   const emotionMapping = {
-    '불안': '불안함',
-    '짜증': '짜증',
-    '우울': '우울함',
-    '슬픔': '슬픔',
-    '지침': '지침',
-    '설렘': '설렘',
-    '즐거움': '즐거움',
-    '평온': '평온함'
+    불안: "불안함",
+    짜증: "짜증",
+    우울: "우울함",
+    슬픔: "슬픔",
+    지침: "지침",
+    설렘: "설렘",
+    즐거움: "즐거움",
+    평온: "평온함",
   };
 
   // 분석 결과 데이터 설정
-  const emotions = Object.entries(analysisResult.topEmotions).map(([label, percent]) => ({
-    label: emotionMapping[label] || label,
-    icon: emotionIcons[emotionMapping[label] || label],
-    percent
-  }));
+  const emotions = Object.entries(analysisResult.topEmotions).map(
+    ([label, percent]) => ({
+      label: emotionMapping[label] || label,
+      icon: emotionIcons[emotionMapping[label] || label],
+      percent,
+    })
+  );
 
-  const mainEmotion = emotionMapping[analysisResult.mainEmotion] || analysisResult.mainEmotion;
+  const mainEmotion =
+    emotionMapping[analysisResult.mainEmotion] || analysisResult.mainEmotion;
 
   const analysisData = {
     emotions,
     summaryMessage: `${mainEmotion}이(가) 가장 두드러지는 하루였네요!`,
-    pieces: analysisResult.emotionItems.map(item => ({
+    pieces: analysisResult.emotionItems.map((item) => ({
       value: item.id.toString(),
       label: item.name,
-      icon: item.imageUrl
-    }))
+      icon: item.imageUrl,
+    })),
   };
 
   // 분석 결과 데이터 업데이트
   Object.assign(dummyAnalysisResult, analysisData);
-  
+
   // 분석 결과 화면으로 전환
   showAnalyzeResult.value = true;
 };
@@ -189,7 +242,7 @@ const toggleCategorySelector = () => {
     // 메인 메뉴에서 감정일기 작성하기 클릭: 카테고리 선택 화면 열기
     showCategorySelector.value = true;
   }
-}
+};
 
 const handleWriteDiaryBack = () => {
   // 일기 작성 화면에서 뒤로가기: 카테고리 선택 화면으로 돌아가기
@@ -198,22 +251,22 @@ const handleWriteDiaryBack = () => {
 };
 
 const handleCategorySelect = (categoryId) => {
-  console.log('Selected category ID in SideMenu:', categoryId);
+  console.log("Selected category ID in SideMenu:", categoryId);
   selectedCategory.value = Number(categoryId); // Ensure it's a number
   showCategorySelector.value = false;
   showWriteDiary.value = true;
 };
 
 const handleWriteGuestbook = () => {
-  showWriteGuestbook.value = true
-  showCategorySelector.value = false
-  showAnalyzeResult.value = false
-  showWriteDiary.value = false
-}
+  showWriteGuestbook.value = true;
+  showCategorySelector.value = false;
+  showAnalyzeResult.value = false;
+  showWriteDiary.value = false;
+};
 
 const handleWriteGuestbookBack = () => {
-  showWriteGuestbook.value = false
-}
+  showWriteGuestbook.value = false;
+};
 
 const handleGuestbook = () => {
   showGuestbookList.value = true;
@@ -243,9 +296,13 @@ const handleGuestbookDetailBack = () => {
   <div class="side-wrapper">
     <div
       class="side-menu"
-      :class="{ 
-        open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showGuestbookList || showGuestbookDetail
+      :class="{
+        open: isMenuOpen,
+        'category-mode':
+          showCategorySelector ||
+          showAnalyzeResult ||
+          showWriteDiary ||
+          showGuestbookList,
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
@@ -273,13 +330,17 @@ const handleGuestbookDetailBack = () => {
               </span>
               감정일기 다시보기
             </router-link>
-            <router-link to="/forestmate" class="menu-btn">
+            <button class="menu-btn" @click="handleForestList">
               <span class="icon">
                 <img :src="buttonIcon_3" class="btn-img" />
               </span>
               우정의 숲 입장하기
-            </router-link>
-            <router-link to="/forestview" class="menu-btn">
+            </button>
+            <router-link
+              to="/forestview"
+              class="menu-btn"
+              @click="handleForestList"
+            >
               <span class="icon">
                 <img :src="buttonIcon_4" class="btn-img" />
               </span>
@@ -297,6 +358,11 @@ const handleGuestbookDetailBack = () => {
               </span>
               방명록 확인하기
             </button>
+            <ForestListModal
+              v-if="showForestListModal"
+              :isOpen="showForestListModal"
+              @close="showForestListModal = false"
+            />
           </div>
         </template>
         <template v-else-if="showGuestbookDetail">
@@ -318,10 +384,10 @@ const handleGuestbookDetailBack = () => {
             </button>
           </div>
           <div class="relative-container">
-            <WriteDiary 
+            <WriteDiary
               :categoryId="selectedCategory"
               @save="handleDiarySave"
-              @loading="val => categoryLoading = val"
+              @loading="(val) => (categoryLoading = val)"
             />
             <div v-if="categoryLoading" class="loading-overlay">
               <LoadingAnimation />
@@ -330,14 +396,21 @@ const handleGuestbookDetailBack = () => {
         </template>
         <template v-else-if="showCategorySelector">
           <div class="top-bar">
-            <button v-if="!categoryLoading" class="back-button" @click="toggleCategorySelector">
+            <button
+              v-if="!categoryLoading"
+              class="back-button"
+              @click="toggleCategorySelector"
+            >
               ←
             </button>
           </div>
-          <CategorySelector @select="handleCategorySelect" @loading="val => categoryLoading = val" />
+          <CategorySelector
+            @select="handleCategorySelect"
+            @loading="(val) => (categoryLoading = val)"
+          />
         </template>
         <template v-else-if="showAnalyzeResult">
-          <AnalyzeResult 
+          <AnalyzeResult
             v-bind="dummyAnalysisResult"
             @place="handlePlace"
             @toStorage="handleToStorage"
@@ -345,10 +418,7 @@ const handleGuestbookDetailBack = () => {
         </template>
       </div>
     </div>
-    <button
-      class="toggle-button"
-      @click="toggleMenu"
-    >
+    <button class="toggle-button" @click="toggleMenu">
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
@@ -528,7 +598,11 @@ const handleGuestbookDetailBack = () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

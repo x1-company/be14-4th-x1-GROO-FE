@@ -8,7 +8,7 @@ import MyItemView from "../components/MyItemView.vue";
 import Guestbook from "../components/GuestBook.vue";
 import Login from "@/components/Login.vue";
 import Signup from "@/components/Signup.vue";
-import ForestDetail from "@/views/ForestDetail.vue"; 
+import ForestDetail from "@/views/ForestDetail.vue";
 import BackgroundImage2 from "@/components/BackgroundImage2.vue";
 import InviteCodeView from "../views/InviteCodeView.vue";
 
@@ -30,7 +30,7 @@ const router = createRouter({
           component: ViewDiary,
         },
         {
-          path: "forestmate",
+          path: "forestmate/:id",
           name: "ForestMate",
           component: ForestMate,
         },
@@ -50,7 +50,7 @@ const router = createRouter({
           component: Guestbook,
         },
         {
-          path: "forest-detail/:forestId", 
+          path: "forest-detail/:forestId",
           name: "ForestDetail",
           component: ForestDetail,
         },
@@ -82,7 +82,7 @@ router.beforeEach((to, _, next) => {
   // 루트 경로("/")로 접근 시 토큰 여부에 따라 리다이렉트
   if (to.path === "/") {
     if (token && forestId) {
-      next({ name: "ForestDetail", params: { forestId: forestId} }); // 기본 ForestDetail로 이동
+      next({ name: "ForestDetail", params: { forestId: forestId } }); // 기본 ForestDetail로 이동
     } else {
       alert("로그인이 필요합니다!"); // 로그인 필요 알림
       next({ name: "Login" }); // 로그인 페이지로 이동
