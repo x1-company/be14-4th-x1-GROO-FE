@@ -161,6 +161,9 @@ const saveDiary = async () => {
     }
 
     console.log('API Response:', response);
+    localStorage.setItem('weather', response.weather);
+    const test = localStorage.getItem('userNickname')
+    localStorage.setItem(test, localStorage.getItem('userNickname'));
     localStorage.removeItem('diaryDraft');
     emit('save', response);
   } catch (error) {
