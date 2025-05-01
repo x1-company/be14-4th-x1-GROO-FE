@@ -3,9 +3,14 @@ import { ref, onMounted } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import GuestBookList from "../components/GuestBookList.vue";
+import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const showGuestBook = ref(false);
+const showGuestBookDetail = ref(false);
+const selectedGuestBookId = ref(null);
 
 const bgRef = ref(null); // background 요소 참조
 const containerRef = ref(null); // placement-container 요소 참조
@@ -86,12 +91,34 @@ const togglePublic = async () => {
     console.error(err);
   }
 };
+
+const handleShowDetail = (id) => {
+  console.log('Showing detail for id:', id); // 디버깅용
+  selectedGuestBookId.value = id;
+  showGuestBookDetail.value = true;
+};
+
+const handleDetailBack = () => {
+  console.log('Detail back clicked'); // 디버깅용
+  showGuestBookDetail.value = false;
+};
+
+const handleGuestBookClick = () => {
+  console.log('Guestbook clicked'); // 디버깅용
+  showGuestBook.value = true;
+};
+
+const handleGuestBookBack = () => {
+  console.log('Guestbook back clicked'); // 디버깅용
+  showGuestBook.value = false;
+  showGuestBookDetail.value = false;
+};
 </script>
 
 <template>
-  <div>
-    <div class="icons">
-      <img :src="buttonIcon_6" class="btn-img" />
+  <div class="forest-detail">
+    <div v-if="!showGuestBook" class="icons">
+      <img :src="buttonIcon_6" class="btn-img" @click="handleGuestBookClick" />
       <img :src="buttonIcon_7" class="btn-img" />
       <img
         :src="buttonIcon_8"
@@ -109,31 +136,46 @@ const togglePublic = async () => {
         </div>
       </div>
     </div>
-  </div>
 
-  <div ref="containerRef" class="placement-container">
-    <div class="placement-inner-container">
-      <img
-        v-if="forestData && forestData.length"
-        ref="bgRef"
-        class="background"
-        :src="forestData[0].backgroundImageUrl"
-        alt="Green Background"
-      />
-      <img
-        v-if="forestData && forestData.length"
-        v-for="item in forestData[0].placementList"
-        :key="item.placementId"
-        class="item"
-        :src="item.itemImageUrl" 
-        :alt="item.itemName"
-        :style="{
-          left: `${item.placementPositionX}%`,
-          top: `${item.placementPositionY}%`,
-          width: `${itemWidth}px`
-        }"
-        draggable="false"
-      />
+    <template v-if="showGuestBook">
+      <template v-if="showGuestBookDetail">
+        <GuestBookDetail 
+          :id="selectedGuestBookId"
+          @back="handleDetailBack"
+        />
+      </template>
+      <template v-else>
+        <GuestBookList 
+          @back="handleGuestBookBack"
+          @show-detail="handleShowDetail"
+        />
+      </template>
+    </template>
+
+    <div v-else ref="containerRef" class="placement-container">
+      <div class="placement-inner-container">
+        <img
+          v-if="forestData && forestData.length"
+          ref="bgRef"
+          class="background"
+          :src="forestData[0].backgroundImageUrl"
+          alt="Green Background"
+        />
+        <img
+          v-if="forestData && forestData.length"
+          v-for="item in forestData[0].placementList"
+          :key="item.placementId"
+          class="item"
+          :src="item.itemImageUrl" 
+          :alt="item.itemName"
+          :style="{
+            left: `${item.placementPositionX}%`,
+            top: `${item.placementPositionY}%`,
+            width: `${itemWidth}px`
+          }"
+          draggable="false"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -233,5 +275,22 @@ const togglePublic = async () => {
 
 .tooltip-status.private {
   background: rgba(255, 10, 38, 0.33);
+}
+
+.forest-detail {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.guestbook-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 100;
 }
 </style>

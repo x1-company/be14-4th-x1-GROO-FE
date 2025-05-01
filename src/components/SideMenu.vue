@@ -21,6 +21,7 @@ import WriteDiary from './WriteDiary.vue'
 import WriteGuestbook from './WriteGuestbook.vue'
 import LoadingAnimation from './LoadingAnimation.vue'
 import GuestbookList from './GuestbookList.vue'
+import GuestBookDetail from './GuestBookDetail.vue'
 import { useRouter, useRoute } from 'vue-router'
 
 
@@ -43,13 +44,15 @@ const isMenuOpen = ref(true)
 const showCategorySelector = ref(false)
 const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
-const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
+const showGuestbookList = ref(false)
+const showGuestbookDetail = ref(false)
+const selectedGuestbookId = ref(null)
 const categoryLoading = ref(false)
 const selectedCategory = ref(null)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value || showGuestbookDetail.value ? 576 : 360
 })
 
 const toggleMenu = () => {
@@ -214,6 +217,7 @@ const handleWriteGuestbookBack = () => {
 
 const handleGuestbook = () => {
   showGuestbookList.value = true;
+  showGuestbookDetail.value = false;
   showCategorySelector.value = false;
   showAnalyzeResult.value = false;
   showWriteDiary.value = false;
@@ -221,6 +225,17 @@ const handleGuestbook = () => {
 
 const handleGuestbookBack = () => {
   showGuestbookList.value = false;
+  showGuestbookDetail.value = false;
+};
+
+const handleGuestbookDetail = (id) => {
+  console.log('Showing guestbook detail:', id);
+  selectedGuestbookId.value = id;
+  showGuestbookDetail.value = true;
+};
+
+const handleGuestbookDetailBack = () => {
+  showGuestbookDetail.value = false;
 };
 </script>
 
@@ -230,12 +245,12 @@ const handleGuestbookBack = () => {
       class="side-menu"
       :class="{ 
         open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showGuestbookList
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showGuestbookList || showGuestbookDetail
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showGuestbookList">
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showGuestbookList && !showGuestbookDetail">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
@@ -284,6 +299,18 @@ const handleGuestbookBack = () => {
             </button>
           </div>
         </template>
+        <template v-else-if="showGuestbookDetail">
+          <GuestBookDetail
+            :id="selectedGuestbookId"
+            @back="handleGuestbookDetailBack"
+          />
+        </template>
+        <template v-else-if="showGuestbookList">
+          <GuestbookList
+            @back="handleGuestbookBack"
+            @show-detail="handleGuestbookDetail"
+          />
+        </template>
         <template v-else-if="showWriteDiary">
           <div class="top-bar">
             <button class="back-button" @click="handleWriteDiaryBack">
@@ -315,9 +342,6 @@ const handleGuestbookBack = () => {
             @place="handlePlace"
             @toStorage="handleToStorage"
           />
-        </template>
-        <template v-else-if="showGuestbookList">
-          <GuestbookList @back="handleGuestbookBack" />
         </template>
       </div>
     </div>
