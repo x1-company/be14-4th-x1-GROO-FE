@@ -2,7 +2,9 @@
 <template>
   <div class="guestbook-list">
     <div class="top-bar">
-      <button class="back-button" @click="$emit('back')">←</button>
+      <button class="back-button" @click="$emit('back')">
+        <img :src="previousIcon" alt="Back" />
+      </button>
       <button class="write-button" @click="showWriteForm = true">
         <img :src="editIcon" />
       </button>
@@ -12,11 +14,21 @@
       @back="showWriteForm = false"
       @submit="handleSubmit"
     />
+    <GuestbookDetail
+      v-else-if="selectedGuestbookId"
+      :guestbook-id="selectedGuestbookId"
+      @back="selectedGuestbookId = null"
+    />
     <div v-else>
       <div v-if="isLoading" class="loading">로딩 중...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
       <ul v-else>
-        <li v-for="entry in guestbookEntries" :key="entry.id" class="guestbook-entry">
+        <li 
+          v-for="entry in guestbookEntries" 
+          :key="entry.id" 
+          class="guestbook-entry"
+          @click="selectedGuestbookId = entry.id"
+        >
           <div>
             💌 {{ formatDate(entry.createdAt) }}의 편지
           </div>
@@ -29,12 +41,16 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import editIcon from '../icons/edit_icon.png'
+import previousIcon from '../icons/previous_icon.png'
 import WriteGuestbook from './WriteGuestbook.vue'
+import GuestbookDetail from './GuestbookDetail.vue'
 
+const emit = defineEmits(['back'])
 const showWriteForm = ref(false);
-const guestbookEntries = ref([]); // 방명록 데이터를 저장할 배열
-const isLoading = ref(true); // 로딩 상태
-const error = ref(null); // 에러 메시지
+const guestbookEntries = ref([]);
+const isLoading = ref(true);
+const error = ref(null);
+const selectedGuestbookId = ref(null);
 
 const fetchGuestbookEntries = async () => {
   const token = localStorage.getItem("accessToken");
@@ -46,7 +62,7 @@ const fetchGuestbookEntries = async () => {
 
   try {
     // forestId 필요 일단 1로 고정
-    const response = await fetch("http://localhost:8080/mailbox-lists/1", {
+    const response = await fetch("http://localhost:8080/mailbox-lists/2", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -88,6 +104,7 @@ onMounted(() => {
 .guestbook-list {
   padding: 20px;
   color: #fff;
+  height: 100%;
 }
 
 .top-bar {
@@ -100,20 +117,15 @@ onMounted(() => {
   background: none;
   border: none;
   color: #fff;
-  font-size: 24px;
   cursor: pointer;
-}
-
-.loading,
-.error {
-  text-align: center;
-  font-size: 18px;
-}
-
-ul {
-  list-style: none;
+  display: flex;
+  align-items: center;
   padding: 0;
-  margin: 0;
+}
+
+.back-button img {
+  width: 24px;
+  height: 24px;
 }
 
 .guestbook-entry {
@@ -127,6 +139,33 @@ ul {
   min-height: 60px;
   text-align: center;
   font-size: 25px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.guestbook-entry:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.guestbook-entry::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.guestbook-entry:hover::before {
+  opacity: 1;
 }
 
 .write-button {
@@ -138,5 +177,17 @@ ul {
 .write-button img {
   width: 24px;
   height: 24px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 18px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 </style>

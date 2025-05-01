@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import GuestbookList from '../components/GuestbookList.vue'
+import GuestbookDetail from '../components/GuestbookDetail.vue'
 
 const props = defineProps({
   isSidebarOpen: {
@@ -33,6 +35,9 @@ watch(() => props.isSidebarOpen, (newValue) => {
 const currentView = ref('background')
 const forestData = ref(null)
 const showTooltip = ref(false)
+const showGuestbook = ref(false)
+const showGuestbookList = ref(false)
+const selectedGuestbookId = ref(null)
 
 const route = useRoute()
 const router = useRouter()
@@ -104,6 +109,27 @@ const togglePublic = async () => {
     console.error(err);
   }
 }
+
+const handleGuestbookBack = () => {
+  if (showGuestbook.value) {
+    showGuestbook.value = false
+    showGuestbookList.value = true
+  } else {
+    showGuestbookList.value = false
+  }
+}
+
+const handleGuestbookClick = () => {
+  props.isSidebarOpen = false
+  showGuestbookList.value = true
+  showGuestbook.value = false
+}
+
+const handleGuestbookSelect = (id) => {
+  selectedGuestbookId.value = id
+  showGuestbook.value = true
+  showGuestbookList.value = false
+}
 </script>
 
 <template>
@@ -111,7 +137,12 @@ const togglePublic = async () => {
     <div class="main-area1">
       <div class="icons">
         <img :src="buttonIcon_6" class="btn-img" />
-        <img :src="buttonIcon_7" class="btn-img" />
+        <img 
+          :src="buttonIcon_7" 
+          class="btn-img" 
+          @click="handleGuestbookClick"
+          style="cursor:pointer;"
+        />
         <img
           :src="buttonIcon_8"
           class="btn-img"
@@ -129,7 +160,17 @@ const togglePublic = async () => {
         </div>
       </div>
 
-      <div v-if="forestData && forestData.length" class="forest-container">
+      <GuestbookDetail
+        v-if="showGuestbook"
+        :guestbook-id="selectedGuestbookId"
+        @back="handleGuestbookBack"
+      />
+      <GuestbookList
+        v-else-if="showGuestbookList"
+        @back="handleGuestbookBack"
+        @select="handleGuestbookSelect"
+      />
+      <div v-else-if="forestData && forestData.length" class="forest-container">
         <div class="background-container" 
           ref="backgroundContainer"
           :style="{ 

@@ -9,20 +9,35 @@
         v-model="content"
         placeholder="방명록을 작성해주세요..."
         class="guestbook-textarea"
+        :maxlength="maxLength"
       ></textarea>
-      <button class="submit-button" @click="handleSubmit">작성하기</button>
+      <button 
+        class="submit-button" 
+        @click="handleSubmit"
+        :disabled="!content.trim() || content.length > maxLength"
+      >
+        작성하기
+      </button>
+    </div>
+    <div class="char-counter" :class="{ 'near-limit': isNearLimit }">
+      {{ content.length }}/{{ maxLength }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
+const maxLength = 500
 const content = ref('')
 const emit = defineEmits(['back', 'submit'])
 
+const isNearLimit = computed(() => {
+  return content.value.length > maxLength * 0.9
+})
+
 const handleSubmit = async () => {
-  if (content.value.trim()) {
+  if (content.value.trim() && content.value.length <= maxLength) {
     try {
       const response = await fetch('http://localhost:8080/emotion-forest/mailbox', {
         method: 'POST',
@@ -30,9 +45,8 @@ const handleSubmit = async () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         },
-        // forestId 가져오는 로직 필요
         body: JSON.stringify({
-          forestId: 1,
+          forestId: 2,
           content: content.value
         })
       });
@@ -58,6 +72,7 @@ const handleSubmit = async () => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .title {
@@ -93,6 +108,24 @@ const handleSubmit = async () => {
   color: rgba(58, 90, 64, 0.6);
 }
 
+.char-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(58, 90, 64, 0.8);
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.char-counter.near-limit {
+  color: #d32f2f;
+  background: rgba(255, 255, 255, 0.8);
+}
+
 .submit-button {
   padding: 14px 0;
   background: rgba(255, 255, 255, 0.35);
@@ -102,11 +135,16 @@ const handleSubmit = async () => {
   font-size: 18px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.55);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .back-button {
