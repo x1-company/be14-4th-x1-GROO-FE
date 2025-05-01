@@ -10,7 +10,6 @@ import previousIcon from "../icons/previous_icon2.png";
 import { useRouter, useRoute } from "vue-router";
 import InviteLinkModal from "./InviteLinkModal.vue";
 import ForestListModal from "./ForestListModal.vue";
-import WithdrawModal from "./WithdrawModal.vue";
 import DiaryCalendar from './DiaryCalendar.vue';
 import DiaryDetail from './DiaryDetail.vue';
 import MyItemView from './MyItemView.vue';
@@ -30,11 +29,10 @@ const sidebarWidth = computed(() => {
 });
 
 const showInviteModal = ref(false);
-const showWithdrawModal = ref(false);
 const inviteLink = ref("");
 const router = useRouter();
 const showForestListModal = ref(false);
-const emit = defineEmits(["openShare", "openForestList"]);
+const emit = defineEmits(["openShare", "openForestList", "openWithdraw"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -59,7 +57,7 @@ const handleForestList = () => {
 };
 
 const handleWithdraw = () => {
-  showWithdrawModal.value = true;
+  emit("openWithdraw");
 };
 
 const openDiaryCalendar = () => {
@@ -170,11 +168,6 @@ const closeMyItems = () => {
             v-if="showForestListModal"
             :isOpen="showForestListModal"
             @close="showForestListModal = false"
-          />
-          <WithdrawModal
-            v-if="showWithdrawModal"
-            :isOpen="showWithdrawModal"
-            @close="showWithdrawModal = false"
           />
         </div>
       </div>

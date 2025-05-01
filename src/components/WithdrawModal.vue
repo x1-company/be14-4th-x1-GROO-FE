@@ -55,7 +55,8 @@ const handleWithdraw = async () => {
 
     if (response.ok) {
       alert("우정의 숲에서 탈퇴되었습니다.");
-      // localStorage.removeItem("forestId"); // 탈퇴 후 forestId 제거
+      // 내 개인숲 id를 localStorage에 저장
+      localStorage.setItem("forestId", "1");
       router.push("/");
     } else {
       const errorData = await response.json().catch(() => ({}));

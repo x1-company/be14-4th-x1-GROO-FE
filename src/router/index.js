@@ -11,6 +11,7 @@ import Signup from "@/components/Signup.vue";
 import ForestDetail from "@/views/ForestDetail.vue";
 import BackgroundImage2 from "@/components/BackgroundImage2.vue";
 import InviteCodeView from "../views/InviteCodeView.vue";
+import LandingPage from "@/views/LandingPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,11 +40,11 @@ const router = createRouter({
           name: "ForestView",
           component: ForestView,
         },
-        // {
-        //   path: "myitemview",
-        //   name: "MyItemView",
-        //   component: MyItemView,
-        // },
+        {
+          path: "myitemview",
+          name: "MyItemView",
+          component: MyItemView,
+        },
         {
           path: "guestbook",
           name: "GuestBook",
@@ -71,6 +72,11 @@ const router = createRouter({
       name: "InviteCode",
       component: InviteCodeView,
     },
+    {
+      path: "/landing",
+      name: "LandingPage",
+      component: LandingPage,
+    }
   ],
 });
 
@@ -84,8 +90,9 @@ router.beforeEach((to, _, next) => {
     if (token && forestId) {
       next({ name: "ForestDetail", params: { forestId: forestId } }); // 기본 ForestDetail로 이동
     } else {
-      alert("로그인이 필요합니다!"); // 로그인 필요 알림
-      next({ name: "Login" }); // 로그인 페이지로 이동
+      next({ name: "LandingPage" });
+      // alert("로그인이 필요합니다!"); // 로그인 필요 알림
+      // next({ name: "Login" }); // 로그인 페이지로 이동
     }
   } else {
     next(); // 다른 경로는 그대로 진행
