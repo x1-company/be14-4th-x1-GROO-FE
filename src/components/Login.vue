@@ -52,16 +52,16 @@ const handleLogin = async (e) => {
     }
 
     const forestData = await forestResponse.json()
-    const forestId = forestData[0]?.id
+    const myRecentforestId = forestData[0]?.id
 
-    if (!forestId) {
+    if (!myRecentforestId) {
       throw new Error('숲이 존재하지 않습니다.')
     }
 
-    // 기본 forestId 저장
-    localStorage.setItem('forestId', forestId)
+    // myRecentforestId 저장
+    localStorage.setItem('myRecentforestId', myRecentforestId)
 
-    router.push(`/forest-detail/${forestId}`)
+    router.push(`/forest-detail/${myRecentforestId}`)
 
     // 페이지 이동 처리 필요(내 숲 상세 조회 페이지로 이동 필요)
   } catch (error) {
