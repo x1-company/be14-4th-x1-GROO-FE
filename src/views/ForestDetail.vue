@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
@@ -19,6 +19,16 @@ const containerWidth = computed(() => {
 const itemSize = computed(() => {
   return props.isSidebarOpen ? '3vw' : '4.5vw'
 })
+
+const backgroundContainer = ref(null)
+
+watch(() => props.isSidebarOpen, (newValue) => {
+  if (newValue) {
+    itemSize.value = '3vw'
+  } else {
+    itemSize.value = '4.5vw'
+  }
+}, { immediate: true })
 
 const currentView = ref('background')
 const forestData = ref(null)
@@ -120,10 +130,13 @@ const togglePublic = async () => {
       </div>
 
       <div v-if="forestData && forestData.length" class="forest-container">
-        <div class="background-container" :style="{ 
-          backgroundImage: `url(${forestData[0].backgroundImageUrl})`,
-          width: containerWidth
-        }">
+        <div class="background-container" 
+          ref="backgroundContainer"
+          :style="{ 
+            backgroundImage: `url(${forestData[0].backgroundImageUrl})`,
+            width: containerWidth
+          }"
+        >
           <div class="forest-title">
             <h1>{{ forestData[0].name }}</h1>
           </div>
@@ -132,8 +145,8 @@ const togglePublic = async () => {
             :key="item.placementId"
             class="item"
             :style="{
-            left: `${item.placementPositionX}%`,
-            top: `${item.placementPositionY}%`
+              left: `${item.placementPositionX}%`,
+              top: `${item.placementPositionY}%`
             }"
           >
             <img 
@@ -174,6 +187,7 @@ const togglePublic = async () => {
   width: 100%;
   max-width: 1200px;
   position: relative;
+  margin: 0 auto;
 }
 
 .background-container {
@@ -193,10 +207,7 @@ const togglePublic = async () => {
 .item-image {
   object-fit: contain;
   transition: transform 0.3s ease;
-}
-
-.item-image:hover {
-  transform: scale(1.1);
+  will-change: transform;
 }
 
 .icons {
