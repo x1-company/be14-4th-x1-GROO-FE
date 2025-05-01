@@ -2,13 +2,13 @@
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="header-decoration">
+        <!-- <div class="header-decoration">
           <span class="deco-item">🌸</span>
           <span class="deco-item">🦊</span>
           <span class="deco-item">🌸</span>
-        </div>
-        <h2>우리의 숲 목록</h2>
-        <button class="close-button" @click="$emit('close')">✨</button>
+        </div> -->
+        <h2>우정의 숲 목록</h2>
+        <button class="close-button" @click="$emit('close')">닫기</button>
       </div>
       <div class="forest-grid">
         <div
@@ -37,7 +37,7 @@
           @click="showCreateForestModal = true"
         >
           <div class="add-forest-content">
-            <div class="plus-icon">✨</div>
+            <!-- <div class="plus-icon"></div> -->
             <div class="add-forest-text">새로운 숲 만들기</div>
           </div>
         </div>
@@ -48,14 +48,14 @@
   <div v-if="showCreateForestModal" class="modal-overlay">
     <div class="create-forest-modal">
       <div class="modal-header">
-        <div class="header-decoration">
+        <!-- <div class="header-decoration">
           <span class="deco-item">🌱</span>
           <span class="deco-item">🌳</span>
           <span class="deco-item">🌱</span>
-        </div>
-        <h2>새로운 우리의 숲 만들기</h2>
+        </div> -->
+        <h2>새로운 우정의 숲 만들기</h2>
         <button class="close-button" @click="showCreateForestModal = false"
-          >✨</button
+          >닫기</button
         >
       </div>
       <div class="create-forest-content">
@@ -67,11 +67,10 @@
             class="forest-name-input"
             @keyup.enter="createNewForest"
           />
-          <span class="input-icon">🌳</span>
+          <!-- <span class="input-icon">🌳</span> -->
         </div>
         <button class="create-button" @click="createNewForest">
           <span>만들기</span>
-          <span class="button-icon">✨</span>
         </button>
       </div>
     </div>
@@ -246,15 +245,20 @@ onMounted(() => {
 .close-button {
   position: absolute;
   right: 20px;
-  background: none;
+  background: rgba(58, 90, 64, 0.1);
   border: none;
-  font-size: 24px;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #3a5a40;
+  font-weight: 500;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.2s ease;
 }
 
 .close-button:hover {
-  transform: rotate(90deg);
+  background: rgba(58, 90, 64, 0.15);
+  transform: translateY(-1px);
 }
 
 .forest-grid {
@@ -361,7 +365,7 @@ onMounted(() => {
 }
 
 .forest-name-input {
-  width: 100%;
+  width: 78%;
   padding: 15px 20px;
   padding-right: 50px;
   border: 2px solid #a5c0a7;

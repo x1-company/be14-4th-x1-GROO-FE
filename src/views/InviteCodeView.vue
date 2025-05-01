@@ -1,14 +1,7 @@
 <template>
   <div class="invite-code-container">
     <button class="back-button" @click="$router.back()">←</button>
-    <div class="floating-items">
-      <span class="float-item">🌿</span>
-      <span class="float-item">🍃</span>
-      <span class="float-item">🌱</span>
-      <span class="float-item">🦊</span>
-      <span class="float-item">🌸</span>
-      <span class="float-item">🦌</span>
-    </div>
+    <div class="floating-items"> </div>
     <div class="invite-code-box">
       <div class="forest-symbol">
         <div class="tree-container">
@@ -18,11 +11,6 @@
             <span class="animal">🦌</span>
             <span class="animal">🐰</span>
           </div>
-        </div>
-        <div class="grass">
-          <span>🌿</span>
-          <span>🌱</span>
-          <span>🍃</span>
         </div>
       </div>
       <h1 class="title">우리의 숲으로<br />놀러와요!</h1>
@@ -36,20 +24,13 @@
             placeholder="초대 코드 8자리"
             maxlength="8"
           />
-          <div class="input-decoration">
-            <span class="flower">🦊</span>
-          </div>
+          <div class="input-decoration"> </div>
         </div>
       </div>
       <button @click="handleSubmit" class="submit-button">
         <span class="button-text">입장하기</span>
         <span class="button-icon">🌳</span>
       </button>
-      <div class="bottom-decoration">
-        <span>🌿</span>
-        <span>🌱</span>
-        <span>🌿</span>
-      </div>
     </div>
   </div>
 </template>
@@ -222,7 +203,6 @@ const handleSubmit = async () => {
 
 .animals {
   position: absolute;
-  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
