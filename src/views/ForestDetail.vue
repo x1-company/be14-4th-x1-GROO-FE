@@ -7,6 +7,8 @@ import GuestBookList from "../components/GuestBookList.vue";
 import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포넌트 불러오기
+import FlowerRainEffect from "../components/FlowerRainEffect.vue";
+import FogEffect from "../components/FogEffect.vue";
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -28,17 +30,21 @@ const forceUpdate = ref(0);
 const { proxy } = getCurrentInstance();
 
 const showRain = computed(() => {
-  forceUpdate.value; // 의존성 추가
-  const nickname = localStorage.getItem('userNickname');
-  const weatherOwner = localStorage.getItem(nickname);
-  if (nickname !== weatherOwner) return false
+  forceUpdate.value;
   const weather = localStorage.getItem('weather');
-  console.log('Checking showRain:', {
-    hasForestData: !!forestData.value,
-    hasLength: forestData.value?.length > 0,
-    weather: weather
-  });
   return weather === '비';
+});
+
+const showFlowerRain = computed(() => {
+  forceUpdate.value;
+  const weather = localStorage.getItem('weather');
+  return weather === '꽃비';
+});
+
+const showFog = computed(() => {
+  forceUpdate.value;
+  const weather = localStorage.getItem('weather');
+  return weather === '안개';
 });
 
 const refreshForestData = async () => {
@@ -285,6 +291,8 @@ const handleEmotionWeather = (weather) => {
     </div>
 
     <RainEffects v-if="showRain" />
+    <FlowerRainEffect v-if="showFlowerRain" />
+    <FogEffect v-if="showFog" />
   </div>
 </template>
 
@@ -437,3 +445,4 @@ const handleEmotionWeather = (weather) => {
   overflow: hidden;
 }
 </style>
+
