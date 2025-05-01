@@ -20,7 +20,7 @@ const showWithdrawModal = ref(false);
 const inviteLink = ref("");
 const router = useRouter();
 const showForestListModal = ref(false);
-const emit = defineEmits(["openShare", "openForestList"]);
+const emit = defineEmits(["openShare", "openForestList", "openWithdraw"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -45,7 +45,7 @@ const handleForestList = () => {
 };
 
 const handleWithdraw = () => {
-  showWithdrawModal.value = true;
+  emit("openWithdraw");
 };
 </script>
 
@@ -116,7 +116,8 @@ const handleWithdraw = () => {
         />
         <WithdrawModal
           v-if="showWithdrawModal"
-          :isOpen="showWithdrawModal"
+          :is-open="showWithdrawModal"
+          :forest-id="route.params.id"
           @close="showWithdrawModal = false"
         />
       </div>

@@ -293,11 +293,7 @@ const handleGuestbookBack = () => {
               </span>
               우정의 숲 입장하기
             </button>
-            <router-link
-              to="/forestview"
-              class="menu-btn"
-              @click="handleForestList"
-            >
+            <router-link to="/forestview" class="menu-btn">
               <span class="icon">
                 <img :src="buttonIcon_4" class="btn-img" />
               </span>
