@@ -11,16 +11,30 @@ import { useRouter, useRoute } from "vue-router";
 import InviteLinkModal from "./InviteLinkModal.vue";
 import ForestListModal from "./ForestListModal.vue";
 import WithdrawModal from "./WithdrawModal.vue";
+import DiaryCalendar from './DiaryCalendar.vue';
+import DiaryDetail from './DiaryDetail.vue';
+import MyItemView from './MyItemView.vue';
 
 const route = useRoute();
 const isMenuOpen = ref(true);
-const sidebarWidth = computed(() => (isMenuOpen.value ? 360 : 60));
+const showDiaryCalendar = ref(false);
+const selectedDiaries = ref(null);
+const currentDiaryIndex = ref(0);
+const showDiaryDetail = ref(false);
+const showMyItems = ref(false);
+
+const sidebarWidth = computed(() => {
+  if (!isMenuOpen.value) return 60;
+  if (showDiaryCalendar.value || showMyItems.value) return 576;
+  return 360;
+});
+
 const showInviteModal = ref(false);
 const showWithdrawModal = ref(false);
 const inviteLink = ref("");
 const router = useRouter();
 const showForestListModal = ref(false);
-const emit = defineEmits(["openShare", "openForestList", "openWithdraw"]);
+const emit = defineEmits(["openShare", "openForestList"]);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -45,7 +59,49 @@ const handleForestList = () => {
 };
 
 const handleWithdraw = () => {
-  emit("openWithdraw");
+  showWithdrawModal.value = true;
+};
+
+const openDiaryCalendar = () => {
+  showDiaryCalendar.value = true;
+};
+
+const closeDiaryCalendar = () => {
+  showDiaryCalendar.value = false;
+  selectedDiaries.value = null;
+};
+
+const handleDiaryClick = (data) => {
+  selectedDiaries.value = data;
+  if (data.diaries && data.diaries.length > 0) {
+    currentDiaryIndex.value = 0;
+    showDiaryDetail.value = true;
+  }
+};
+
+const handlePrevDiary = () => {
+  if (currentDiaryIndex.value > 0) {
+    currentDiaryIndex.value--;
+  }
+};
+
+const handleNextDiary = () => {
+  if (currentDiaryIndex.value < selectedDiaries.value.diaries.length - 1) {
+    currentDiaryIndex.value++;
+  }
+};
+
+const closeDiaryDetail = () => {
+  showDiaryDetail.value = false;
+  currentDiaryIndex.value = 0;
+};
+
+const openMyItems = () => {
+  showMyItems.value = true;
+};
+
+const closeMyItems = () => {
+  showMyItems.value = false;
 };
 </script>
 
@@ -61,65 +117,91 @@ const handleWithdraw = () => {
     </button>
 
     <div class="menu-content" v-if="isMenuOpen">
-      <div class="top-bar">
-        <span class="previous-icon" @click="goBack">
-          <img :src="previousIcon" class="btn-img" />
-        </span>
-        <span class="logout-icon" @click="logout">
-          <img :src="logoutIcon" class="btn-img" />
-        </span>
+      <div v-if="!showDiaryCalendar && !showMyItems">
+        <div class="top-bar">
+          <span class="previous-icon" @click="goBack">
+            <img :src="previousIcon" class="btn-img" />
+          </span>
+          <span class="logout-icon" @click="logout">
+            <img :src="logoutIcon" class="btn-img" />
+          </span>
+        </div>
+        <div class="greeting">
+          <div>우정의 숲에</div>
+          <div>들어오신걸 환영해요!</div>
+        </div>
+        <div class="menu-buttons">
+          <button class="menu-btn">
+            <span class="icon">
+              <img :src="buttonIcon_1" class="btn-img" />
+            </span>
+            우정일기 작성하기
+          </button>
+          <button class="menu-btn" @click="openDiaryCalendar">
+            <span class="icon">
+              <img :src="buttonIcon_2" class="btn-img" />
+            </span>
+            우정일기 다시보기
+          </button>
+          <button class="menu-btn" @click="handleShare">
+            <span class="icon">
+              <img :src="buttonIcon_4" class="btn-img" />
+            </span>
+            우정의 숲 초대하기
+          </button>
+          <button class="menu-btn" @click="openMyItems">
+            <span class="icon">
+              <img :src="buttonIcon_5" class="btn-img" />
+            </span>
+            우리의 조각 보기
+          </button>
+          <button class="menu-btn" @click="handleWithdraw">
+            <span class="icon">
+              <img :src="buttonIcon_3" class="btn-img" />
+            </span>
+            우정의 숲 탈퇴하기
+          </button>
+          <InviteLinkModal
+            v-if="showInviteModal"
+            :inviteLink="inviteLink"
+            @close="showInviteModal = false"
+          />
+          <ForestListModal
+            v-if="showForestListModal"
+            :isOpen="showForestListModal"
+            @close="showForestListModal = false"
+          />
+          <WithdrawModal
+            v-if="showWithdrawModal"
+            :isOpen="showWithdrawModal"
+            @close="showWithdrawModal = false"
+          />
+        </div>
       </div>
-      <div class="greeting">
-        <div>우정의 숲에</div>
-        <div>들어오신걸 환영해요!</div>
+      <div v-else-if="showDiaryCalendar && !showDiaryDetail" class="calendar-view">
+        <DiaryCalendar
+          @close="closeDiaryCalendar"
+          @diary-click="handleDiaryClick"
+        />
       </div>
-      <div class="menu-buttons">
-        <button class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_1" class="btn-img" />
-          </span>
-          우정일기 작성하기
-        </button>
-        <button class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_2" class="btn-img" />
-          </span>
-          우정일기 다시보기
-        </button>
-        <button class="menu-btn" @click="handleShare">
-          <span class="icon">
-            <img :src="buttonIcon_4" class="btn-img" />
-          </span>
-          우정의 숲 초대하기
-        </button>
-        <button class="menu-btn">
-          <span class="icon">
-            <img :src="buttonIcon_5" class="btn-img" />
-          </span>
-          우리의 조각 보기
-        </button>
-        <button class="menu-btn" @click="handleWithdraw">
-          <span class="icon">
-            <img :src="buttonIcon_3" class="btn-img" />
-          </span>
-          우정의 숲 탈퇴하기
-        </button>
-        <InviteLinkModal
-          v-if="showInviteModal"
-          :inviteLink="inviteLink"
-          @close="showInviteModal = false"
+      <div v-else-if="showDiaryDetail" class="diary-detail-view">
+        <DiaryDetail
+          v-if="selectedDiaries && selectedDiaries.diaries[currentDiaryIndex]"
+          :nickname="selectedDiaries.diaries[currentDiaryIndex].nickname"
+          :year="selectedDiaries.year"
+          :month="selectedDiaries.month"
+          :day="selectedDiaries.day"
+          :emotions="selectedDiaries.diaries[currentDiaryIndex].emotions || []"
+          :content="selectedDiaries.diaries[currentDiaryIndex].content"
+          :showPrev="currentDiaryIndex > 0"
+          :showNext="currentDiaryIndex < selectedDiaries.diaries.length - 1"
+          @close="closeDiaryDetail"
+          @prev="handlePrevDiary"
+          @next="handleNextDiary"
         />
-        <ForestListModal
-          v-if="showForestListModal"
-          :isOpen="showForestListModal"
-          @close="showForestListModal = false"
-        />
-        <WithdrawModal
-          v-if="showWithdrawModal"
-          :is-open="showWithdrawModal"
-          :forest-id="route.params.id"
-          @close="showWithdrawModal = false"
-        />
+      </div>
+      <div v-else class="myitem-view">
+        <MyItemView @close="closeMyItems" />
       </div>
     </div>
   </div>
@@ -313,5 +395,69 @@ const handleWithdraw = () => {
 
 .confirm-btn:hover {
   background: #ff5252;
+}
+
+.calendar-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.selected-diaries {
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.selected-diaries h3 {
+  color: white;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.diary-entry {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.diary-content {
+  color: white;
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.diary-author {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-size: 14px;
+}
+
+.diary-detail-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.myitem-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
 }
 </style>
