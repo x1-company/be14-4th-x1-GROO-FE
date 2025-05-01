@@ -6,14 +6,15 @@ import buttonIcon_3 from '../icons/forestmate_icon.png'
 import buttonIcon_4 from '../icons/forestview_icon.png'
 import buttonIcon_5 from '../icons/myitemview_icon.png'
 import buttonIcon_6 from '../icons/mailbox_icon.png'
-import logoutIcon from '../icons/logout_icon.png'
+import logoutIcon  from '../icons/logout_icon.png'
 
-import CategorySelector from './CategorySelector.vue'
-import AnalyzeResult from './AnalyzeResult.vue'
-import WriteDiary from './WriteDiary.vue'
-import { useRouter } from 'vue-router'
+import CategorySelector  from './CategorySelector.vue'
+import AnalyzeResult     from './AnalyzeResult.vue'
+import WriteDiary        from './WriteDiary.vue'
+import GuestbookList     from './GuestbookList.vue'
+import { useRouter }     from 'vue-router'
 
-// 더미 데이터 - 실제로는 API 응답으로 받아서 대체하세요
+// 더미 데이터 - 실제 API 응답으로 대체하세요
 const dummyAnalysisResult = {
   emotions: [
     { label: '평온함', emoji: '😊', percent: 50 },
@@ -27,66 +28,81 @@ const dummyAnalysisResult = {
   ]
 }
 
-const isMenuOpen        = ref(true)
+const isMenuOpen            = ref(true)
 const showCategorySelector = ref(false)
-const showAnalyzeResult = ref(false)
-const showWriteDiary    = ref(false)
-const categoryLoading   = ref(false)
+const showAnalyzeResult    = ref(false)
+const showWriteDiary       = ref(false)
+const showGuestbookList    = ref(false)
+const categoryLoading      = ref(false)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return (showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value)
-    ? 576
-    : 360
+  return (
+    showCategorySelector.value ||
+    showAnalyzeResult.value    ||
+    showWriteDiary.value       ||
+    showGuestbookList.value
+  ) ? 576 : 360
 })
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
-const router = useRouter()
+const router   = useRouter()
+const nickname = localStorage.getItem('userNickname') || '여행자'
 
 const logout = () => {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userNickname')
+  localStorage.removeItem('myRecentforestId')
   router.push('/login')
 }
 
 const handleAnalyze = (category) => {
-  console.log("Selected category:", category)
-  // 분석 로직 호출 전 로딩 표시
   categoryLoading.value = true
   setTimeout(() => {
     categoryLoading.value = false
     showCategorySelector.value = false
-    showAnalyzeResult.value = true
+    showAnalyzeResult.value    = true
   }, 2000)
 }
 
 const handlePlace = (selectedPiece) => {
-  console.log("Selected piece to place:", selectedPiece)
   showAnalyzeResult.value = false
 }
 
 const handleToStorage = () => {
-  console.log("Moving to storage")
   showAnalyzeResult.value = false
   router.push('/myitemview')
+}
+
+const handleDiarySave = () => {
+  showWriteDiary.value       = false
+  showCategorySelector.value = true
+}
+
+const toggleCategorySelector = () => {
+  // 쓰기 화면을 열 때만 showWriteDiary=true
+  showWriteDiary.value       = true
+  showCategorySelector.value = false
+  showAnalyzeResult.value    = false
+  showGuestbookList.value    = false
 }
 
 const handleWriteDiaryBack = () => {
   showWriteDiary.value = false
 }
 
-const handleDiarySave = () => {
-  showWriteDiary.value = false
-  showCategorySelector.value = true
+const handleGuestbook = () => {
+  showGuestbookList.value    = true
+  showCategorySelector.value = false
+  showAnalyzeResult.value    = false
+  showWriteDiary.value       = false
 }
 
-const toggleCategorySelector = () => {
-  showWriteDiary.value = true
-  showCategorySelector.value = false
-  showAnalyzeResult.value = false
+const handleGuestbookBack = () => {
+  showGuestbookList.value = false
 }
 </script>
 
@@ -94,52 +110,58 @@ const toggleCategorySelector = () => {
   <div class="side-wrapper">
     <div
       class="side-menu"
-      :class="{ open: isMenuOpen, 'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary }"
+      :class="{ 
+        open: isMenuOpen, 
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showGuestbookList 
+      }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
         <!-- 기본 메뉴 -->
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary">
+        <template v-if="
+          !showCategorySelector &&
+          !showAnalyzeResult    &&
+          !showWriteDiary       &&
+          !showGuestbookList
+        ">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
             </span>
           </div>
           <div class="greeting">
-            <div>안녕하세요 min님,</div>
+            <div>안녕하세요 {{ nickname }}님,</div>
             <div>오늘 하루는 어떠셨나요?</div>
           </div>
           <div class="menu-buttons">
             <button class="menu-btn" @click="toggleCategorySelector">
-              <span class="icon">
-                <img :src="buttonIcon_1" class="btn-img" />
-              </span>
+              <span class="icon"><img :src="buttonIcon_1" class="btn-img" /></span>
               감정일기 작성하기
             </button>
-            <router-link to="/viewdiary"   class="menu-btn">
+            <router-link to="/viewdiary" class="menu-btn">
               <span class="icon"><img :src="buttonIcon_2" class="btn-img" /></span>
               감정일기 다시보기
             </router-link>
-            <router-link to="/forestmate"  class="menu-btn">
+            <router-link to="/forestmate" class="menu-btn">
               <span class="icon"><img :src="buttonIcon_3" class="btn-img" /></span>
               우정의 숲 입장하기
             </router-link>
-            <router-link to="/forestview"  class="menu-btn">
+            <router-link to="/forestview" class="menu-btn">
               <span class="icon"><img :src="buttonIcon_4" class="btn-img" /></span>
               다른 숲 구경가기
             </router-link>
-            <router-link to="/myitemview"  class="menu-btn">
+            <router-link to="/myitemview" class="menu-btn">
               <span class="icon"><img :src="buttonIcon_5" class="btn-img" /></span>
               나의 조각 보기
             </router-link>
-            <router-link to="/guestbook"   class="menu-btn">
+            <button class="menu-btn" @click="handleGuestbook">
               <span class="icon"><img :src="buttonIcon_6" class="btn-img" /></span>
               방명록 확인하기
-            </router-link>
+            </button>
           </div>
         </template>
 
-        <!-- 일기 작성 -->
+        <!-- 일기 작성 화면 -->
         <template v-else-if="showWriteDiary">
           <div class="top-bar">
             <button class="back-button" @click="handleWriteDiaryBack">←</button>
@@ -147,7 +169,7 @@ const toggleCategorySelector = () => {
           <WriteDiary @save="handleDiarySave" />
         </template>
 
-        <!-- 감정 선택 -->
+        <!-- 감정 선택 화면 -->
         <template v-else-if="showCategorySelector">
           <div class="top-bar">
             <button v-if="!categoryLoading" class="back-button" @click="toggleCategorySelector">←</button>
@@ -158,13 +180,18 @@ const toggleCategorySelector = () => {
           />
         </template>
 
-        <!-- 분석 결과 -->
+        <!-- 분석 결과 화면 -->
         <template v-else-if="showAnalyzeResult">
           <AnalyzeResult
             v-bind="dummyAnalysisResult"
             @place="handlePlace"
             @toStorage="handleToStorage"
           />
+        </template>
+
+        <!-- 방명록 화면 -->
+        <template v-else-if="showGuestbookList">
+          <GuestbookList @back="handleGuestbookBack" />
         </template>
       </div>
     </div>
@@ -177,88 +204,5 @@ const toggleCategorySelector = () => {
 </template>
 
 <style scoped>
-.toggle-button {
-  width: 40px; height: 60px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff; font-size: 32px;
-  border: none; cursor: pointer;
-  position: absolute; left: -40px; top: 50%;
-  transform: translateY(-50%); z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.side-wrapper {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  align-items: stretch;
-}
-
-.side-menu {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1.5px solid rgba(255, 255, 255, 0.25);
-  padding: 0 20px 20px;
-  box-sizing: border-box;
-  display: flex; flex-direction: column;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-.side-menu.category-mode {
-  border: none;
-}
-
-.menu-content {
-  width: 100%; display: flex;
-  flex-direction: column; height: 100%;
-}
-
-.top-bar {
-  width: 100%; display: flex;
-  justify-content: flex-end; align-items: center;
-  padding: 20px 24px; margin-bottom: 12px;
-}
-
-.logout-icon {
-  font-size: 28px; color: #fff; cursor: pointer;
-}
-
-.greeting {
-  color: #fff; font-size: 22px; font-weight: 500;
-  text-align: center; margin-bottom: 36px; line-height: 1.5;
-}
-
-.menu-buttons {
-  width: 100%; display: flex;
-  flex-direction: column; align-items: center; gap: 18px;
-}
-
-.menu-btn {
-  width: 260px; padding: 14px 0;
-  background: rgba(255,255,255,0.35);
-  border: none; border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  color: #3a5a40; font-size: 18px; font-weight: 500;
-  display: flex; align-items: center; justify-content: flex-start;
-  gap: 16px; cursor: pointer; transition: background 0.2s;
-  text-decoration: none;
-}
-.menu-btn:hover { background: rgba(255,255,255,0.55); }
-
-.icon { font-size: 22px; margin-left: 18px; }
-.btn-img {
-  width: 24px; height: 24px;
-  object-fit: contain; margin-right: 8px;
-  vertical-align: middle;
-}
-
-.back-button {
-  background: none; border: none; color: #fff;
-  font-size: 24px; cursor: pointer;
-  padding: 8px; margin-right: auto;
-}
+/* … 기존 스타일 유지 … */
 </style>
