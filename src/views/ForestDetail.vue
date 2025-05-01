@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
+import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import GuestBookList from "../components/GuestBookList.vue";
+import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
+import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포넌트 불러오기
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -15,6 +18,7 @@ const containerRef = ref(null); // placement-container 요소 참조
 const itemWidth = ref(60); // 아이템의 고정 크기
 const showTooltip = ref(false);
 const forestData = ref(null);
+const currentWeather = ref(null); // 현재 날씨 상태를 저장할 ref 추가
 const selectedPiece = ref(null)
 const dragPos = ref({ x: 50, y: 50 })
 const isDragging = ref(false)
@@ -22,68 +26,66 @@ const dragOffset = ref({ x: 0, y: 0 })
 
 const { proxy } = getCurrentInstance();
 
-onMounted(async () => {
-  // 숲 데이터 가져오기
+const showRain = computed(() => {
+  const weather = localStorage.getItem('weather');
+  console.log('Checking showRain:', {
+    hasForestData: !!forestData.value,
+    hasLength: forestData.value?.length > 0,
+    weather: weather
+  });
+  return weather === '비';
+});
+
+const refreshForestData = async () => {
   const token = localStorage.getItem('accessToken');
+  const forestId = localStorage.getItem("myRecentforestId");
 
-  // let forestId = route.params.forestId
-  let forestId = localStorage.getItem("myRecentforestId")
+  if (!forestId) return;
 
-  if (!forestId) {
-    try {
-      const res = await fetch('http://localhost:8080/myforest', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!res.ok) throw new Error('myforest 요청 실패')
-
-      const forestList = await res.json()
-
-      if (!forestList.length) {
-        alert('소유한 숲이 없습니다.')
-        return
+  try {
+    const response = await fetch(`http://localhost:8080/detail/${forestId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
+    });
 
-      forestId = forestList[0].id
-      router.replace(`/forest-detail/${forestId}`)
-      return
-    } catch (err) {
-      console.error('myforest 호출 실패:', err)
+    if (!response.ok) {
+      alert("다시 로그인해 주세요!");
+      router.push('/login');
+      throw new Error('detail 요청 실패');
     }
-  } else {
-    try {
-      const response = await fetch(`http://localhost:8080/detail/${forestId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
 
-      if (!response.ok) {
-        alert("다시 로그인해 주세요!")
-        router.push('/login')
-        throw new Error('detail 요청 실패')
-      }
-
-      forestData.value = await response.json()
-      console.log('forestData:', forestData.value)
-    } catch (error) {
-      console.error('숲 정보 불러오기 실패:', error)
-    }
+    const data = await response.json();
+    console.log('Raw forest data:', data);
+    forestData.value = data;
+    console.log('Updated forestData:', forestData.value);
+  } catch (error) {
+    console.error('숲 정보 불러오기 실패:', error);
   }
+};
 
-  // 이벤트 버스에서 이벤트 수신
+onMounted(async () => {
+  await refreshForestData();
+
   proxy.emitter.on('place-item', (piece) => {
     selectedPiece.value = piece;
-    dragPos.value = { x: 10, y: 20 } // 초기 위치 고정
+    dragPos.value = { x: 10, y: 20 };
     console.log('Received piece in ForestDetail:', selectedPiece.value);
+  });
+
+  // 일기 저장 후 날씨 정보를 받는 리스너
+  proxy.emitter.on('diary-saved', (response) => {
+    console.log('Received diary save response:', response);
+    if (response.weather) {
+      currentWeather.value = response.weather;
+      console.log('Updated weather:', currentWeather.value);
+    }
   });
 });
 
-// 컴포넌트 언마운트 시 이벤트 리스너 제거
 onUnmounted(() => {
   proxy.emitter.off('place-item');
+  proxy.emitter.off('diary-saved');
 });
 
 const togglePublic = async () => {
@@ -164,23 +166,37 @@ const handleCompletePlacement = async () => {
     });
     if (!res.ok) throw new Error('배치 요청 실패');
     alert('배치가 완료되었습니다!');
-    // placementList에 새 아이템 추가
-    if (forestData.value && forestData.value[0]) {
-      forestData.value[0].placementList.push({
-        placementId: Date.now(), // 임시 ID
-        itemImageUrl: selectedPiece.value.icon,
-        itemName: selectedPiece.value.label,
-        placementPositionX: dragPos.value.x,
-        placementPositionY: dragPos.value.y,
-        itemId: selectedPiece.value.value
-      });
-    }
-    selectedPiece.value = null; // 버튼만 숨김, 이미지는 남음
+    await refreshForestData(); // 배치 완료 후 숲 데이터 새로고침
+    selectedPiece.value = null;
   } catch (err) {
     alert('배치에 실패했습니다.');
     console.error(err);
   }
-}
+};
+
+const handleShowDetail = (id) => {
+  selectedGuestBookId.value = id;
+  showGuestBookDetail.value = true;
+};
+
+const handleDetailBack = () => {
+  showGuestBookDetail.value = false;
+};
+
+const handleGuestBookClick = () => {
+  showGuestBook.value = true;
+};
+
+const handleGuestBookBack = () => {
+  showGuestBook.value = false;
+  showGuestBookDetail.value = false;
+};
+
+const handleEmotionWeather = (weather) => {
+  if (forestData.value && forestData.value.length) {
+    forestData.value[0].emotionWeather = weather;
+  }
+};
 </script>
 
 <template>
@@ -204,48 +220,65 @@ const handleCompletePlacement = async () => {
         </div>
       </div>
     </div>
-  </div>
 
-  <div ref="containerRef" class="placement-container">
-    <div class="placement-inner-container">
-      <button v-if="selectedPiece" class="complete-btn" @click="handleCompletePlacement">배치 완료</button>
-      <img
-        v-if="forestData && forestData.length"
-        ref="bgRef"
-        class="background"
-        :src="forestData[0].backgroundImageUrl"
-        alt="Green Background"
-      />
-      <img
-        v-if="forestData && forestData.length"
-        v-for="item in forestData[0].placementList"
-        :key="item.placementId"
-        class="item"
-        :src="item.itemImageUrl" 
-        :alt="item.itemName"
-        :style="{
-          left: `${item.placementPositionX}%`,
-          top: `${item.placementPositionY}%`,
-          width: `${itemWidth}px`
-        }"
-        draggable="false"
-      />
-      <img
-        v-if="selectedPiece"
-        class="item draggable"
-        :src="selectedPiece.icon"
-        :alt="selectedPiece.label"
-        :style="{
-          left: `${dragPos.x}%`,
-          top: `${dragPos.y}%`,
-          width: `${itemWidth}px`,
-          cursor: isDragging ? 'grabbing' : 'grab'
-        }"
-        @mousedown="onMouseDown"
-        @dragstart.prevent
-        draggable="false"
-      />
+    <template v-if="showGuestBook">
+      <template v-if="showGuestBookDetail">
+        <GuestBookDetail 
+          :id="selectedGuestBookId"
+          @back="handleDetailBack"
+        />
+      </template>
+      <template v-else>
+        <GuestBookList 
+          @back="handleGuestBookBack"
+          @show-detail="handleShowDetail"
+        />
+      </template>
+    </template>
+
+    <div ref="containerRef" class="placement-container">
+      <div class="placement-inner-container">
+        <button v-if="selectedPiece" class="complete-btn" @click="handleCompletePlacement">배치 완료</button>
+        <img
+          v-if="forestData && forestData.length"
+          ref="bgRef"
+          class="background"
+          :src="forestData[0].backgroundImageUrl"
+          alt="Green Background"
+        />
+        <img
+          v-if="forestData && forestData.length"
+          v-for="item in forestData[0].placementList"
+          :key="item.placementId"
+          class="item"
+          :src="item.itemImageUrl" 
+          :alt="item.itemName"
+          :style="{
+            left: `${item.placementPositionX}%`,
+            top: `${item.placementPositionY}%`,
+            width: `${itemWidth}px`
+          }"
+          draggable="false"
+        />
+        <img
+          v-if="selectedPiece"
+          class="item draggable"
+          :src="selectedPiece.icon"
+          :alt="selectedPiece.label"
+          :style="{
+            left: `${dragPos.x}%`,
+            top: `${dragPos.y}%`,
+            width: `${itemWidth}px`,
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }"
+          @mousedown="onMouseDown"
+          @dragstart.prevent
+          draggable="false"
+        />
+      </div>
     </div>
+
+    <RainEffects v-if="showRain" />
   </div>
 </template>
 
@@ -389,5 +422,12 @@ const handleCompletePlacement = async () => {
 }
 .complete-btn:hover {
   background: #2d4632;
+}
+
+.forest-detail {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 </style>

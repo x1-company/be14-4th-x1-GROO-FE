@@ -148,7 +148,7 @@ const saveDiary = async () => {
     const requestData = {
       content: diaryContent.value,
       categoryId: props.categoryId,
-      forestId: Number(localStorage.getItem('myRecentforestId')),
+      forestId: Number(localStorage.getItem('forestId')),
       createdAt: createdAt
     };
 
@@ -161,6 +161,7 @@ const saveDiary = async () => {
     }
 
     console.log('API Response:', response);
+    localStorage.setItem('weather', response.weather);
     localStorage.removeItem('diaryDraft');
     emit('save', response);
   } catch (error) {
