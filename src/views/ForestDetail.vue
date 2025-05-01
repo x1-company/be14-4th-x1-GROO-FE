@@ -27,6 +27,9 @@ const dragOffset = ref({ x: 0, y: 0 })
 const { proxy } = getCurrentInstance();
 
 const showRain = computed(() => {
+  const nickname = localStorage.getItem('userNickname');
+  const weatherOwner = localStorage.getItem(nickname);
+  if (nickname !== weatherOwner) return false
   const weather = localStorage.getItem('weather');
   console.log('Checking showRain:', {
     hasForestData: !!forestData.value,
