@@ -13,6 +13,7 @@ import WriteDiary from './WriteDiary.vue'
 import WriteGuestbook from './WriteGuestbook.vue'
 import { useRouter } from 'vue-router'
 
+
 // 더미 데이터 - 실제로는 API 응답으로 받을 데이터
 const dummyAnalysisResult = {
   emotions: [
