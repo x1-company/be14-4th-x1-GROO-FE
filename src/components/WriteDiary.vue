@@ -148,7 +148,7 @@ const saveDiary = async () => {
     const requestData = {
       content: diaryContent.value,
       categoryId: props.categoryId,
-      forestId: Number(localStorage.getItem('forestId')),
+      forestId: Number(localStorage.getItem('myRecentforestId')),
       createdAt: createdAt
     };
 
