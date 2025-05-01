@@ -32,10 +32,13 @@
   /* ---------- Fog ---------- */
   .fogwrapper {
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
-    width: 100%;
-    filter: blur(1px) grayscale(0.2) saturate(1.2) sepia(0.2);
+    left: 0;
+    width: 100vw;
+    pointer-events: none;
+    z-index: 100;
+    filter: blur(2px) grayscale(0.2) saturate(1.2) sepia(0.2);
   }
   #foglayer_01, #foglayer_02, #foglayer_03 {
     height: 100%;
@@ -48,6 +51,7 @@
     float: left;
     height: 100%;
     width: 50%;
+    background-repeat: repeat-x;
   }
   
   /* 레이어별 애니메이션 설정 */
@@ -74,27 +78,28 @@
   
   /* Keyframes */
   @keyframes foglayer_01_opacity {
-    0%   { opacity: .1; }
-    22%  { opacity: .5; }
-    40%  { opacity: .28; }
-    58%  { opacity: .4; }
-    80%  { opacity: .16; }
-    100% { opacity: .1; }
+    0%   { opacity: .4; }
+    22%  { opacity: .7; }
+    40%  { opacity: .5; }
+    58%  { opacity: .6; }
+    80%  { opacity: .4; }
+    100% { opacity: .4; }
   }
   @keyframes foglayer_02_opacity {
     0%   { opacity: .5; }
-    25%  { opacity: .2; }
-    50%  { opacity: .1; }
-    80%  { opacity: .3; }
+    25%  { opacity: .4; }
+    50%  { opacity: .6; }
+    80%  { opacity: .8; }
     100% { opacity: .5; }
   }
   @keyframes foglayer_03_opacity {
-    0%   { opacity: .8; }
-    27%  { opacity: .2; }
-    52%  { opacity: .6; }
-    68%  { opacity: .3; }
-    100% { opacity: .8; }
+    0%   { opacity: .5; }
+    27%  { opacity: .5; }
+    52%  { opacity: .8; }
+    68%  { opacity: .6; }
+    100% { opacity: .4; }
   }
+  
   @keyframes foglayer_moveme {
     0%   { left: 0; }
     100% { left: -100%; }
@@ -105,7 +110,7 @@
     #foglayer_01 .image01, #foglayer_01 .image02,
     #foglayer_02 .image01, #foglayer_02 .image02,
     #foglayer_03 .image01, #foglayer_03 .image02 {
-      width: 100%;
+      width: 3000%;
     }
   }
   </style>
