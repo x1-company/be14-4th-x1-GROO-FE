@@ -52,6 +52,7 @@ const logout = () => {
   // 로컬 스토리지 비우기
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userNickname')
+  localStorage.removeItem('myRecentforestId')
   router.push('/login')
 }
 
