@@ -10,7 +10,7 @@ import logoutIcon from '../icons/logout_icon.png'
 import CategorySelector from './CategorySelector.vue'
 import AnalyzeResult from './AnalyzeResult.vue'
 import WriteDiary from './WriteDiary.vue'
-import WriteGuestbook from './WriteGuestbook.vue'
+import GuestbookList from './GuestbookList.vue'
 import { useRouter } from 'vue-router'
 
 
@@ -32,12 +32,12 @@ const isMenuOpen = ref(true)
 const showCategorySelector = ref(false)
 const showAnalyzeResult = ref(false)
 const showWriteDiary = ref(false)
-const showWriteGuestbook = ref(false)
+const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
 const categoryLoading = ref(false)
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60
-  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showWriteGuestbook.value ? 576 : 360
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value ? 576 : 360
 })
 
 const toggleMenu = () => {
@@ -46,10 +46,14 @@ const toggleMenu = () => {
 
 const router = useRouter()
 
+// 닉네임 가져오기
+const nickname = localStorage.getItem('userNickname') || '여행자'
+
 const logout = () => {
   // 로컬 스토리지 비우기
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userNickname')
+  localStorage.removeItem('myRecentforestId')
   router.push('/login')
 }
 
@@ -89,27 +93,16 @@ const toggleCategorySelector = () => {
   }
 }
 
-const handleWriteGuestbook = () => {
-  showWriteGuestbook.value = true
-  showCategorySelector.value = false
-  showAnalyzeResult.value = false
-  showWriteDiary.value = false
-}
-
-const handleWriteGuestbookBack = () => {
-  showWriteGuestbook.value = false
-}
-
 const handleGuestbook = () => {
-  // TODO: API 호출 로직 추가
-  console.log('방명록 확인하기')
-}
+  showGuestbookList.value = true;
+  showCategorySelector.value = false;
+  showAnalyzeResult.value = false;
+  showWriteDiary.value = false;
+};
 
-const handleGuestbookSubmit = async (content) => {
-  // TODO: API 호출 로직 추가
-  console.log('방명록 내용:', content)
-  showWriteGuestbook.value = false
-}
+const handleGuestbookBack = () => {
+  showGuestbookList.value = false;
+};
 </script>
 
 <template>
@@ -118,19 +111,19 @@ const handleGuestbookSubmit = async (content) => {
       class="side-menu"
       :class="{ 
         open: isMenuOpen, 
-        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showWriteGuestbook 
+        'category-mode': showCategorySelector || showAnalyzeResult || showWriteDiary || showGuestbookList
       }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showWriteGuestbook">
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showGuestbookList">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
             </span>
           </div>
           <div class="greeting">
-            <div>안녕하세요 min님,</div>
+            <div>안녕하세요 {{ nickname }}님,</div>
             <div>오늘 하루는 어떠셨나요?</div>
           </div>
           <div class="menu-buttons">
@@ -170,12 +163,6 @@ const handleGuestbookSubmit = async (content) => {
               </span>
               방명록 확인하기
             </button>
-            <button class="menu-btn" @click="handleWriteGuestbook">
-              <span class="icon">
-                <img :src="buttonIcon_6" class="btn-img" />
-              </span>
-              방명록 작성하기
-            </button>
           </div>
         </template>
         <template v-else-if="showWriteDiary">
@@ -201,11 +188,8 @@ const handleGuestbookSubmit = async (content) => {
             @toStorage="handleToStorage"
           />
         </template>
-        <template v-else-if="showWriteGuestbook">
-          <WriteGuestbook
-            @back="handleWriteGuestbookBack"
-            @submit="handleGuestbookSubmit"
-          />
+        <template v-else-if="showGuestbookList">
+          <GuestbookList @back="handleGuestbookBack" />
         </template>
       </div>
     </div>
