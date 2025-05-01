@@ -3,9 +3,14 @@ import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import GuestBookList from "../components/GuestBookList.vue";
+import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const showGuestBook = ref(false);
+const showGuestBookDetail = ref(false);
+const selectedGuestBookId = ref(null);
 
 const bgRef = ref(null); // background 요소 참조
 const containerRef = ref(null); // placement-container 요소 참조
@@ -181,9 +186,9 @@ const handleCompletePlacement = async () => {
 </script>
 
 <template>
-  <div>
-    <div class="icons">
-      <img :src="buttonIcon_6" class="btn-img" />
+  <div class="forest-detail">
+    <div v-if="!showGuestBook" class="icons">
+      <img :src="buttonIcon_6" class="btn-img" @click="handleGuestBookClick" />
       <img :src="buttonIcon_7" class="btn-img" />
       <img
         :src="buttonIcon_8"
@@ -201,7 +206,6 @@ const handleCompletePlacement = async () => {
         </div>
       </div>
     </div>
-  </div>
 
   <div ref="containerRef" class="placement-container">
     <div class="placement-inner-container">

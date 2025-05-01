@@ -16,16 +16,14 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+const route = useRoute();
 
 const router = useRouter();
 const props = defineProps({
   isOpen: {
     type: Boolean,
-    required: true,
-  },
-  forestId: {
-    type: [String, Number],
     required: true,
   },
 });
@@ -34,22 +32,34 @@ const emit = defineEmits(["close"]);
 
 const handleWithdraw = async () => {
   try {
+    const forestId = route.params.id;
     const token = localStorage.getItem("accessToken");
+
+    if (!forestId) {
+      throw new Error("숲 ID를 찾을 수 없습니다.");
+    }
+
+    console.log("Withdrawing from forest:", forestId); // 디버깅용
+
     const response = await fetch(
-      `http://localhost:8080/mate/withdraw/${props.forestId}`,
+      `http://localhost:8080/mate/quit?forestId=${forestId}`,
       {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ forestId: forestId }),
       }
     );
 
     if (response.ok) {
       alert("우정의 숲에서 탈퇴되었습니다.");
-      router.push("/forest-list");
+      // localStorage.removeItem("forestId"); // 탈퇴 후 forestId 제거
+      router.push("/");
     } else {
-      throw new Error("탈퇴 처리 중 오류가 발생했습니다.");
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "탈퇴 처리 중 오류가 발생했습니다.");
     }
   } catch (error) {
     console.error("Error:", error);

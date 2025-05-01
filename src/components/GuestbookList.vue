@@ -2,7 +2,7 @@
 <template>
   <div class="guestbook-list">
     <div class="top-bar">
-      <button class="back-button" @click="$emit('back')">←</button>
+      <img :src="previousIcon" class="back-button" @click="$emit('back')" alt="back" />
       <button class="write-button" @click="showWriteForm = true">
         <img :src="editIcon" />
       </button>
@@ -16,7 +16,12 @@
       <div v-if="isLoading" class="loading">로딩 중...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
       <ul v-else>
-        <li v-for="entry in guestbookEntries" :key="entry.id" class="guestbook-entry">
+        <li 
+          v-for="entry in guestbookEntries" 
+          :key="entry.id" 
+          class="guestbook-entry"
+          @click="handleEntryClick(entry.id)"
+        >
           <div>
             💌 {{ formatDate(entry.createdAt) }}의 편지
           </div>
@@ -29,12 +34,20 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import editIcon from '../icons/edit_icon.png'
+import previousIcon from '../icons/previous_icon2.png'
 import WriteGuestbook from './WriteGuestbook.vue'
+
+const emit = defineEmits(['back', 'show-detail']);
 
 const showWriteForm = ref(false);
 const guestbookEntries = ref([]); // 방명록 데이터를 저장할 배열
 const isLoading = ref(true); // 로딩 상태
 const error = ref(null); // 에러 메시지
+
+const handleEntryClick = (id) => {
+  console.log('Entry clicked:', id); // 디버깅용
+  emit('show-detail', id);
+};
 
 const fetchGuestbookEntries = async () => {
   const token = localStorage.getItem("accessToken");
@@ -97,10 +110,8 @@ onMounted(() => {
 }
 
 .back-button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 }
 
@@ -127,6 +138,14 @@ ul {
   min-height: 60px;
   text-align: center;
   font-size: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.guestbook-entry:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .write-button {

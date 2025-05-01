@@ -58,6 +58,7 @@ const route = useRoute(); // 현재 경로 가져오기
         v-if="route.name === 'ForestMate'"
         @openShare="openInviteLinkModal"
         @openForestList="openForestListModal"
+        @openWithdraw="openWithdrawModal"
       />
       <SideMenu
         v-else
@@ -73,6 +74,11 @@ const route = useRoute(); // 현재 경로 가져오기
       v-if="isForestListModalOpen"
       :isOpen="isForestListModalOpen"
       @close="closeForestListModal"
+    />
+    <WithdrawModal
+      v-if="isWithdrawModalOpen"
+      :is-open="isWithdrawModalOpen"
+      @close="closeWithdrawModal"
     />
   </div>
 </template>

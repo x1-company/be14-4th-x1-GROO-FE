@@ -1,29 +1,36 @@
 <script setup>
 import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
-import buttonIcon_1 from "../icons/diarywrite_icon.png";
-import buttonIcon_2 from "../icons/diaryview_icon.png";
-import buttonIcon_3 from "../icons/forestmate_icon.png";
-import buttonIcon_4 from "../icons/forestview_icon.png";
-import buttonIcon_5 from "../icons/myitemview_icon.png";
-import buttonIcon_6 from "../icons/mailbox_icon.png";
-import logoutIcon from "../icons/logout_icon.png";
-import joyIcon from "../icons/joy_icon.png";
-import sadIcon from "../icons/sad_icon.png";
-import peacefulIcon from "../icons/peaceful_icon.png";
-import annoyIcon from "../icons/annoy_icon.png";
-import anxiousIcon from "../icons/anxious_icon.png";
-import melancholyIcon from "../icons/melancholy_icon.png";
-import tiredIcon from "../icons/tired_icon.png";
-import romanceIcon from "../icons/romance_icon.png";
-import CategorySelector from "./CategorySelector.vue";
-import AnalyzeResult from "./AnalyzeResult.vue";
-import WriteDiary from "./WriteDiary.vue";
-import WriteGuestbook from "./WriteGuestbook.vue";
-import LoadingAnimation from "./LoadingAnimation.vue";
-import GuestbookList from "./GuestbookList.vue";
+import { useRouter, useRoute } from 'vue-router'
+
+// Icons
+import buttonIcon_1 from '../icons/diarywrite_icon.png'
+import buttonIcon_2 from '../icons/diaryview_icon.png'
+import buttonIcon_3 from '../icons/forestmate_icon.png'
+import buttonIcon_4 from '../icons/forestview_icon.png'
+import buttonIcon_5 from '../icons/myitemview_icon.png'
+import buttonIcon_6 from '../icons/mailbox_icon.png'
+import logoutIcon from '../icons/logout_icon.png'
+
+// Emotion Icons
+import joyIcon from '../icons/joy_icon.png'
+import sadIcon from '../icons/sad_icon.png'
+import peacefulIcon from '../icons/peaceful_icon.png'
+import annoyIcon from '../icons/annoy_icon.png'
+import anxiousIcon from '../icons/anxious_icon.png'
+import melancholyIcon from '../icons/melancholy_icon.png'
+import tiredIcon from '../icons/tired_icon.png'
+import romanceIcon from '../icons/romance_icon.png'
+
+// Components
+import CategorySelector from './CategorySelector.vue'
+import AnalyzeResult from './AnalyzeResult.vue'
+import WriteDiary from './WriteDiary.vue'
+import WriteGuestbook from './WriteGuestbook.vue'
+import LoadingAnimation from './LoadingAnimation.vue'
+import GuestbookList from './GuestbookList.vue'
+import GuestBookDetail from './GuestBookDetail.vue'
 import ForestListModal from "./ForestListModal.vue";
 import WithdrawModal from "./WithdrawModal.vue";
-import { useRouter, useRoute } from "vue-router";
 
 const { proxy } = getCurrentInstance();
 
@@ -46,25 +53,22 @@ const dummyAnalysisResult = {
   ],
 };
 
-const isMenuOpen = ref(true);
-const showCategorySelector = ref(false);
-const showAnalyzeResult = ref(false);
-const showWriteDiary = ref(false);
-const showGuestbookList = ref(false); // 방명록 확인하기 화면 표시 여부
-const categoryLoading = ref(false);
-const selectedCategory = ref(null);
-const showForestListModal = ref(false);
-const emit = defineEmits(["openForestList"]);
+const isMenuOpen = ref(true)
+const showCategorySelector = ref(false)
+const showAnalyzeResult = ref(false)
+const showWriteDiary = ref(false)
+const showGuestbookList = ref(false)
+const showGuestbookDetail = ref(false)
+const selectedGuestbookId = ref(null)
+const categoryLoading = ref(false)
+const selectedCategory = ref(null)
+const showForestListModal = ref(false)
+const emit = defineEmits(["openForestList"])
 
 const sidebarWidth = computed(() => {
-  if (!isMenuOpen.value) return 60;
-  return showCategorySelector.value ||
-    showAnalyzeResult.value ||
-    showWriteDiary.value ||
-    showGuestbookList.value
-    ? 576
-    : 360;
-});
+  if (!isMenuOpen.value) return 60
+  return showCategorySelector.value || showAnalyzeResult.value || showWriteDiary.value || showGuestbookList.value || showGuestbookDetail.value ? 576 : 360
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -191,7 +195,6 @@ const handleDiarySave = (analysisResult) => {
 
   // 분석 결과 데이터 업데이트
   Object.assign(dummyAnalysisResult, analysisData);
-
   // 분석 결과 화면으로 전환
   showAnalyzeResult.value = true;
 };
@@ -235,6 +238,7 @@ const handleWriteGuestbookBack = () => {
 
 const handleGuestbook = () => {
   showGuestbookList.value = true;
+  showGuestbookDetail.value = false;
   showCategorySelector.value = false;
   showAnalyzeResult.value = false;
   showWriteDiary.value = false;
@@ -242,6 +246,36 @@ const handleGuestbook = () => {
 
 const handleGuestbookBack = () => {
   showGuestbookList.value = false;
+  showGuestbookDetail.value = false;
+};
+
+const handleGuestbookDetail = (id) => {
+  console.log('Showing guestbook detail:', id);
+  selectedGuestbookId.value = id;
+  showGuestbookDetail.value = true;
+};
+
+const handleGuestbookDetailBack = () => {
+  showGuestbookDetail.value = false;
+};
+
+// '우정의 숲 입장하기' 화면 열기
+const handleForestList = () => {
+  emit("openForestList");
+};
+
+// 더미 데이터 - 실제로는 API 응답으로 받을 데이터
+const dummyAnalysisResult = {
+  emotions: [
+    { label: "평온함", icon: peacefulIcon, percent: 50 },
+    { label: "즐거움", icon: joyIcon, percent: 30 },
+  ],
+  summaryMessage: "평온하고 일상적인 하루에, 즐거움이 묻어나있네요!",
+  pieces: [
+    { value: "tree1", label: "동글 나무", icon: buttonIcon_1 },
+    { value: "tree2", label: "뾰족 나무", icon: buttonIcon_2 },
+    { value: "tree3", label: "나는 나무", icon: buttonIcon_3 },
+  ],
 };
 </script>
 
@@ -260,14 +294,7 @@ const handleGuestbookBack = () => {
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <template
-          v-if="
-            !showCategorySelector &&
-            !showAnalyzeResult &&
-            !showWriteDiary &&
-            !showGuestbookList
-          "
-        >
+        <template v-if="!showCategorySelector && !showAnalyzeResult && !showWriteDiary && !showGuestbookList && !showGuestbookDetail">
           <div class="top-bar">
             <span class="logout-icon" @click="logout">
               <img :src="logoutIcon" class="btn-img" />
@@ -296,11 +323,7 @@ const handleGuestbookBack = () => {
               </span>
               우정의 숲 입장하기
             </button>
-            <router-link
-              to="/forestview"
-              class="menu-btn"
-              @click="handleForestList"
-            >
+            <router-link to="/forestview" class="menu-btn">
               <span class="icon">
                 <img :src="buttonIcon_4" class="btn-img" />
               </span>
@@ -324,6 +347,18 @@ const handleGuestbookBack = () => {
               @close="showForestListModal = false"
             />
           </div>
+        </template>
+        <template v-else-if="showGuestbookDetail">
+          <GuestBookDetail
+            :id="selectedGuestbookId"
+            @back="handleGuestbookDetailBack"
+          />
+        </template>
+        <template v-else-if="showGuestbookList">
+          <GuestbookList
+            @back="handleGuestbookBack"
+            @show-detail="handleGuestbookDetail"
+          />
         </template>
         <template v-else-if="showWriteDiary">
           <div class="top-bar">
@@ -363,9 +398,6 @@ const handleGuestbookBack = () => {
             @place="handlePlace"
             @toStorage="handleToStorage"
           />
-        </template>
-        <template v-else-if="showGuestbookList">
-          <GuestbookList @back="handleGuestbookBack" />
         </template>
       </div>
     </div>

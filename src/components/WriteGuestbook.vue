@@ -5,12 +5,17 @@
     </div>
     <div class="title">방명록 작성</div>
     <div class="content">
-      <textarea
-        v-model="content"
-        placeholder="방명록을 작성해주세요..."
-        class="guestbook-textarea"
-      ></textarea>
-      <button class="submit-button" @click="handleSubmit">작성하기</button>
+      <div class="textarea-container">
+        <textarea
+          v-model="content"
+          placeholder="방명록을 작성해주세요... (최대 500자)"
+          class="guestbook-textarea"
+          maxlength="500"
+          @input="handleInput"
+        ></textarea>
+        <div class="char-count">{{ content.length }}/500</div>
+      </div>
+      <button class="submit-button" @click="handleSubmit" :disabled="!content.trim() || content.length > 500">작성하기</button>
     </div>
   </div>
 </template>
@@ -21,8 +26,14 @@ import { ref } from 'vue'
 const content = ref('')
 const emit = defineEmits(['back', 'submit'])
 
+const handleInput = (e) => {
+  if (content.value.length > 500) {
+    content.value = content.value.slice(0, 500)
+  }
+}
+
 const handleSubmit = async () => {
-  if (content.value.trim()) {
+  if (content.value.trim() && content.value.length <= 500) {
     try {
       const response = await fetch('http://localhost:8080/emotion-forest/mailbox', {
         method: 'POST',
@@ -30,7 +41,6 @@ const handleSubmit = async () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         },
-        // forestId 가져오는 로직 필요
         body: JSON.stringify({
           forestId: 1,
           content: content.value
@@ -75,6 +85,13 @@ const handleSubmit = async () => {
   gap: 20px;
 }
 
+.textarea-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .guestbook-textarea {
   flex: 1;
   padding: 16px;
@@ -87,6 +104,17 @@ const handleSubmit = async () => {
   outline: none;
   max-height: 300px;
   overflow-y: auto;
+}
+
+.char-count {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: rgba(58, 90, 64, 0.8);
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
 .guestbook-textarea::placeholder {
@@ -105,8 +133,13 @@ const handleSubmit = async () => {
   transition: background 0.2s;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.55);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .back-button {
