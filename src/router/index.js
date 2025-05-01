@@ -39,11 +39,11 @@ const router = createRouter({
           name: "ForestView",
           component: ForestView,
         },
-        {
-          path: "myitemview",
-          name: "MyItemView",
-          component: MyItemView,
-        },
+        // {
+        //   path: "myitemview",
+        //   name: "MyItemView",
+        //   component: MyItemView,
+        // },
         {
           path: "guestbook",
           name: "GuestBook",
