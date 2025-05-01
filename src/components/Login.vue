@@ -38,7 +38,6 @@ const handleLogin = async (e) => {
 
     const token = localStorage.getItem('accessToken');
     const authToken = `Bearer ${token}`;
-    console.log(authToken);
 
     // 숲 정보 가져오기
     const forestResponse = await fetch('http://localhost:8080/myforest', {
@@ -58,6 +57,9 @@ const handleLogin = async (e) => {
     if (!forestId) {
       throw new Error('숲이 존재하지 않습니다.')
     }
+
+    // 기본 forestId 저장
+    localStorage.setItem('forestId', forestId)
 
     router.push(`/forest-detail/${forestId}`)
 
