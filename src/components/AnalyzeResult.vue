@@ -68,7 +68,9 @@ const props = defineProps({
   }
 })
 const selected = ref(null)
-const selectPiece = (val) => (selected.value = val)
+const selectPiece = (val) => {
+  selected.value = val
+}
 </script>
 
 <style scoped>
