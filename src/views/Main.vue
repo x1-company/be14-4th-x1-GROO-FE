@@ -11,14 +11,50 @@ const currentView = ref("background"); // 초기 상태: BackgroundImage
 const isInviteLinkModalOpen = ref(false);
 const isForestListModalOpen = ref(false);
 const isWithdrawModalOpen = ref(false);
+const inviteLink = ref("");
 
 const changeView = (view) => {
   currentView.value = view;
 };
 
 // 초대 링크 모달 열기
-const openInviteLinkModal = () => {
-  isInviteLinkModalOpen.value = true;
+const openInviteLinkModal = async () => {
+  try {
+    const pathSegments = route.path.split("/");
+    const forestId = route.params.id;
+    console.log("forestId:", forestId);
+
+    if (!forestId) {
+      console.error("forestId가 없습니다.");
+      return;
+    }
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.error("토큰이 없습니다.");
+      return;
+    }
+
+    const response = await fetch(
+      `http://localhost:8080/mate/link?forestId=${forestId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("서버 응답 데이터:", data); // 응답 데이터 확인
+
+    // 서버 응답 구조에 따라 inviteLink 설정
+    inviteLink.value = `${data.inviteLink}`;
+    isInviteLinkModalOpen.value = true;
+  } catch (error) {
+    console.error("초대 링크 요청 실패:", error);
+  }
 };
 
 const closeInviteLinkModal = () => {
@@ -68,6 +104,7 @@ const route = useRoute(); // 현재 경로 가져오기
     </template>
     <InviteLinkModal
       :is-open="isInviteLinkModalOpen"
+      :invite-link="inviteLink"
       @close="closeInviteLinkModal"
     />
     <ForestListModal
