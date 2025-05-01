@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
 import buttonIcon_1 from "../icons/diarywrite_icon.png";
 import buttonIcon_2 from "../icons/diaryview_icon.png";
 import buttonIcon_3 from "../icons/forestmate_icon.png";
@@ -24,6 +24,8 @@ import GuestbookList from "./GuestbookList.vue";
 import ForestListModal from "./ForestListModal.vue";
 import WithdrawModal from "./WithdrawModal.vue";
 import { useRouter, useRoute } from "vue-router";
+
+const { proxy } = getCurrentInstance();
 
 // '우정의 숲 입장하기' 화면 열기
 const handleForestList = () => {
@@ -121,7 +123,8 @@ const handleAnalyze = (category) => {
 const handlePlace = (selectedPiece) => {
   console.log("Selected piece to place:", selectedPiece);
   showAnalyzeResult.value = false;
-  // 여기에 배치 로직 추가
+  // 이벤트 버스를 통해 이벤트 전달
+  proxy.emitter.emit('place-item', selectedPiece);
 };
 
 const handleToStorage = () => {
