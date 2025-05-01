@@ -67,7 +67,7 @@ const router = createRouter({
       component: Signup,
     },
     {
-      path: "/invite", // 초대 코드 입력 화면도 레이아웃 없이 독립적으로 표시
+      path: "/mate/invite/:inviteCode", // 초대 코드 입력 화면도 레이아웃 없이 독립적으로 표시
       name: "InviteCode",
       component: InviteCodeView,
     },

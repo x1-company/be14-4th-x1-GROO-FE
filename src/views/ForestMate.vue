@@ -49,9 +49,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import buttonIcon_6 from "../icons/edit_icon.png";
-import buttonIcon_7 from "../icons/External_icon.png";
-import buttonIcon_8 from "../icons/is_public_icon.png";
 import WithdrawModal from "../components/WithdrawModal.vue";
 const route = useRoute();
 const forestData = ref(null);
@@ -156,14 +153,6 @@ div {
   margin: 0;
   text-align: center;
   width: 100%;
-}
-
-.icons {
-  position: absolute;
-  top: 40px;
-  left: 88px;
-  display: flex;
-  gap: 16px;
 }
 
 .btn-img {

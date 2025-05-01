@@ -70,7 +70,7 @@ defineEmits(["close"]);
 
 const linkInput = ref(null);
 const shareUrl = computed(() => {
-  return `http://localhost:8080/mate/invite/${props.inviteLink}`;
+  return `${props.inviteLink}`;
 });
 
 const copyLink = () => {
