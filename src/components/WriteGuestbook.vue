@@ -1,7 +1,9 @@
 <template>
   <div class="write-guestbook">
     <div class="top-bar">
-      <button class="back-button" @click="$emit('back')">←</button>
+      <button class="list-button" @click="$emit('back')">
+        목록으로
+      </button>
     </div>
     <div class="title">방명록 작성</div>
     <div class="content">
@@ -147,13 +149,25 @@ const handleSubmit = async () => {
   cursor: not-allowed;
 }
 
-.back-button {
+.top-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.list-button {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 24px;
   cursor: pointer;
-  padding: 8px;
-  margin-right: auto;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.list-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 </style> 

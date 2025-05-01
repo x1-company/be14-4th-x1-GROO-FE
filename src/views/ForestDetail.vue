@@ -111,18 +111,12 @@ const togglePublic = async () => {
 }
 
 const handleGuestbookBack = () => {
-  if (showGuestbook.value) {
-    showGuestbook.value = false
-    showGuestbookList.value = true
-  } else {
-    showGuestbookList.value = false
-  }
+  showGuestbookList.value = false
 }
 
-const handleGuestbookClick = () => {
-  props.isSidebarOpen = false
-  showGuestbookList.value = true
+const handleGuestbookToList = () => {
   showGuestbook.value = false
+  showGuestbookList.value = true
 }
 
 const handleGuestbookSelect = (id) => {
@@ -140,7 +134,7 @@ const handleGuestbookSelect = (id) => {
         <img 
           :src="buttonIcon_7" 
           class="btn-img" 
-          @click="handleGuestbookClick"
+          @click="handleGuestbookToList"
           style="cursor:pointer;"
         />
         <img
@@ -163,7 +157,7 @@ const handleGuestbookSelect = (id) => {
       <GuestbookDetail
         v-if="showGuestbook"
         :guestbook-id="selectedGuestbookId"
-        @back="handleGuestbookBack"
+        @back="handleGuestbookToList"
       />
       <GuestbookList
         v-else-if="showGuestbookList"

@@ -1,5 +1,10 @@
 <template>
   <div class="guestbook-detail">
+    <div class="top-bar">
+      <button class="list-button" @click="$emit('back')">
+        목록으로
+      </button>
+    </div>
     <div v-if="isLoading" class="loading">로딩 중...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else class="content">
@@ -72,14 +77,24 @@ onMounted(() => {
 
 .top-bar {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
-.back-button {
+.list-button {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 24px;
   cursor: pointer;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.list-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .loading,
