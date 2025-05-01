@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted, watch, getCurrentInstance } from "vue";
-import { useRouter, useRoute } from 'vue-router'
 
 // Icons
 import buttonIcon_1 from '../icons/diarywrite_icon.png'
@@ -28,6 +27,8 @@ import WriteDiary from './WriteDiary.vue'
 import WriteGuestbook from './WriteGuestbook.vue'
 import LoadingAnimation from './LoadingAnimation.vue'
 import GuestbookList from './GuestbookList.vue'
+import { useRouter, useRoute } from 'vue-router'
+import ConfirmModal from './ConfirmModal.vue'
 import GuestBookDetail from './GuestBookDetail.vue'
 import ForestListModal from "./ForestListModal.vue";
 import WithdrawModal from "./WithdrawModal.vue";
@@ -43,6 +44,15 @@ const showGuestbookDetail = ref(false)
 const selectedGuestbookId = ref(null)
 const categoryLoading = ref(false)
 const selectedCategory = ref(null)
+const showSaveModal = ref(false)
+
+function openSaveModal() {
+  showSaveModal.value = true
+}
+function closeSaveModal() {
+  showSaveModal.value = false
+}
+
 const showForestListModal = ref(false)
 const emit = defineEmits(["openForestList"])
 
@@ -112,10 +122,9 @@ const handlePlace = (selectedPiece) => {
   proxy.emitter.emit('place-item', selectedPiece);
 };
 
-const handleToStorage = () => {
-  console.log("Moving to storage");
-  showAnalyzeResult.value = false;
-  router.push("/myitemview");
+const confirmSaveToStorage = () => {
+  showSaveModal.value = false;
+  router.push('/myitemview');
 };
 
 // 감정 아이콘 매핑 객체
@@ -377,7 +386,7 @@ const dummyAnalysisResult = {
           <AnalyzeResult
             v-bind="dummyAnalysisResult"
             @place="handlePlace"
-            @toStorage="handleToStorage"
+            @to-storage="openSaveModal"
           />
         </template>
       </div>
@@ -386,6 +395,13 @@ const dummyAnalysisResult = {
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
+    <ConfirmModal
+            :is-open="showSaveModal"
+            title="보관소에 저장"
+            message="정말로 이 조각을 보관소에 저장하시겠습니까?"
+            @confirm="confirmSaveToStorage"
+            @cancel="closeSaveModal"
+          />
   </div>
 </template>
 
