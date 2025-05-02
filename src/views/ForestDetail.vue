@@ -7,7 +7,8 @@ import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포넌트 불러오기
 import FlowerRainEffect from "../components/FlowerRainEffect.vue";
-import FogEffect from "../components/FogEffect.vue";
+// import FogEffect from "../components/FogEffect.vue";
+import FogEffects from "../components/FogEffects.vue";
 import YellowDustEffects from "../components/YellowDustEffects.vue";
 import SnowEffects from "../components/SnowEffects.vue";
 import ThunderEffects from "../components/ThunderEffects.vue";
@@ -349,7 +350,7 @@ const handleNameUpdate = (newName) => {
 
     <RainEffects v-if="showRain" />
     <FlowerRainEffect v-if="showFlowerRain" />
-    <FogEffect v-if="showFog" />
+    <FogEffects v-if="showFog" />
     <YellowDustEffects v-if="showYellowDust" />
     <SnowEffects v-if="showSnow" />
     <ThunderEffects v-if="showThunder" />

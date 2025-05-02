@@ -42,7 +42,7 @@
     width: 100vw;
     pointer-events: none;
     z-index: 1000;
-    filter: blur(1.5px) sepia(0.5) hue-rotate(-20deg) brightness(1.05);
+    filter: blur(1.5px) sepia(0.3) hue-rotate(-20deg) brightness(1.05);
   }
   
   #dustlayer_01, #dustlayer_02, #dustlayer_03 {
@@ -74,7 +74,7 @@
   }
   
   @keyframes dust_opacity_01 {
-    0%   { opacity: 0.3; }
+    0%   { opacity: 0.2; }
     30%  { opacity: 0.5; }
     70%  { opacity: 0.4; }
     100% { opacity: 0.3; }
