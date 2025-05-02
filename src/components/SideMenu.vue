@@ -35,6 +35,7 @@ import ConfirmModal from './ConfirmModal.vue'
 import GuestBookDetail from './GuestBookDetail.vue'
 import ForestListModal from "./ForestListModal.vue";
 import MyItemView from './MyItemView.vue'
+import AlertModal from './AlertModal.vue'
 
 const { proxy } = getCurrentInstance();
 
@@ -54,6 +55,8 @@ const showMyDiaryCalendar = ref(false)
 const showMyDiaryDetail = ref(false)
 const selectedDiaryData = ref(null)
 const currentDiaryIndex = ref(0)
+const showAlertModal = ref(false)
+const alertMessage = ref('')
 
 function openSaveModal(selectedPiece) {
   pieceToSave.value = selectedPiece
@@ -135,7 +138,8 @@ const handlePlace = (selectedPiece) => {
 
 async function confirmSaveToStorage() {
   if (!pieceToSave.value) {
-    alert("저장할 조각 정보가 없습니다.")
+    alertMessage.value = "저장할 조각 정보가 없습니다."
+    showAlertModal.value = true
     return
   }
   try {
@@ -153,7 +157,8 @@ async function confirmSaveToStorage() {
     window.location.href = `/forest-detail/${forestId}`;
   } catch (e) {
     console.error(e);
-    alert("보관소 저장에 실패했습니다. 다시 시도해주세요.");
+    alertMessage.value = "보관소 저장에 실패했습니다. 다시 시도해주세요."
+    showAlertModal.value = true
   }
 }
 
@@ -507,6 +512,11 @@ const handleNextDiary = () => {
             message="정말로 이 조각을 보관소에 저장하시겠습니까?"
             @confirm="confirmSaveToStorage"
             @cancel="closeSaveModal"
+          />
+    <AlertModal
+            :is-open="showAlertModal"
+            :message="alertMessage"
+            @close="showAlertModal = false"
           />
   </div>
 </template>

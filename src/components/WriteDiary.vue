@@ -53,6 +53,12 @@
         </button>
       </div>
     </div>
+    <AlertModal
+      v-if="showAlert"
+      :message="alertMessage"
+      :type="alertType"
+      @close="showAlert = false"
+    />
   </div>
 </template>
 
@@ -62,6 +68,7 @@ import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 import { Korean } from 'flatpickr/dist/l10n/ko.js';
 import { diaryApi } from '../services/api';
+import AlertModal from './AlertModal.vue';
 
 const props = defineProps({
   categoryId: {
@@ -76,6 +83,9 @@ const props = defineProps({
 const diaryContent = ref('');
 const charCount = ref(0);
 const selectedDate = ref(new Date());
+const showAlert = ref(false);
+const alertMessage = ref('');
+const alertType = ref('');
 
 // Flatpickr 설정
 const flatpickrConfig = {
@@ -102,12 +112,18 @@ const updateCharCount = () => {
   charCount.value = diaryContent.value.length;
 };
 
+const showAlertModal = (message, type = 'info') => {
+  alertMessage.value = message;
+  alertType.value = type;
+  showAlert.value = true;
+};
+
 const saveDraft = () => {
   localStorage.setItem('diaryDraft', JSON.stringify({
     content: diaryContent.value,
     date: selectedDate.value
   }));
-  alert('임시저장되었습니다.');
+  showAlertModal('임시저장되었습니다.');
 };
 
 const loadDraft = () => {
@@ -118,7 +134,7 @@ const loadDraft = () => {
     selectedDate.value = new Date(date);
     updateCharCount();
   } else {
-    alert('저장된 임시글이 없습니다.');
+    showAlertModal('저장된 임시글이 없습니다.');
   }
 };
 
@@ -127,12 +143,12 @@ const emit = defineEmits(['save', 'loading']);
 const saveDiary = async () => {
   try {
     if (!props.categoryId) {
-      alert('카테고리가 선택되지 않았습니다.');
+      showAlertModal('카테고리가 선택되지 않았습니다.', 'error');
       return;
     }
 
     if (!diaryContent.value.trim()) {
-      alert('일기 내용을 입력해주세요.');
+      showAlertModal('일기 내용을 입력해주세요.', 'error');
       return;
     }
 
@@ -168,7 +184,7 @@ const saveDiary = async () => {
     emit('save', response);
   } catch (error) {
     console.error('일기 저장 실패:', error);
-    alert('일기 저장에 실패했습니다. 다시 시도해주세요.');
+    showAlertModal('일기 저장에 실패했습니다. 다시 시도해주세요.', 'error');
   } finally {
     emit('loading', false);
   }

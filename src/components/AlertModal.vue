@@ -2,7 +2,7 @@
   <Transition name="toast">
     <div class="toast-message" v-if="show">
       <div class="toast-content">
-        <span class="check-icon">✓</span>
+        <!-- <span class="check-icon">✓</span> -->
         {{ message }}
       </div>
     </div>
@@ -39,12 +39,12 @@ onMounted(() => {
 <style scoped>
 .toast-message {
   position: fixed;
-  top: 20px;
+  top: 35px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #3a5a40;
   color: white;
-  padding: 12px 24px;
+  padding: 16px 28px;
   border-radius: 8px;
   z-index: 1000;
   display: flex;
@@ -55,13 +55,8 @@ onMounted(() => {
 .toast-content {
   display: flex;
   align-items: center;
-  gap: 8px;
   font-size: 16px;
   font-weight: 500;
-}
-
-.check-icon {
-  font-size: 18px;
 }
 
 /* 토스트 애니메이션 */
