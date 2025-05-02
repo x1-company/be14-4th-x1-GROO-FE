@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import buttonIcon_6 from "../icons/edit_icon.png"
 import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
+import AlertModal from './AlertModal.vue'
 
 const props = defineProps({
   isSidebarOpen: {
@@ -33,6 +34,9 @@ watch(() => props.isSidebarOpen, (newValue) => {
 const currentView = ref('background')
 const forestData = ref(null)
 const showTooltip = ref(false)
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref('')
 
 const route = useRoute()
 const router = useRouter()
@@ -55,7 +59,9 @@ onMounted(async () => {
       const forestList = await res.json()
 
       if (!forestList.length) {
-        alert('소유한 숲이 없습니다.')
+        alertMessage.value = '소유한 숲이 없습니다.'
+        alertType.value = 'error'
+        showAlert.value = true
         return
       }
 
@@ -74,7 +80,9 @@ onMounted(async () => {
       })
 
       if (!response.ok) {
-        alert("다시 로그인해 주세요!")
+        alertMessage.value = "다시 로그인해 주세요!"
+        alertType.value = 'error'
+        showAlert.value = true
         router.push('/login')
         throw new Error('detail 요청 실패')
       }
@@ -104,7 +112,9 @@ const togglePublic = async () => {
 
     forestData.value.isPublic = !forestData.value.isPublic;
   } catch (err) {
-    alert('공개여부 변경에 실패했습니다.');
+    alertMessage.value = '공개여부 변경에 실패했습니다.'
+    alertType.value = 'error'
+    showAlert.value = true
     console.error(err);
   }
 }
@@ -112,6 +122,12 @@ const togglePublic = async () => {
 
 <template>
   <div class="container1">
+    <AlertModal
+      v-if="showAlert"
+      :message="alertMessage"
+      :type="alertType"
+      @close="showAlert = false"
+    />
     <div class="main-area1">
       <div class="icons">
         <img :src="buttonIcon_6" class="btn-img" />

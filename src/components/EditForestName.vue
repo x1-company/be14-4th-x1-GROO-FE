@@ -15,10 +15,16 @@
     <span class="forest-name">{{ currentName }}</span>
     <button class="edit-btn">변경하기</button>
   </div>
+  <AlertModal
+    v-if="showAlert"
+    :message="alertMessage"
+    @close="showAlert = false"
+  />
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import AlertModal from './AlertModal.vue';
 
 const props = defineProps({
   currentName: {
@@ -32,6 +38,8 @@ const emit = defineEmits(['update']);
 const isEditing = ref(false);
 const editingName = ref(props.currentName);
 const nameInput = ref(null);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const startEdit = () => {
   isEditing.value = true;
@@ -73,7 +81,8 @@ const handleSubmit = async () => {
     isEditing.value = false;
   } catch (error) {
     console.error('숲 이름 수정 중 오류 발생:', error);
-    alert('숲 이름 수정에 실패했습니다.');
+    alertMessage.value = '숲 이름 수정에 실패했습니다.';
+    showAlert.value = true;
     cancelEdit();
   }
 };

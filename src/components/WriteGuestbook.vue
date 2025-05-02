@@ -17,17 +17,25 @@
       </div>
       <button class="submit-button" @click="handleSubmit" :disabled="!content.trim() || content.length > 500">작성하기</button>
     </div>
+    <AlertModal
+      v-if="showAlert"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import AlertModal from './AlertModal.vue'
 
 const route = useRoute()
 const currentPath = route.path
 
 const content = ref('')
+const showAlert = ref(false)
+const alertMessage = ref('')
 const emit = defineEmits(['back', 'submit'])
 
 const handleInput = (e) => {
@@ -55,12 +63,14 @@ const handleSubmit = async () => {
         throw new Error('방명록 작성에 실패했습니다.');
       }
 
-      alert('방명록이 작성되었습니다!');
+      alertMessage.value = '방명록이 작성되었습니다!';
+      showAlert.value = true;
       emit('submit', content.value);
       content.value = '';
     } catch (error) {
       console.error('Error:', error);
-      alert('방명록 작성에 실패했습니다. 다시 시도해주세요.');
+      alertMessage.value = '방명록 작성에 실패했습니다. 다시 시도해주세요.';
+      showAlert.value = true;
     }
   }
 }

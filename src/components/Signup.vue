@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import AlertModal from './AlertModal.vue'
 
 const router = useRouter()
 
@@ -15,6 +16,17 @@ const loadingVerification = ref(false) // 전송 중 로딩 상태
 const loadingVerificationCheck = ref(false)
 const verificationCheckMessage = ref('')
 
+// AlertModal 관련 상태
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref('')
+
+const showAlertModal = (message, type = 'info') => {
+  alertMessage.value = message
+  alertType.value = type
+  showAlert.value = true
+}
+
 const sendVerification = async () => {
   loadingVerification.value = true
   try {
@@ -26,7 +38,7 @@ const sendVerification = async () => {
       body: JSON.stringify({ email: email.value }),
     })
     if (!response.ok) {
-      alert('인증번호 전송에 실패했습니다.')
+      showAlertModal('인증번호 전송에 실패했습니다.', 'error')
       throw new Error('전송 실패')
     }
     verificationSent.value = true
@@ -56,7 +68,7 @@ const verifyCode = async () => {
     const message = await response.text();
     if (!response.ok) {
       verificationCheckMessage.value = '인증에 실패했습니다.'
-      alert(message)
+      showAlertModal(message, 'error')
       throw new Error('인증 실패')
     }
     verificationCheckMessage.value = '인증이 완료되었습니다.'
@@ -86,15 +98,15 @@ const handleSignUp = async (e) => {
     const message = await response.text();
 
     if (!response.ok) {
-      alert(message || '회원가입 정보를 확인해 주세요!')
+      showAlertModal(message || '회원가입 정보를 확인해 주세요!', 'error')
       throw new Error('회원가입 실패')
     }
 
-    alert('회원가입 성공! 환영합니다. 🌿')
+    showAlertModal('회원가입 성공! 환영합니다. 🌿', 'success')
     router.push('/login')
   } catch (error) {
     console.error('에러 발생:', error)
-    alert('회원가입 실패')
+    showAlertModal('회원가입 실패', 'error')
   }
 }
 
@@ -169,6 +181,12 @@ const canSignUp = computed(() => {
         <button type="submit" class="signup-button" :disabled="!canSignUp">가입</button>
       </form>
     </div>
+    <AlertModal
+      v-if="showAlert"
+      :message="alertMessage"
+      :type="alertType"
+      @close="showAlert = false"
+    />
   </div>
 </template>
 

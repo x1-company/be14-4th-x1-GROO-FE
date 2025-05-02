@@ -39,12 +39,12 @@ onMounted(() => {
 <style scoped>
 .toast-message {
   position: fixed;
-  top: 20px;
+  top: 35px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #3a5a40;
   color: white;
-  padding: 12px 24px;
+  padding: 16px 28px;
   border-radius: 8px;
   z-index: 1000;
   display: flex;
