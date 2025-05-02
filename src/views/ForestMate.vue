@@ -128,15 +128,14 @@ div {
 }
 
 .background {
-  width: 80%;
+  width: 800px;
   height: auto;
 }
 
 .title {
   position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 12.83%;
+  left: 5.07%;
   color: white;
   font-size: 24px;
   font-weight: 500;
@@ -145,14 +144,13 @@ div {
 
 .nickname-list {
   position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 16%;
+  left: 5.07%;
   color: white;
   font-size: 18px;
   margin: 0;
-  text-align: center;
-  width: 100%;
+  text-align: left;
+  width: auto;
 }
 
 .btn-img {

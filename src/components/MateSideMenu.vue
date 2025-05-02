@@ -43,7 +43,8 @@ const handleShare = () => {
 };
 
 const goBack = () => {
-  router.back();
+  // router.back();
+  router.push('/forest-detail/' + localStorage.getItem("myRecentforestId"));
 };
 
 const logout = () => {
