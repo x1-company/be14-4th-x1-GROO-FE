@@ -5,7 +5,8 @@ const imageUrl = ref('') // 이미지 URL을 저장할 상태
 
 onMounted(() => {
   const hour = new Date().getHours()
-  document.body.className = hour >= 6 && hour < 18 ? 'daytime' : 'nighttime'
+  // document.body.className = hour >= 6 && hour < 18 ? 'daytime' : 'nighttime'
+  document.body.className = 'nighttime'
   imageUrl.value =
     hour >= 6 && hour < 18
       ? 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/joy_fox' // 낮 이미지
