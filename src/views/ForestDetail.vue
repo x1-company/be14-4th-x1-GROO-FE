@@ -509,15 +509,15 @@ const handleNameUpdate = (newName) => {
 
 .complete-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 530px;
+  right: 340px;
   z-index: 30;
-  padding: 10px 24px;
+  padding: 15px 28px;
   background: #3a5a40;
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
