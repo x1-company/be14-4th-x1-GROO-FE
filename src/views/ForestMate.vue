@@ -36,6 +36,7 @@
           }"
         >
           <img
+            v-if="item.placementPositionX && item.placementPositionY"
             :src="item.itemImageUrl"
             :alt="item.itemName"
             @error="handleImageError"
