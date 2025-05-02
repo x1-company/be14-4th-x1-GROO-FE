@@ -8,7 +8,7 @@
       @keyup.esc="cancelEdit"
     >
     <div class="button-group">
-      <button class="edit-btn" @click="handleSubmit"></button>
+      <button class="edit-btn" @click="handleSubmit">수정</button>
     </div>
   </div>
   <div class="forest-name-bubble" v-else @click="startEdit">

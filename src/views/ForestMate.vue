@@ -36,6 +36,7 @@
           }"
         >
           <img
+            v-if="item.placementPositionX && item.placementPositionY"
             :src="item.itemImageUrl"
             :alt="item.itemName"
             @error="handleImageError"
@@ -138,22 +139,26 @@ div {
 .title {
   position: absolute;
   top: 12.83%;
-  left: 5.07%;
+  left: 50%;
+  transform: translateX(-50%);
   color: white;
   font-size: 24px;
   font-weight: 500;
   margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .nickname-list {
   position: absolute;
   top: 16%;
-  left: 5.07%;
+  left: 50%;
+  transform: translateX(-50%);
   color: white;
   font-size: 18px;
   margin: 0;
-  text-align: left;
-  width: auto;
+  text-align: center;
+  width: 100%;
 }
 
 .btn-img {

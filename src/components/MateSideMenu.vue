@@ -189,7 +189,7 @@ const handleDiarySave = async (result) => {
       ([label, percent]) => ({
         label: emotionMapping[label] || label,
         icon: emotionIcons[emotionMapping[label] || label],
-        percent: Math.round(percent * 100), // 퍼센트로 변환
+        percent,
       })
     );
 
@@ -219,138 +219,144 @@ const handleDiarySave = async (result) => {
 </script>
 
 <template>
-  <div
-    class="side-menu"
-    :class="{ open: isMenuOpen }"
-    :style="{ width: sidebarWidth + 'px' }"
-  >
+  <div class="sidebar-container">
     <button class="toggle-button" @click="toggleMenu">
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
-
-    <div class="menu-content" v-if="isMenuOpen">
-      <div v-if="!showDiaryCalendar && !showMyItems && !showCategorySelector && !showWriteDiary && !showAnalyzeResult">
-        <div class="top-bar">
-          <span class="previous-icon" @click="goBack">
-            <img :src="previousIcon" class="btn-img" />
-          </span>
-          <span class="logout-icon" @click="logout">
-            <img :src="logoutIcon" class="btn-img" />
-          </span>
-        </div>
-        <div class="greeting">
-          <div>우정의 숲에</div>
-          <div>들어오신걸 환영해요!</div>
-        </div>
-        <div class="menu-buttons">
-          <button class="menu-btn" @click="toggleCategorySelector">
-            <span class="icon">
-              <img :src="buttonIcon_1" class="btn-img" />
+    <div
+      class="side-menu"
+      :class="{ open: isMenuOpen }"
+      :style="{ width: sidebarWidth + 'px' }"
+    >
+      <div class="menu-content" v-if="isMenuOpen">
+        <div v-if="!showDiaryCalendar && !showMyItems && !showCategorySelector && !showWriteDiary && !showAnalyzeResult">
+          <div class="top-bar">
+            <span class="previous-icon" @click="goBack">
+              <img :src="previousIcon" class="btn-img" />
             </span>
-            우정일기 작성하기
-          </button>
-          <button class="menu-btn" @click="openDiaryCalendar">
-            <span class="icon">
-              <img :src="buttonIcon_2" class="btn-img" />
+            <span class="logout-icon" @click="logout">
+              <img :src="logoutIcon" class="btn-img" />
             </span>
-            우정일기 다시보기
-          </button>
-          <button class="menu-btn" @click="handleShare">
-            <span class="icon">
-              <img :src="buttonIcon_4" class="btn-img" />
-            </span>
-            우정의 숲 초대하기
-          </button>
-          <button class="menu-btn" @click="openMyItems">
-            <span class="icon">
-              <img :src="buttonIcon_5" class="btn-img" />
-            </span>
-            우리의 조각 보기
-          </button>
-          <button class="menu-btn" @click="handleWithdraw">
-            <span class="icon">
-              <img :src="buttonIcon_3" class="btn-img" />
-            </span>
-            우정의 숲 탈퇴하기
-          </button>
-          <InviteLinkModal
-            v-if="showInviteModal"
-            :inviteLink="inviteLink"
-            @close="showInviteModal = false"
-          />
-          <ForestListModal
-            v-if="showForestListModal"
-            :isOpen="showForestListModal"
-            @close="showForestListModal = false"
-          />
-        </div>
-      </div>
-      <template v-else-if="showCategorySelector">
-        <div class="top-bar">
-          <button class="back-button" @click="toggleCategorySelector">
-            ←
-          </button>
-        </div>
-        <CategorySelector
-          @select="handleCategorySelect"
-          @loading="(val) => (categoryLoading = val)"
-        />
-      </template>
-      <template v-else-if="showWriteDiary">
-        <div class="top-bar">
-          <button class="back-button" @click="toggleCategorySelector">
-            ←
-          </button>
-        </div>
-        <div class="relative-container">
-          <WriteDiary
-            :categoryId="selectedCategory"
-            @save="handleDiarySave"
-            @loading="(val) => (categoryLoading = val)"
-          />
-          <div v-if="categoryLoading" class="loading-overlay">
-            <LoadingAnimation />
+          </div>
+          <div class="greeting">
+            <div>우정의 숲에</div>
+            <div>들어오신걸 환영해요!</div>
+          </div>
+          <div class="menu-buttons">
+            <button class="menu-btn" @click="toggleCategorySelector">
+              <span class="icon">
+                <img :src="buttonIcon_1" class="btn-img" />
+              </span>
+              우정일기 작성하기
+            </button>
+            <button class="menu-btn" @click="openDiaryCalendar">
+              <span class="icon">
+                <img :src="buttonIcon_2" class="btn-img" />
+              </span>
+              우정일기 다시보기
+            </button>
+            <button class="menu-btn" @click="handleShare">
+              <span class="icon">
+                <img :src="buttonIcon_4" class="btn-img" />
+              </span>
+              우정의 숲 초대하기
+            </button>
+            <button class="menu-btn" @click="openMyItems">
+              <span class="icon">
+                <img :src="buttonIcon_5" class="btn-img" />
+              </span>
+              우리의 조각 보기
+            </button>
+            <button class="menu-btn" @click="handleWithdraw">
+              <span class="icon">
+                <img :src="buttonIcon_3" class="btn-img" />
+              </span>
+              우정의 숲 탈퇴하기
+            </button>
+            <InviteLinkModal
+              v-if="showInviteModal"
+              :inviteLink="inviteLink"
+              @close="showInviteModal = false"
+            />
+            <ForestListModal
+              v-if="showForestListModal"
+              :isOpen="showForestListModal"
+              @close="showForestListModal = false"
+            />
           </div>
         </div>
-      </template>
-      <template v-else-if="showAnalyzeResult">
-        <AnalyzeResult
-          v-bind="analysisResult"
-          @place="handlePlace"
-          @to-storage="openSaveModal"
-        />
-      </template>
-      <div v-else-if="showDiaryCalendar && !showDiaryDetail" class="calendar-view">
-        <DiaryCalendar
-          @close="closeDiaryCalendar"
-          @diary-click="handleDiaryClick"
-        />
-      </div>
-      <div v-else-if="showDiaryDetail" class="diary-detail-view">
-        <DiaryDetail
-          v-if="selectedDiaries && selectedDiaries.diaries[currentDiaryIndex]"
-          :nickname="selectedDiaries.diaries[currentDiaryIndex].nickname"
-          :year="selectedDiaries.year"
-          :month="selectedDiaries.month"
-          :day="selectedDiaries.day"
-          :emotions="selectedDiaries.diaries[currentDiaryIndex].emotions || []"
-          :content="selectedDiaries.diaries[currentDiaryIndex].content"
-          :showPrev="currentDiaryIndex > 0"
-          :showNext="currentDiaryIndex < selectedDiaries.diaries.length - 1"
-          @close="closeDiaryDetail"
-          @prev="handlePrevDiary"
-          @next="handleNextDiary"
-        />
-      </div>
-      <div v-else class="myitem-view">
-        <MyItemView @close="closeMyItems" />
+        <template v-else-if="showCategorySelector">
+          <div class="top-bar">
+            <button class="back-button" @click="toggleCategorySelector">
+              ←
+            </button>
+          </div>
+          <CategorySelector
+            @select="handleCategorySelect"
+            @loading="(val) => (categoryLoading = val)"
+          />
+        </template>
+        <template v-else-if="showWriteDiary">
+          <div class="top-bar">
+            <button class="back-button" @click="toggleCategorySelector">
+              ←
+            </button>
+          </div>
+          <div class="relative-container">
+            <WriteDiary
+              :categoryId="selectedCategory"
+              @save="handleDiarySave"
+              @loading="(val) => (categoryLoading = val)"
+            />
+            <div v-if="categoryLoading" class="loading-overlay">
+              <LoadingAnimation />
+            </div>
+          </div>
+        </template>
+        <template v-else-if="showAnalyzeResult">
+          <AnalyzeResult
+            v-bind="analysisResult"
+            @place="handlePlace"
+            @to-storage="openSaveModal"
+          />
+        </template>
+        <div v-else-if="showDiaryCalendar && !showDiaryDetail" class="calendar-view">
+          <DiaryCalendar
+            @close="closeDiaryCalendar"
+            @diary-click="handleDiaryClick"
+          />
+        </div>
+        <div v-else-if="showDiaryDetail" class="diary-detail-view">
+          <DiaryDetail
+            v-if="selectedDiaries && selectedDiaries.diaries[currentDiaryIndex]"
+            :nickname="selectedDiaries.diaries[currentDiaryIndex].nickname"
+            :year="selectedDiaries.year"
+            :month="selectedDiaries.month"
+            :day="selectedDiaries.day"
+            :emotions="selectedDiaries.diaries[currentDiaryIndex].emotions || []"
+            :content="selectedDiaries.diaries[currentDiaryIndex].content"
+            :showPrev="currentDiaryIndex > 0"
+            :showNext="currentDiaryIndex < selectedDiaries.diaries.length - 1"
+            @close="closeDiaryDetail"
+            @prev="handlePrevDiary"
+            @next="handleNextDiary"
+          />
+        </div>
+        <div v-else class="myitem-view">
+          <MyItemView @close="closeMyItems" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.sidebar-container {
+  position: relative;
+  height: 100%;
+}
+
 .side-menu {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(16px);
@@ -366,8 +372,28 @@ const handleDiarySave = async (result) => {
   transition: width 0.3s ease;
   position: relative;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.toggle-button {
+  width: 40px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #fff;
+  font-size: 32px;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  left: -40px;
+  top: 50vh;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .side-menu::-webkit-scrollbar {
@@ -490,24 +516,6 @@ const handleDiarySave = async (result) => {
   align-items: flex-start;
   padding: 20px;
   box-sizing: border-box;
-}
-
-.toggle-button {
-  width: 40px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 32px;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  left: -40px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .logout-icon {
