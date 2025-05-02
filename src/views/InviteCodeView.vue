@@ -32,16 +32,24 @@
         <span class="button-icon">🌳</span>
       </button>
     </div>
+    <AlertModal
+      v-if="showAlert"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import AlertModal from "../components/AlertModal.vue";
 
 const router = useRouter();
 const route = useRoute();
 const inviteCode = ref("");
+const showAlert = ref(false);
+const alertMessage = ref("");
 
 onMounted(() => {
   // URL 파라미터에서 inviteCode를 가져와서 설정
@@ -93,11 +101,13 @@ const handleSubmit = async () => {
       router.push("/");
     } catch (error) {
       console.error("초대 코드 검증 중 상세 오류:", error);
-      alert("초대 코드 검증에 실패했습니다. 다시 시도해주세요.");
+      alertMessage.value = "초대 코드 검증에 실패했습니다. 다시 시도해주세요.";
+      showAlert.value = true;
     }
   } else {
     console.log("초대 코드가 8자리가 아닙니다.");
-    alert("초대 코드 8자리를 입력해주세요.");
+    alertMessage.value = "초대 코드 8자리를 입력해주세요.";
+    showAlert.value = true;
   }
 };
 </script>

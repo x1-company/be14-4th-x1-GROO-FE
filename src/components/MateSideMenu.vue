@@ -17,6 +17,7 @@ import CategorySelector from './CategorySelector.vue';
 import WriteDiary from './WriteDiary.vue';
 import LoadingAnimation from './LoadingAnimation.vue';
 import AnalyzeResult from './AnalyzeResult.vue';
+import AlertModal from './AlertModal.vue';
 
 // Emotion Icons
 import joyIcon from '../icons/joy_icon.png'
@@ -84,7 +85,13 @@ const goBack = () => {
   router.push('/forest-detail/' + localStorage.getItem("myRecentforestId"));
 };
 
+const showLogoutModal = ref(false);
+
 const logout = () => {
+  showLogoutModal.value = true;
+};
+
+const handleLogoutConfirm = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("userNickname");
   router.push("/login");
@@ -348,6 +355,12 @@ const handleDiarySave = async (result) => {
         </div>
       </div>
     </div>
+    <AlertModal
+      v-if="showLogoutModal"
+      :message="'정말 로그아웃 하시겠습니까?'"
+      @confirm="handleLogoutConfirm"
+      @cancel="showLogoutModal = false"
+    />
   </div>
 </template>
 

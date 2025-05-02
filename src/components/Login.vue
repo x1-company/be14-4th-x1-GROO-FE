@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import AlertModal from "./AlertModal.vue";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
+const showAlert = ref(false);
+const alertMessage = ref("");
 
 const handleLogin = async (e) => {
   e.preventDefault();
@@ -22,82 +25,84 @@ const handleLogin = async (e) => {
     });
 
     if (!response.ok) {
-      alert("로그인 정보를 확인해 주세요!");
+      alertMessage.value = "로그인 정보를 확인해 주세요!";
+      showAlert.value = true;
       throw new Error("로그인 실패");
     }
 
     const data = await response.json();
 
-    alert("로그인 성공! 환영합니다.🌿");
-
     // 토큰 저장
     localStorage.setItem("accessToken", data.accessToken);
-
     // 유저 닉네임 저장
     localStorage.setItem("userNickname", data.userNickname);
 
-    const token = localStorage.getItem("accessToken");
-    const authToken = `Bearer ${token}`;
+    // 로그인 성공 메시지 표시
+    alertMessage.value = "로그인 성공! 환영합니다.🌿";
+    showAlert.value = true;
 
-    // 저장된 초대 코드가 있는지 확인
-    const pendingInviteCode = localStorage.getItem("pendingInviteCode");
-    if (pendingInviteCode) {
-      // 초대 코드가 있으면 초대 코드 검증 API 호출
-      try {
-        const inviteResponse = await fetch(
-          `http://localhost:8080/mate/invite/verify`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: authToken,
-            },
-            body: JSON.stringify({
-              inviteCode: pendingInviteCode,
-            }),
+    // 알림이 표시되고 나서 페이지 이동
+    setTimeout(async () => {
+      const token = localStorage.getItem("accessToken");
+      const authToken = `Bearer ${token}`;
+
+      // 저장된 초대 코드가 있는지 확인
+      const pendingInviteCode = localStorage.getItem("pendingInviteCode");
+      if (pendingInviteCode) {
+        try {
+          const inviteResponse = await fetch(
+            `http://localhost:8080/mate/invite/verify`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: authToken,
+              },
+              body: JSON.stringify({
+                inviteCode: pendingInviteCode,
+              }),
+            }
+          );
+
+          if (inviteResponse.ok) {
+            localStorage.removeItem("pendingInviteCode");
+            router.push("/");
+            return;
           }
-        );
-
-        if (inviteResponse.ok) {
-          // 초대 코드 검증 성공 시 저장된 코드 삭제
-          localStorage.removeItem("pendingInviteCode");
-          // 메인 페이지로 이동
-          router.push("/");
-          return;
+        } catch (error) {
+          console.error("초대 코드 검증 실패:", error);
         }
-      } catch (error) {
-        console.error("초대 코드 검증 실패:", error);
       }
-    }
 
-    // 초대 코드가 없거나 검증 실패 시 기존 로직 실행
-    const forestResponse = await fetch("http://localhost:8080/myforest", {
-      method: "GET",
-      headers: {
-        Authorization: authToken,
-      },
-    });
+      // 초대 코드가 없거나 검증 실패 시 기존 로직 실행
+      const forestResponse = await fetch("http://localhost:8080/myforest", {
+        method: "GET",
+        headers: {
+          Authorization: authToken,
+        },
+      });
 
-    if (!forestResponse.ok) {
-      throw new Error("숲 정보 불러오기 실패");
-    }
+      if (!forestResponse.ok) {
+        throw new Error("숲 정보 불러오기 실패");
+      }
 
-    const forestData = await forestResponse.json();
-    const myRecentforestId = forestData[0]?.id;
+      const forestData = await forestResponse.json();
+      const myRecentforestId = forestData[0]?.id;
 
-    if (!myRecentforestId) {
-      throw new Error("숲이 존재하지 않습니다.");
-    }
+      if (!myRecentforestId) {
+        throw new Error("숲이 존재하지 않습니다.");
+      }
 
-    // myRecentforestId 저장
-    localStorage.setItem("myRecentforestId", myRecentforestId);
+      localStorage.setItem("myRecentforestId", myRecentforestId);
+      router.push(`/forest-detail/${myRecentforestId}`);
+    }, 1000); // 알림이 보이고 1초 후에 페이지 이동
 
-    router.push(`/forest-detail/${myRecentforestId}`);
-
-    // 페이지 이동 처리 필요(내 숲 상세 조회 페이지로 이동 필요)
   } catch (error) {
     console.error("에러 발생:", error);
-    alert("로그인 실패");
+    if (!showAlert.value) {  // 이미 에러 메시지가 표시되지 않았다면
+      alertMessage.value = "로그인에 실패했습니다.";
+      showAlert.value = true;
+    }
   }
 };
 </script>
@@ -145,6 +150,11 @@ const handleLogin = async (e) => {
         </div>
       </div>
     </div>
+    <AlertModal 
+      v-if="showAlert" 
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   </div>
 </template>
 
