@@ -189,7 +189,7 @@ const handleDiarySave = async (result) => {
       ([label, percent]) => ({
         label: emotionMapping[label] || label,
         icon: emotionIcons[emotionMapping[label] || label],
-        percent: Math.round(percent * 100), // 퍼센트로 변환
+        percent,
       })
     );
 
