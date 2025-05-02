@@ -10,24 +10,24 @@ import previousIcon from "../icons/previous_icon2.png";
 import { useRouter, useRoute } from "vue-router";
 import InviteLinkModal from "./InviteLinkModal.vue";
 import ForestListModal from "./ForestListModal.vue";
-import DiaryCalendar from './DiaryCalendar.vue';
-import DiaryDetail from './DiaryDetail.vue';
-import MyItemView from './MyItemView.vue';
-import CategorySelector from './CategorySelector.vue';
-import WriteDiary from './WriteDiary.vue';
-import LoadingAnimation from './LoadingAnimation.vue';
-import AnalyzeResult from './AnalyzeResult.vue';
-import AlertModal from './AlertModal.vue';
+import DiaryCalendar from "./DiaryCalendar.vue";
+import DiaryDetail from "./DiaryDetail.vue";
+import MyItemView from "./MyItemView.vue";
+import CategorySelector from "./CategorySelector.vue";
+import WriteDiary from "./WriteDiary.vue";
+import LoadingAnimation from "./LoadingAnimation.vue";
+import AnalyzeResult from "./AnalyzeResult.vue";
+import AlertModal from "./AlertModal.vue";
 
 // Emotion Icons
-import joyIcon from '../icons/joy_icon.png'
-import sadIcon from '../icons/sad_icon.png'
-import peacefulIcon from '../icons/peaceful_icon.png'
-import annoyIcon from '../icons/annoy_icon.png'
-import anxiousIcon from '../icons/anxious_icon.png'
-import melancholyIcon from '../icons/melancholy_icon.png'
-import tiredIcon from '../icons/tired_icon.png'
-import romanceIcon from '../icons/romance_icon.png'
+import joyIcon from "../icons/joy_icon.png";
+import sadIcon from "../icons/sad_icon.png";
+import peacefulIcon from "../icons/peaceful_icon.png";
+import annoyIcon from "../icons/annoy_icon.png";
+import anxiousIcon from "../icons/anxious_icon.png";
+import melancholyIcon from "../icons/melancholy_icon.png";
+import tiredIcon from "../icons/tired_icon.png";
+import romanceIcon from "../icons/romance_icon.png";
 
 const route = useRoute();
 const isMenuOpen = ref(true);
@@ -36,33 +36,10 @@ const selectedDiaries = ref(null);
 const currentDiaryIndex = ref(0);
 const showDiaryDetail = ref(false);
 const showMyItems = ref(false);
-const showCategorySelector = ref(false);
-const showWriteDiary = ref(false);
-const showAnalyzeResult = ref(false);
-const categoryLoading = ref(false);
-const selectedCategory = ref(null);
-
-const analysisResult = ref({
-  emotions: [],
-  summaryMessage: '',
-  pieces: []
-});
-
-// 감정 아이콘 매핑 객체
-const emotionIcons = {
-  즐거움: joyIcon,
-  우울함: melancholyIcon,
-  평온함: peacefulIcon,
-  짜증: annoyIcon,
-  불안함: anxiousIcon,
-  슬픔: sadIcon,
-  지침: tiredIcon,
-  설렘: romanceIcon,
-};
 
 const sidebarWidth = computed(() => {
   if (!isMenuOpen.value) return 60;
-  if (showDiaryCalendar.value || showMyItems.value || showCategorySelector.value || showWriteDiary.value || showAnalyzeResult.value) return 576;
+  if (showDiaryCalendar.value || showMyItems.value) return 576;
   return 360;
 });
 
@@ -81,8 +58,7 @@ const handleShare = () => {
 };
 
 const goBack = () => {
-  // router.back();
-  router.push('/forest-detail/' + localStorage.getItem("myRecentforestId"));
+  router.back();
 };
 
 const showLogoutModal = ref(false);
@@ -169,7 +145,7 @@ const handleCategorySelect = (categoryId) => {
 
 const handleDiarySave = async (result) => {
   console.log("Diary save result:", result);
-  
+
   if (!result || !result.topEmotions) {
     console.error("유효하지 않은 분석 결과입니다:", result);
     alert("감정 분석에 실패했습니다. 다시 시도해주세요.");
@@ -215,7 +191,7 @@ const handleDiarySave = async (result) => {
 
     // 분석 결과 데이터 업데이트
     analysisResult.value = analysisData;
-    
+
     // 분석 결과 화면으로 전환
     showAnalyzeResult.value = true;
   } catch (error) {
@@ -231,13 +207,14 @@ const handleDiarySave = async (result) => {
       <span v-if="isMenuOpen">»</span>
       <span v-else>«</span>
     </button>
+
     <div
       class="side-menu"
       :class="{ open: isMenuOpen }"
       :style="{ width: sidebarWidth + 'px' }"
     >
       <div class="menu-content" v-if="isMenuOpen">
-        <div v-if="!showDiaryCalendar && !showMyItems && !showCategorySelector && !showWriteDiary && !showAnalyzeResult">
+        <div v-if="!showDiaryCalendar && !showMyItems">
           <div class="top-bar">
             <span class="previous-icon" @click="goBack">
               <img :src="previousIcon" class="btn-img" />
@@ -246,121 +223,64 @@ const handleDiarySave = async (result) => {
               <img :src="logoutIcon" class="btn-img" />
             </span>
           </div>
-          <div class="greeting">
-            <div>우정의 숲에</div>
-            <div>들어오신걸 환영해요!</div>
-          </div>
+
           <div class="menu-buttons">
-            <button class="menu-btn" @click="toggleCategorySelector">
-              <span class="icon">
-                <img :src="buttonIcon_1" class="btn-img" />
-              </span>
-              우정일기 작성하기
-            </button>
-            <button class="menu-btn" @click="openDiaryCalendar">
-              <span class="icon">
-                <img :src="buttonIcon_2" class="btn-img" />
-              </span>
-              우정일기 다시보기
-            </button>
-            <button class="menu-btn" @click="handleShare">
-              <span class="icon">
-                <img :src="buttonIcon_4" class="btn-img" />
-              </span>
-              우정의 숲 초대하기
-            </button>
-            <button class="menu-btn" @click="openMyItems">
-              <span class="icon">
-                <img :src="buttonIcon_5" class="btn-img" />
-              </span>
-              우리의 조각 보기
-            </button>
-            <button class="menu-btn" @click="handleWithdraw">
-              <span class="icon">
-                <img :src="buttonIcon_3" class="btn-img" />
-              </span>
-              우정의 숲 탈퇴하기
-            </button>
-            <InviteLinkModal
-              v-if="showInviteModal"
-              :inviteLink="inviteLink"
-              @close="showInviteModal = false"
-            />
-            <ForestListModal
-              v-if="showForestListModal"
-              :isOpen="showForestListModal"
-              @close="showForestListModal = false"
-            />
-          </div>
-        </div>
-        <template v-else-if="showCategorySelector">
-          <div class="top-bar">
-            <button class="back-button" @click="toggleCategorySelector">
-              ←
-            </button>
-          </div>
-          <CategorySelector
-            @select="handleCategorySelect"
-            @loading="(val) => (categoryLoading = val)"
-          />
-        </template>
-        <template v-else-if="showWriteDiary">
-          <div class="top-bar">
-            <button class="back-button" @click="toggleCategorySelector">
-              ←
-            </button>
-          </div>
-          <div class="relative-container">
-            <WriteDiary
-              :categoryId="selectedCategory"
-              @save="handleDiarySave"
-              @loading="(val) => (categoryLoading = val)"
-            />
-            <div v-if="categoryLoading" class="loading-overlay">
-              <LoadingAnimation />
+            <div class="greeting">
+              <div>우정의 숲에</div>
+              <div>들어오신걸 환영해요!</div>
+            </div>
+            <div class="menu-buttons">
+              <button class="menu-btn" @click="toggleCategorySelector">
+                <span class="icon">
+                  <img :src="buttonIcon_1" class="btn-img" />
+                </span>
+                우정일기 작성하기
+              </button>
+              <button class="menu-btn" @click="openDiaryCalendar">
+                <span class="icon">
+                  <img :src="buttonIcon_2" class="btn-img" />
+                </span>
+                우정일기 다시보기
+              </button>
+              <button class="menu-btn" @click="handleShare">
+                <span class="icon">
+                  <img :src="buttonIcon_4" class="btn-img" />
+                </span>
+                우정의 숲 초대하기
+              </button>
+              <button class="menu-btn" @click="openMyItems">
+                <span class="icon">
+                  <img :src="buttonIcon_5" class="btn-img" />
+                </span>
+                우리의 조각 보기
+              </button>
+              <button class="menu-btn" @click="handleWithdraw">
+                <span class="icon">
+                  <img :src="buttonIcon_3" class="btn-img" />
+                </span>
+                우정의 숲 탈퇴하기
+              </button>
+              <InviteLinkModal
+                v-if="showInviteModal"
+                :inviteLink="inviteLink"
+                @close="showInviteModal = false"
+              />
+              <ForestListModal
+                v-if="showForestListModal"
+                :isOpen="showForestListModal"
+                @close="showForestListModal = false"
+              />
             </div>
           </div>
-        </template>
-        <template v-else-if="showAnalyzeResult">
-          <AnalyzeResult
-            v-bind="analysisResult"
-            @place="handlePlace"
-            @to-storage="openSaveModal"
-          />
-        </template>
-        <div v-else-if="showDiaryCalendar && !showDiaryDetail" class="calendar-view">
-          <DiaryCalendar
-            @close="closeDiaryCalendar"
-            @diary-click="handleDiaryClick"
-          />
-        </div>
-        <div v-else-if="showDiaryDetail" class="diary-detail-view">
-          <DiaryDetail
-            v-if="selectedDiaries && selectedDiaries.diaries[currentDiaryIndex]"
-            :nickname="selectedDiaries.diaries[currentDiaryIndex].nickname"
-            :year="selectedDiaries.year"
-            :month="selectedDiaries.month"
-            :day="selectedDiaries.day"
-            :emotions="selectedDiaries.diaries[currentDiaryIndex].emotions || []"
-            :content="selectedDiaries.diaries[currentDiaryIndex].content"
-            :showPrev="currentDiaryIndex > 0"
-            :showNext="currentDiaryIndex < selectedDiaries.diaries.length - 1"
-            @close="closeDiaryDetail"
-            @prev="handlePrevDiary"
-            @next="handleNextDiary"
-          />
-        </div>
-        <div v-else class="myitem-view">
-          <MyItemView @close="closeMyItems" />
         </div>
       </div>
+      <AlertModal
+        v-if="showLogoutModal"
+        :message="'정말 로그아웃 하시겠습니까?'"
+        @confirm="handleLogoutConfirm"
+        @cancel="showLogoutModal = false"
+      />
     </div>
-    <AlertModal
-      v-if="showLogoutModal"
-      :message="'정말 로그아웃 하시겠습니까?'"
-      @confirm="handleLogoutConfirm"
-      @cancel="showLogoutModal = false"
-    />
   </div>
 </template>
 
@@ -375,7 +295,7 @@ const handleDiarySave = async (result) => {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-right: 1.5px solid rgba(255, 255, 255, 0.25);
-  height: 100vh;
+  height: 100%;
   padding: 0px 20px 20px 20px;
   box-sizing: border-box;
   display: flex;
@@ -417,21 +337,49 @@ const handleDiarySave = async (result) => {
   background: rgba(255, 255, 255, 0.15);
 }
 
+.toggle-button {
+  width: 40px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 32px;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
 .menu-content {
   width: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding-top: 20px;
+  align-items: center;
+  margin-top: 26px;
 }
 
 .top-bar {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 0 24px;
   margin-bottom: 32px;
+}
+
+.logout-icon {
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.back-button {
+  font-size: 28px;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
 }
 
 .greeting {
@@ -463,8 +411,7 @@ const handleDiarySave = async (result) => {
   font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
+  justify-content: center;
   cursor: pointer;
   transition: background 0.2s;
   text-decoration: none;
@@ -474,54 +421,136 @@ const handleDiarySave = async (result) => {
   background: rgba(255, 255, 255, 0.55);
 }
 
-.icon {
-  font-size: 22px;
-  margin-left: 18px;
-}
-
 .btn-img {
   width: 24px;
   height: 24px;
+  /* padding-right: 8px; */
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
 }
 
-.back-button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
+.logout-icon {
+  margin-left: 254.5px;
+}
+
+.previous-icon:hover {
   cursor: pointer;
-  padding: 8px;
-  margin-right: auto;
 }
 
-.relative-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.loading-overlay {
-  position: absolute;
+.modal-overlay {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-.calendar-view,
-.diary-detail-view,
-.myitem-view {
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  color: #333;
+  font-size: 20px;
+}
+
+.modal-content p {
+  margin: 0 0 24px;
+  color: #666;
+  font-size: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-btn {
+  background: #ff6b6b;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #d0d0d0;
+}
+
+.confirm-btn:hover {
+  background: #ff5252;
+}
+
+.calendar-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.selected-diaries {
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.selected-diaries h3 {
+  color: white;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.diary-entry {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.diary-content {
+  color: white;
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.diary-author {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-size: 14px;
+}
+
+.diary-detail-view {
   width: 100%;
   height: 100%;
   display: flex;
@@ -538,5 +567,15 @@ const handleDiarySave = async (result) => {
 
 .previous-icon:hover {
   cursor: pointer;
+}
+
+.myitem-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
 }
 </style>

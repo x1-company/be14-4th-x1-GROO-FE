@@ -2,11 +2,6 @@
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <!-- <div class="header-decoration">
-          <span class="deco-item">🌸</span>
-          <span class="deco-item">🦊</span>
-          <span class="deco-item">🌸</span>
-        </div> -->
         <h2>우정의 숲 목록</h2>
         <button class="close-button" @click="$emit('close')">닫기</button>
       </div>
@@ -24,12 +19,6 @@
           />
           <div class="forest-info">
             <div class="forest-name">{{ forest.forestName }}</div>
-            <div class="forest-members">
-              <span class="member-icon">👥</span>
-              <span class="member-count"
-                >{{ forest.memberCount || 1 }}명의 친구들</span
-              >
-            </div>
           </div>
         </div>
         <div
@@ -48,11 +37,6 @@
   <div v-if="showCreateForestModal" class="modal-overlay">
     <div class="create-forest-modal">
       <div class="modal-header">
-        <!-- <div class="header-decoration">
-          <span class="deco-item">🌱</span>
-          <span class="deco-item">🌳</span>
-          <span class="deco-item">🌱</span>
-        </div> -->
         <h2>새로운 우정의 숲 만들기</h2>
         <button class="close-button" @click="showCreateForestModal = false"
           >닫기</button
@@ -67,7 +51,6 @@
             class="forest-name-input"
             @keyup.enter="createNewForest"
           />
-          <!-- <span class="input-icon">🌳</span> -->
         </div>
         <button class="create-button" @click="createNewForest">
           <span>만들기</span>

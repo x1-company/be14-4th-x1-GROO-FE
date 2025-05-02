@@ -3,6 +3,12 @@
     <div v-if="isLoading" class="loading">로딩 중...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
+      <img
+        :src="grooLogo"
+        class="groo-logo"
+        @click="router.push('/')"
+        alt="GROO Logo"
+      />
       <div class="background-wrapper">
         <img
           :src="forestData?.backgroundImageUrl"
@@ -49,8 +55,11 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import WithdrawModal from "../components/WithdrawModal.vue";
+import grooLogo from "../icons/logo.png";
+
+const router = useRouter();
 const route = useRoute();
 const forestData = ref(null);
 const isLoading = ref(true);
@@ -232,5 +241,20 @@ div {
   background: rgba(0, 0, 0, 0.5);
   padding: 10px;
   border-radius: 5px;
+}
+
+.groo-logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+  z-index: 30;
+  transition: transform 0.2s ease;
+}
+
+.groo-logo:hover {
+  transform: scale(1.05);
 }
 </style>

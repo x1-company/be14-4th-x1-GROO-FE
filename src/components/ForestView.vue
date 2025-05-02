@@ -1,17 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
-const imageUrl = ref('') // 이미지 URL을 저장할 상태
+const imageUrl = ref(""); // 이미지 URL을 저장할 상태
 
 onMounted(() => {
-  const hour = new Date().getHours()
-  document.body.className = hour >= 6 && hour < 18 ? 'daytime' : 'nighttime'
-  // document.body.className = 'nighttime'
+  const hour = new Date().getHours();
+  document.body.className = hour >= 6 && hour < 18 ? "daytime" : "nighttime";
+
+  // document.body.className = hour >= 6 && hour < 18 ? 'daytime' : 'nighttime'
+  document.body.className = "nighttime";
+
   imageUrl.value =
     hour >= 6 && hour < 18
-      ? 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/joy_fox' // 낮 이미지
-      : 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/sad_owl1' // 밤 이미지
-})
+      ? "https://x1-groo.s3.ap-northeast-2.amazonaws.com/joy_fox" // 낮 이미지
+      : "https://x1-groo.s3.ap-northeast-2.amazonaws.com/sad_owl1"; // 밤 이미지
+});
 </script>
 
 <template>
@@ -22,7 +25,12 @@ onMounted(() => {
       <img :src="imageUrl" alt="Dynamic Image" class="dynamic-image" />
     </div>
     <div class="stars">
-      <div v-for="n in 50" :key="n" class="star" :style="generateStarStyle()"></div>
+      <div
+        v-for="n in 50"
+        :key="n"
+        class="star"
+        :style="generateStarStyle()"
+      ></div>
     </div>
   </div>
 </template>
@@ -31,10 +39,10 @@ onMounted(() => {
 export default {
   methods: {
     generateStarStyle() {
-      const size = Math.random() * 3 + 1 // 별 크기 (1px ~ 4px)
-      const top = Math.random() * 100 // 화면 상단 위치 (%)
-      const left = Math.random() * 100 // 화면 좌측 위치 (%)
-      const duration = Math.random() * 2 + 1 // 깜빡이는 애니메이션 시간 (1s ~ 3s)
+      const size = Math.random() * 3 + 1; // 별 크기 (1px ~ 4px)
+      const top = Math.random() * 100; // 화면 상단 위치 (%)
+      const left = Math.random() * 100; // 화면 좌측 위치 (%)
+      const duration = Math.random() * 2 + 1; // 깜빡이는 애니메이션 시간 (1s ~ 3s)
 
       return {
         width: `${size}px`,
@@ -42,10 +50,10 @@ export default {
         top: `${top}%`,
         left: `${left}%`,
         animationDuration: `${duration}s`,
-      }
+      };
     },
   },
-}
+};
 </script>
 
 <style scoped>
