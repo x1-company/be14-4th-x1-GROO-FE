@@ -1,106 +1,96 @@
 <template>
-    <div class="dustwrapper">
-      <div id="dustlayer_01" class="dust">
-        <div class="image01" :style="getImageStyle(dust1)"></div>
-        <div class="image02" :style="getImageStyle(dust1)"></div>
-      </div>
-      <div id="dustlayer_02" class="dust">
-        <div class="image01" :style="getImageStyle(dust2)"></div>
-        <div class="image02" :style="getImageStyle(dust2)"></div>
-      </div>
-      <div id="dustlayer_03" class="dust">
-        <div class="image01" :style="getImageStyle(dust1)"></div>
-        <div class="image02" :style="getImageStyle(dust1)"></div>
-      </div>
+    <div class="dust-container">
+      <canvas id="canvas-yellow-dust"></canvas>
     </div>
   </template>
   
-  <script setup>
-  import dust1 from '@/assets/yellow-watercolor-texture.jpg';  // 이미지 import
-  import dust2 from '@/assets/yellow-watercolor-texture.jpg';  // 이미지 import
+  <script>
+  export default {
+    name: "CanvasYellowDust",
+    mounted() {
+      this.init();
+    },
+    methods: {
+      init() {
+        this.particles = [];
+        this.canvas = document.getElementById("canvas-yellow-dust");
+        this.ctx = this.canvas.getContext("2d");
+        this.particleCount = 1200;
   
-  const getImageStyle = (image) => ({
-    background: `url(${image}) center center/cover no-repeat transparent`
-  });
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+  
+        for (let i = 0; i < this.particleCount; i++) {
+          this.particles.push(this.createParticle());
+        }
+  
+        window.addEventListener("resize", () => {
+          this.canvas.width = window.innerWidth;
+          this.canvas.height = window.innerHeight;
+        });
+  
+        this.animate();
+      },
+  
+      createParticle() {
+        return {
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          size: Math.random() * 8 + 4, // 입자 크기 증가
+          speedY: Math.random() * 1.5 + 0.5, // 수직 속도 증가
+          speedX: Math.random() * 1.2 - 0.6, // 수평 속도 증가
+          opacity: Math.random() * 0.2 + 0.05,
+          phase: Math.random() * Math.PI * 2
+        };
+      },
+  
+      animate() {
+        const draw = () => {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  
+          for (let particle of this.particles) {
+            particle.x += particle.speedX + Math.sin(particle.phase) * 0.3;
+            particle.y += particle.speedY;
+            particle.phase += 0.01;
+  
+            this.ctx.beginPath();
+            this.ctx.fillStyle = `rgba(200, 160, 60, ${particle.opacity})`;
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.ctx.fill();
+  
+            if (
+              particle.y > this.canvas.height ||
+              particle.x < 0 ||
+              particle.x > this.canvas.width
+            ) {
+              Object.assign(particle, this.createParticle(), { y: 0 });
+            }
+          }
+  
+          requestAnimationFrame(draw);
+        };
+        draw();
+      }
+    }
+  };
   </script>
   
-  <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-  }
-  body {
-    overflow-x: hidden;
-    background-color: #f3e9c0;
-  }
-  
-  .dustwrapper {
-    height: 100%;
+  <style scoped>
+  .dust-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
+    height: 100vh;
     pointer-events: none;
-    z-index: 1000;
-    filter: blur(1.5px) sepia(0.5) hue-rotate(-20deg) brightness(1.05);
+    z-index: 10;
   }
   
-  #dustlayer_01, #dustlayer_02, #dustlayer_03 {
+  canvas {
+    width: 100%;
     height: 100%;
-    position: absolute;
-    width: 200%;
-  }
-  
-  #dustlayer_01 .image01, #dustlayer_01 .image02,
-  #dustlayer_02 .image01, #dustlayer_02 .image02,
-  #dustlayer_03 .image01, #dustlayer_03 .image02 {
-    float: left;
-    height: 250%;
-    width: 50%;
-    background-repeat: repeat-x;
-  }
-  
-  #dustlayer_01 {
-    animation: dust_opacity_01 10s linear infinite,
-               dust_move 10s linear infinite;
-  }
-  #dustlayer_02 {
-    animation: dust_opacity_02 15s linear infinite,
-               dust_move 8s linear infinite;
-  }
-  #dustlayer_03 {
-    animation: dust_opacity_03 20s linear infinite,
-               dust_move 6s linear infinite;
-  }
-  
-  @keyframes dust_opacity_01 {
-    0%   { opacity: 0.3; }
-    30%  { opacity: 0.5; }
-    70%  { opacity: 0.4; }
-    100% { opacity: 0.3; }
-  }
-  @keyframes dust_opacity_02 {
-    0%   { opacity: 0.2; }
-    40%  { opacity: 0.4; }
-    80%  { opacity: 0.3; }
-    100% { opacity: 0.2; }
-  }
-  @keyframes dust_opacity_03 {
-    0%   { opacity: 0.2; }
-    50%  { opacity: 0.5; }
-    100% { opacity: 0.2; }
-  }
-  @keyframes dust_move {
-    0%   { left: 0; }
-    100% { left: -100%; }
-  }
-  
-  @media (max-width: 767px) {
-    #dustlayer_01 .image01, #dustlayer_01 .image02,
-    #dustlayer_02 .image01, #dustlayer_02 .image02,
-    #dustlayer_03 .image01, #dustlayer_03 .image02 {
-      width: 3000%;
-    }
+    filter: blur(3px);
+    background: transparent;
   }
   </style>
   

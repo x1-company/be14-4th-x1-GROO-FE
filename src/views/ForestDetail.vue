@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
-import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
 import GuestBookList from "../components/GuestBookList.vue";
 import GuestBookDetail from "../components/GuestBookDetail.vue";
 import { useRouter } from 'vue-router';
 import RainEffects from "../components/RainEffects.vue"; // Rain 효과 컴포넌트 불러오기
 import FlowerRainEffect from "../components/FlowerRainEffect.vue";
-import FogEffect from "../components/FogEffect.vue";
+// import FogEffect from "../components/FogEffect.vue";
+import FogEffects from "../components/FogEffects.vue";
 import YellowDustEffects from "../components/YellowDustEffects.vue";
 import SnowEffects from "../components/SnowEffects.vue";
 import ThunderEffects from "../components/ThunderEffects.vue";
@@ -280,7 +280,6 @@ const handleNameUpdate = (newName) => {
           @update="handleNameUpdate"
         />
       </div>
-      <img :src="buttonIcon_7" class="btn-img" @click="handleGuestBookClick" />
       <img
         :src="buttonIcon_8"
         class="btn-img"
@@ -361,7 +360,7 @@ const handleNameUpdate = (newName) => {
 
     <RainEffects v-if="showRain" />
     <FlowerRainEffect v-if="showFlowerRain" />
-    <FogEffect v-if="showFog" />
+    <FogEffects v-if="showFog" />
     <YellowDustEffects v-if="showYellowDust" />
     <SnowEffects v-if="showSnow" />
     <ThunderEffects v-if="showThunder" />
