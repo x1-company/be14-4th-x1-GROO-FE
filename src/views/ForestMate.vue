@@ -1,6 +1,11 @@
 <template>
   <div class="forest-mate">
-
+    <img 
+      src="/icon.png" 
+      alt="Home" 
+      class="home-icon" 
+      @click="goToHome"
+    />
     <div ref="containerRef" class="placement-container">
       <div class="placement-inner-container">
         <button v-if="selectedPiece" class="complete-btn" @click="handleCompletePlacement">배치 완료</button>
@@ -56,9 +61,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import WithdrawModal from "../components/WithdrawModal.vue";
+
 const route = useRoute();
+const router = useRouter();
 const forestData = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
@@ -199,6 +206,10 @@ const handleCompletePlacement = async () => {
     console.error(err);
   }
 };
+
+const goToHome = () => {
+  router.push('/')
+}
 </script>
 
 <style scoped>
@@ -311,5 +322,21 @@ const handleCompletePlacement = async () => {
 
 .error {
   color: #ff6b6b;
+}
+
+.home-icon {
+  position: absolute;
+  top: 15px;
+  left: 40px;
+  width: 120px;
+  height: 100px;
+  cursor: pointer;
+  z-index: 2;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.home-icon:hover {
+  transform: scale(1.1);
 }
 </style>

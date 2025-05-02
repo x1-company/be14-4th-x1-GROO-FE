@@ -1,7 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const imageUrl = ref('') // 이미지 URL을 저장할 상태
+
+const goToHome = () => {
+  router.push('/')
+}
 
 onMounted(() => {
   const hour = new Date().getHours()
@@ -16,6 +22,12 @@ onMounted(() => {
 
 <template>
   <div class="forest-view">
+    <img 
+      src="/icon.png" 
+      alt="Home" 
+      class="home-icon" 
+      @click="goToHome"
+    />
     <div class="message">
       <h1>서비스 준비 중입니다</h1>
       <p>곧 찾아뵙겠습니다. 조금만 기다려 주세요!</p>
@@ -110,5 +122,21 @@ export default {
   to {
     opacity: 1;
   }
+}
+
+.home-icon {
+  position: absolute;
+  top: 15px;
+  left: 40px;
+  width: 120px;
+  height: 100px;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.2s ease;
+  object-fit: contain;
+}
+
+.home-icon:hover {
+  transform: scale(1.1);
 }
 </style>

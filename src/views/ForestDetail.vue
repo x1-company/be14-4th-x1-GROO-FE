@@ -267,10 +267,20 @@ const handleNameUpdate = (newName) => {
     forestData.value[0].name = newName;
   }
 };
+
+const goToHome = () => {
+  router.push('/')
+}
 </script>
 
 <template>
   <div class="forest-detail">
+    <img 
+      src="/icon.png" 
+      alt="Home" 
+      class="home-icon" 
+      @click="goToHome"
+    />
     <div class="top-left-icons">
       <div class="edit-name-container">
         <img :src="buttonIcon_6" class="btn-img" @click="handleEditNameClick" />
@@ -443,6 +453,7 @@ const handleNameUpdate = (newName) => {
   font-size: 18px;
   color: #333;
   pointer-events: none;
+  opacity: 1;
 }
 
 .tooltip::after {
@@ -512,7 +523,7 @@ const handleNameUpdate = (newName) => {
   top: 530px;
   right: 340px;
   z-index: 30;
-  padding: 15px 28px;
+  padding: 16px 28px;
   background: #3a5a40;
   color: #fff;
   border: none;
@@ -531,6 +542,22 @@ const handleNameUpdate = (newName) => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+}
+
+.home-icon {
+  position: absolute;
+  top: 15px;
+  left: 40px;
+  width: 120px;
+  height: 100px;
+  cursor: pointer;
+  z-index: 2;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.home-icon:hover {
+  transform: scale(1.1);
 }
 </style>
 

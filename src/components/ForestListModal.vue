@@ -26,9 +26,9 @@
             <div class="forest-name">{{ forest.forestName }}</div>
             <div class="forest-members">
               <span class="member-icon">👥</span>
-              <span class="member-count"
-                >{{ forest.memberCount || 1 }}명의 친구들</span
-              >
+              <!-- <span class="member-count"
+                >{{ forest.length() }}명의 친구들</span
+              > -->
             </div>
           </div>
         </div>
