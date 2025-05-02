@@ -22,6 +22,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const currentPath = route.path
 
 const content = ref('')
 const emit = defineEmits(['back', 'submit'])
@@ -42,7 +46,7 @@ const handleSubmit = async () => {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         },
         body: JSON.stringify({
-          forestId: 1,
+          forestId: parseInt(currentPath.split('/')[2]),
           content: content.value
         })
       });
