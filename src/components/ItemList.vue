@@ -18,7 +18,7 @@
         <img :src="item.imageUrl" :alt="item.itemName" class="item-image" />
         <div class="item-info">
           <div class="item-name">{{ item.itemName }}</div>
-          <div class="item-count">{{ item.placedCount }}/{{ item.totalCount }}</div>
+          <div class="item-count">{{ item.totalCount - item.placedCount }}/{{ item.totalCount }}</div>
         </div>
       </div>
     </div>
