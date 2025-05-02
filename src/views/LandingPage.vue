@@ -31,7 +31,7 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 700px;
+    width: 900px;
     max-width: 90vw;
     transform: translate(-50%, -50%);
     animation: float 3s ease-in-out infinite;
