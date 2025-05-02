@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, getCurrentInstance, computed } from "vue";
 import buttonIcon_6 from "../icons/edit_icon.png"
-import buttonIcon_7 from "../icons/External_icon.png"
 import buttonIcon_8 from "../icons/is_public_icon.png"
 import GuestBookList from "../components/GuestBookList.vue";
 import GuestBookDetail from "../components/GuestBookDetail.vue";
@@ -270,7 +269,6 @@ const handleNameUpdate = (newName) => {
           @update="handleNameUpdate"
         />
       </div>
-      <img :src="buttonIcon_7" class="btn-img" @click="handleGuestBookClick" />
       <img
         :src="buttonIcon_8"
         class="btn-img"
