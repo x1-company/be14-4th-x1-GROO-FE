@@ -14,6 +14,7 @@ import SnowEffects from "../components/SnowEffects.vue";
 import ThunderEffects from "../components/ThunderEffects.vue";
 import CloudyEffects from "../components/CloudyEffects.vue";
 import EditForestName from "../components/EditForestName.vue";
+import AlertModal from "../components/AlertModal.vue";
 
 const router = useRouter();
 const showGuestBook = ref(false);
@@ -32,6 +33,8 @@ const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const forceUpdate = ref(0);
 const showEditName = ref(false);
+const showAlertModal = ref(false);
+const alertMessage = ref('');
 
 const { proxy } = getCurrentInstance();
 
@@ -187,7 +190,8 @@ const handleCompletePlacement = async () => {
   const token = localStorage.getItem('accessToken');
   const forestId = localStorage.getItem('myRecentforestId');
   if (!selectedPiece.value || !forestId) {
-    alert('필수 정보가 없습니다.');
+    alertMessage.value = '필수 정보가 없습니다.';
+    showAlertModal.value = true;
     return;
   }
   const body = {
@@ -206,14 +210,20 @@ const handleCompletePlacement = async () => {
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error('배치 요청 실패');
-    alert('배치가 완료되었습니다!');
+    alertMessage.value = '배치가 완료되었습니다!';
+    showAlertModal.value = true;
     await refreshForestData();
     selectedPiece.value = null;
     forceUpdate.value++; // 배치 후 강제 리렌더 트리거
   } catch (err) {
-    alert('배치에 실패했습니다.');
+    alertMessage.value = '배치에 실패했습니다.';
+    showAlertModal.value = true;
     console.error(err);
   }
+};
+
+const closeAlertModal = () => {
+  showAlertModal.value = false;
 };
 
 const handleShowDetail = (id) => {
@@ -356,6 +366,11 @@ const handleNameUpdate = (newName) => {
     <SnowEffects v-if="showSnow" />
     <ThunderEffects v-if="showThunder" />
     <CloudyEffects v-if="showCloudy" />
+    <AlertModal 
+      v-if="showAlertModal" 
+      :message="alertMessage"
+      @close="closeAlertModal"
+    />
   </div>
 </template>
 
