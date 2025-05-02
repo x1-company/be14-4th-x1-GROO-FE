@@ -51,10 +51,11 @@
     <script>
       const hour = new Date().getHours()
       
-      if (hour >= 6 && hour < 18) {
-        // 6시 ~ 18시: 낮
-        document.body.classList.add('daytime')
-      } else {
+      if (false) {
+        // if (hour >= 6 && hour < 18) {
+          // 6시 ~ 18시: 낮
+          document.body.classList.add('daytime')
+        } else {
         // 18시 ~ 다음날 6시: 밤
         document.body.classList.add('nighttime')
 
