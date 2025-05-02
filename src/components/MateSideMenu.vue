@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import buttonIcon_1 from "../icons/diarywrite_icon.png";
 import buttonIcon_2 from "../icons/diaryview_icon.png";
 import buttonIcon_3 from "../icons/forestmate_icon.png";
@@ -29,6 +29,7 @@ import melancholyIcon from '../icons/melancholy_icon.png'
 import tiredIcon from '../icons/tired_icon.png'
 import romanceIcon from '../icons/romance_icon.png'
 
+const { proxy } = getCurrentInstance();
 const route = useRoute();
 const isMenuOpen = ref(true);
 const showDiaryCalendar = ref(false);
@@ -223,6 +224,23 @@ const handleDiarySave = async (result) => {
     alert("분석 결과 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
   }
 };
+
+const handlePlace = (selectedPiece) => {
+  console.log('Placing piece:', selectedPiece);
+  showAnalyzeResult.value = false;
+  if (proxy && proxy.emitter) {
+    proxy.emitter.emit('place-item', selectedPiece);
+    console.log('Emitted place-item event with:', selectedPiece);
+  } else {
+    console.error('Emitter not available');
+  }
+};
+
+const handleToStorage = (piece) => {
+  console.log('Saving to storage:', piece);
+  showAnalyzeResult.value = false;
+  // 보관소 저장 로직 추가
+};
 </script>
 
 <template>
@@ -325,7 +343,7 @@ const handleDiarySave = async (result) => {
           <AnalyzeResult
             v-bind="analysisResult"
             @place="handlePlace"
-            @to-storage="openSaveModal"
+            @to-storage="handleToStorage"
           />
         </template>
         <div v-else-if="showDiaryCalendar && !showDiaryDetail" class="calendar-view">

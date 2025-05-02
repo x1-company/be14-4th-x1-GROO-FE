@@ -2,7 +2,7 @@
   <Transition name="toast">
     <div class="toast-message" v-if="show">
       <div class="toast-content">
-        <!-- <span class="check-icon">✓</span> -->
+        <span class="check-icon">✓</span>
         {{ message }}
       </div>
     </div>
