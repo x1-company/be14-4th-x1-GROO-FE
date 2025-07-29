@@ -15,8 +15,8 @@ onMounted(() => {
   // document.body.className = 'nighttime'
   imageUrl.value =
     hour >= 6 && hour < 18
-      ? 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/joy_fox' // 낮 이미지
-      : 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/sad_owl1' // 밤 이미지
+      ? 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/items/default/joy/etc/fox' // 낮 이미지
+      : 'https://x1-groo.s3.ap-northeast-2.amazonaws.com/items/default/sad/etc/owl1' // 밤 이미지
 })
 </script>
 
